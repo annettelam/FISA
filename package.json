@@ -10,6 +10,14 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^4.15.9"
-  }
+    "astro": "^4.15.9",
+    "node": "^22.9.0",
+    "puppeteer": "^23.4.1",
+    "sqlite3": "^5.1.7"
+  },
+  "description": "```sh npm create astro@latest -- --template basics ```",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
 }
