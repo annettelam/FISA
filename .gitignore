@@ -28,5 +28,5 @@ pnpm-debug.log*
 
 # test database path
 # Ignore all files in the data folder
-/pages/api/data/*
+src/pages/api/data/*
 
