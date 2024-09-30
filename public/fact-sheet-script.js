@@ -73,6 +73,16 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("grade-12").value = data["12"];
       document.getElementById("ungraded-sec").value = data.UNS;
 
+      // Populate school type fields
+      document.getElementById("funding").value = data.FUNDING;
+      document.getElementById("specialty").value = data.SPECIALTY;
+
+      // Populate relationship fields
+      document.getElementById("assoc").value = data.ASSOC;
+      document.getElementById("sdnum").value = data.SDNUM;
+      document.getElementById("sd").value = data.SD;
+      document.getElementById("electoral").value = data.ELECTORAL;
+
       // Call calculateTotals to update totals
       calculateTotals();
 
@@ -83,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
   });
 
-  // Call calculateTotals when enrollment fields change
+  // Recalculate totals when enrollment fields change
   const enrollmentFields = [
     "prek-age4",
     "halfday-k",
@@ -95,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
     "grade-11",
     "grade-12",
   ];
+
   enrollmentFields.forEach((fieldId) => {
     document.getElementById(fieldId).addEventListener("input", calculateTotals);
   });
