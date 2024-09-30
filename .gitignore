@@ -25,6 +25,7 @@ pnpm-debug.log*
 
 # database
 /data/FISA.db
+/data/test.db
 
 # test database path
 # Ignore all files in the data folder

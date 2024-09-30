@@ -81,7 +81,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("assoc").value = data.ASSOC;
       document.getElementById("sdnum").value = data.SDNUM;
       document.getElementById("sd").value = data.SD;
-      document.getElementById("electoral").value = data.ELECTORAL;
+      document.getElementById("electoral").value = data.ElectoralNew;
 
       // Call calculateTotals to update totals
       calculateTotals();

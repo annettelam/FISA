@@ -41,7 +41,7 @@ export async function GET(req) {
     ASSOC,     -- Provincial Association
     SDNUM,     -- Public School District #
     SD,        -- Name
-    ELECTORAL  -- Provincial Electoral District
+    ElectoralNew  -- Provincial Electoral District
   FROM 
     "all_schools_2024-2025"
   WHERE 
