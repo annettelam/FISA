@@ -8,7 +8,7 @@ export async function GET(req) {
   // Open the SQLite database
   const db = new Database("./data/FISA.db");
 
-  // Prepare the query with the specific columns you need
+  // Prepare the query with the specific columns you need for both general information and enrollment
   const query = `
     SELECT 
       SCHOOL, 
@@ -24,7 +24,18 @@ export async function GET(req) {
       Email, 
       FIRST, 
       LAST, 
-      DEGREE
+      DEGREE,
+      PrekAge4, 
+      Halfday_k, 
+      Fullday_k, 
+      "1_7", 
+      UNE, 
+      "8", 
+      "9", 
+      "10", 
+      "11", 
+      "12", 
+      UNS
     FROM 
       "all_schools_2024-2025"
     WHERE 
