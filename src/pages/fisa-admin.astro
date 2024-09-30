@@ -25,6 +25,86 @@ import SchoolEnrollmentCard from '../components/SchoolEnrollmentCard.astro';
             <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
         </div>
 
+        ---
+import Layout from '../layouts/Layout.astro';
+import SchoolInfoCard from '../components/SchoolInfoCard.astro';
+import SchoolStatusCard from '../components/SchoolStatusCard.astro';
+import SchoolEnrollmentCard from '../components/SchoolEnrollmentCard.astro';
+---
+
+<Layout title="FISA Admin page">
+    <main class="border border-gray-300 rounded-lg p-6 m-6">
+        <h1 class="m-6 font-bold dark:text-white">FISA Admin Portal</h1>
+
+        <SchoolInfoCard />
+        <SchoolStatusCard />
+        <SchoolEnrollmentCard />
+
+        <div class="m-6">
+            <label for="notes" class="font-bold block mb-2 text-sm font-medium text-gray-900 dark:text-white">Notes</label>
+            <textarea id="notes" rows="4" class="block p-2.5 w-full text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"></textarea>
+        </div>
+        <div class="flex justify-end mb-20 mt-20 mr-6">
+            <button id="submitButton" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
+        </div>
+
+        <script>
+            /// Example not-yet functional JS script to handle form submission for each Component with a placeholder endpoint
+            document.getElementById('submitButton').addEventListener('click', async () => {
+                // Collect data from the SchoolInfoCard, SchoolStatusCard, and SchoolEnrollmentCard
+                const schoolInfo = {
+                    // Assume these are IDs in the SchoolInfoCard component
+                    schoolName: (document.getElementById('schoolName') as HTMLInputElement).value,
+                    address: (document.getElementById('address') as HTMLInputElement).value,
+                };
+
+                const schoolStatus = {
+                    // Assume these are IDs in the SchoolStatusCard component
+                    status: (document.getElementById('status') as HTMLInputElement).value,
+                };
+
+                const schoolEnrollment = {
+                    // Assume these are IDs in the SchoolEnrollmentCard component
+                    enrollmentCount: (document.getElementById('enrollmentCount') as HTMLInputElement).value,
+                };
+
+                const notes = (document.getElementById('notes') as HTMLTextAreaElement).value;
+
+                // Construct the payload
+                const payload = {
+                    schoolInfo,
+                    schoolStatus,
+                    schoolEnrollment,
+                    notes,
+                };
+
+                try {
+                    const response = await fetch('YOUR_API_ENDPOINT', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(payload),
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+
+                    const data = await response.json();
+                    console.log('Success:', data);
+                    // Handle success (e.g., show a success message)
+                } catch (error) {
+                    console.error('Error:', error);
+                    // Handle error (e.g., show an error message)
+                }
+            });
+        </script>
+    </main>
+</Layout>
+
+        
+
     </main>
 
 </Layout>
