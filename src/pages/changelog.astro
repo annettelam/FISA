@@ -6,8 +6,14 @@ const db = new Database('./data/FISA.db');
 const logsQuery = `
   SELECT school_num, field_changed, old_value, new_value, updated_by, timestamp 
   FROM school_change_log
-  ORDER BY timestamp DESC
+  ORDER BY 
+    MAX(timestamp) OVER (PARTITION BY school_num) DESC,  -- Ensures most recently updated schools are on top
+    school_num ASC,  -- Groups logs by school_num in ascending order
+    timestamp DESC   -- Orders logs by timestamp within each school_num
 `;
+
+
+
 const logs = db.prepare(logsQuery).all();
 db.close();
 ---
