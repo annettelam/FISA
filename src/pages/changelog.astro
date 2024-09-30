@@ -1,0 +1,67 @@
+---
+import Database from "better-sqlite3";
+
+// Open the SQLite database and fetch all logs
+const db = new Database('./data/FISA.db');
+const logsQuery = `
+  SELECT school_num, field_changed, old_value, new_value, updated_by, timestamp 
+  FROM school_change_log
+  ORDER BY timestamp DESC
+`;
+const logs = db.prepare(logsQuery).all();
+db.close();
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Change Log</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/flowbite@1.4.7/dist/flowbite.min.css" rel="stylesheet" />
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-7xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+      <!-- Page Heading -->
+      <div class="text-center mb-10">
+        <h1 class="text-3xl font-bold text-gray-800">School Change Log</h1>
+        <p class="text-gray-600">Track changes made to school data</p>
+      </div>
+
+      <!-- Change Log Table -->
+      <div class="overflow-x-auto">
+        <table class="table-auto w-full text-left text-sm text-gray-500">
+          <thead class="bg-gray-50">
+            <tr>
+              <th class="px-4 py-2 font-medium text-gray-900">School Number</th>
+              <th class="px-4 py-2 font-medium text-gray-900">Field Changed</th>
+              <th class="px-4 py-2 font-medium text-gray-900">Old Value</th>
+              <th class="px-4 py-2 font-medium text-gray-900">New Value</th>
+              <th class="px-4 py-2 font-medium text-gray-900">Updated By</th>
+              <th class="px-4 py-2 font-medium text-gray-900">Timestamp</th>
+            </tr>
+          </thead>
+          <tbody>
+            {logs.length === 0 ? (
+              <tr>
+                <td colspan="6" class="text-center py-4">No changes logged yet.</td>
+              </tr>
+            ) : (
+              logs.map(log => (
+                <tr class="bg-white border-b">
+                  <td class="px-4 py-2">{log.school_num}</td>
+                  <td class="px-4 py-2">{log.field_changed}</td>
+                  <td class="px-4 py-2">{log.old_value || "N/A"}</td>
+                  <td class="px-4 py-2">{log.new_value || "N/A"}</td>
+                  <td class="px-4 py-2">{log.updated_by}</td>
+                  <td class="px-4 py-2">{new Date(log.timestamp).toLocaleString()}</td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <script src="https://unpkg.com/flowbite@1.4.7/dist/flowbite.min.js"></script>
+  </body>
+</html>

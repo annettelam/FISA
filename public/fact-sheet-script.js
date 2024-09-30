@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("specialty").value = data.SPECIALTY;
 
       // Populate relationship fields
-      document.getElementById("fisa").value = data.FISA ? "Yes" : "No";
+     document.getElementById("fisa").value =data.FISA === "True" ? "True" : "False";
       document.getElementById("assoc").value = data.ASSOC;
       document.getElementById("sdnum").value = data.SDNUM;
       document.getElementById("sd").value = data.SD;
@@ -110,4 +110,65 @@ document.addEventListener("DOMContentLoaded", function () {
   enrollmentFields.forEach((fieldId) => {
     document.getElementById(fieldId).addEventListener("input", calculateTotals);
   });
+
+
+  schoolForm.addEventListener("submit", async function (event) {
+    event.preventDefault();
+
+    // Collect form data
+    const formData = {
+      schoolNum: document.getElementById("school-number").value,
+      founded: document.getElementById("founded").value,
+      school: document.getElementById("school").value,
+      authority: document.getElementById("authority").value,
+      address: document.getElementById("address").value,
+      saddress: document.getElementById("saddress").value,
+      city: document.getElementById("city").value,
+      postal: document.getElementById("postal").value,
+      phone: document.getElementById("phone").value,
+      fax: document.getElementById("fax").value,
+      website: document.getElementById("website").value,
+      email: document.getElementById("email").value,
+      firstName: document.getElementById("first-name").value,
+      lastName: document.getElementById("last-name").value,
+      degree: document.getElementById("degree").value,
+      prekAge4: document.getElementById("prek-age4").value,
+      halfdayK: document.getElementById("halfday-k").value,
+      fulldayK: document.getElementById("fullday-k").value,
+      grade1_7: document.getElementById("grade-1-7").value,
+      ungradedElem: document.getElementById("ungraded-elem").value,
+      grade8: document.getElementById("grade-8").value,
+      grade9: document.getElementById("grade-9").value,
+      grade10: document.getElementById("grade-10").value,
+      grade11: document.getElementById("grade-11").value,
+      grade12: document.getElementById("grade-12").value,
+      ungradedSec: document.getElementById("ungraded-sec").value,
+      funding: document.getElementById("funding").value,
+      specialty: document.getElementById("specialty").value,
+      assoc: document.getElementById("assoc").value,
+      sdnum: document.getElementById("sdnum").value,
+      sd: document.getElementById("sd").value,
+      electoral: document.getElementById("electoral").value,
+      fisa: document.getElementById("fisa").value,  // This will be either "True" or "False"
+
+    };
+
+    try {
+      // Send the data to the server
+      const response = await fetch(`http://localhost:4321/api/update-school`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      alert(result.message);
+    } catch (error) {
+      console.error("Error updating school data:", error);
+    }
+  });
 });
+
+
+
+
