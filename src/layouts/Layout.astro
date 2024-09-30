@@ -3,6 +3,8 @@ interface Props {
 	title: string;
 }
 
+import Header from '../components/Header.astro';
+
 const { title } = Astro.props;
 ---
 
@@ -15,11 +17,19 @@ const { title } = Astro.props;
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
+		<!-- Add Tailwind CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+		<!-- Add Flowbite CSS -->
+		<link href="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.css" rel="stylesheet" />
 	</head>
 	<body>
+		<Header />
 		<slot />
+		<!-- Add Flowbite JS -->
+		<script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.bundle.min.js"></script>
 	</body>
 </html>
+
 <style is:global>
 	:root {
 		--accent: 136, 58, 234;
@@ -35,6 +45,7 @@ const { title } = Astro.props;
 	html {
 		font-family: system-ui, sans-serif;
 		background: #13151a;
+		
 	}
 	code {
 		font-family:
