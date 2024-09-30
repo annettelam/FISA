@@ -1,0 +1,140 @@
+---
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Fact Sheet</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link href="https://unpkg.com/flowbite@1.4.7/dist/flowbite.min.css" rel="stylesheet" />
+    <script defer src="/fact-sheet-script.js"></script> <!-- Script for fetching and populating data -->
+  </head>
+  <body class="bg-gray-100">
+    <div class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+      
+      <!-- Step 1: Search Section (No header or logo here) -->
+      <div class="border-b pb-6 mb-6">
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Search School by Number</h2>
+        <form id="search-form" class="space-y-4">
+          <div>
+            <label for="schoolNum" class="block mb-2 text-sm font-medium text-gray-900">Enter School Number</label>
+            <input type="text" id="schoolNum" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3" placeholder="e.g., 03496069" required />
+          </div>
+          <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center">Fetch School Data</button>
+        </form>
+      </div>
+
+      <!-- Step 2: Fact Sheet Form (Initially hidden, with header and logo) -->
+      <div id="school-data" class="hidden">
+        
+        <!-- Header section with FISA logo -->
+        <div class="flex justify-between items-center mb-6">
+          <img src="/fisa_logo_small.png" alt="FISA Logo" class="w-32 h-auto"> <!-- FISA Logo -->
+          <div class="text-center">
+            <h1 class="text-2xl font-bold text-gray-800">FACT SHEET FOR SCHOOL YEAR 2023 - 2024</h1>
+            <p class="text-sm text-gray-600">Please complete or correct where necessary the following information<br>
+            Return by Canada Post or email to <a href="mailto:info@fisabc.ca" class="text-blue-600 underline">info@fisabc.ca</a> by October 20, 2023.</p>
+          </div>
+        </div>
+
+        <!-- Fact Sheet Form -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">1. GENERAL INFORMATION</h2>
+        <form id="school-form" class="space-y-4">
+
+          <!-- School Number and Year Founded -->
+          <div class="grid grid-cols-3 gap-4">
+            <div class="col-span-2">
+              <label for="school-number" class="block text-sm font-medium text-gray-900">SCHOOL NUMBER:</label>
+              <input type="text" id="school-number" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" disabled />
+            </div>
+            <div>
+              <label for="founded" class="block text-sm font-medium text-gray-900">YEAR FOUNDED:</label>
+              <input type="text" id="founded" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+          </div>
+
+          <!-- School Name and Authority -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="school" class="block text-sm font-medium text-gray-900">NAME OF SCHOOL:</label>
+              <input type="text" id="school" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+            <div>
+              <label for="authority" class="block text-sm font-medium text-gray-900">NAME OF AUTHORITY:</label>
+              <input type="text" id="authority" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+          </div>
+
+          <!-- Mailing Address and School Address -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="address" class="block text-sm font-medium text-gray-900">MAILING ADDRESS:</label>
+              <input type="text" id="address" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+            <div>
+              <label for="saddress" class="block text-sm font-medium text-gray-900">SCHOOL ADDRESS (if different):</label>
+              <input type="text" id="saddress" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+          </div>
+
+          <!-- City and Postal Code -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="city" class="block text-sm font-medium text-gray-900">CITY:</label>
+              <input type="text" id="city" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+            <div>
+              <label for="postal" class="block text-sm font-medium text-gray-900">POSTAL CODE:</label>
+              <input type="text" id="postal" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+          </div>
+
+          <!-- Phone, Fax, Website, and Email -->
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-900">SCHOOL PHONE:</label>
+              <input type="text" id="phone" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+            <div>
+              <label for="fax" class="block text-sm font-medium text-gray-900">SCHOOL FAX:</label>
+              <input type="text" id="fax" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+          </div>
+
+          <div class="grid grid-cols-2 gap-4">
+            <div>
+              <label for="website" class="block text-sm font-medium text-gray-900">WEBSITE:</label>
+              <input type="text" id="website" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+            <div>
+              <label for="email" class="block text-sm font-medium text-gray-900">EMAIL:</label>
+              <input type="text" id="email" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+          </div>
+
+          <!-- Principal's First and Last Name, and Degree -->
+          <div class="grid grid-cols-3 gap-4">
+            <div>
+              <label for="first-name" class="block text-sm font-medium text-gray-900">PRINCIPAL FIRST NAME:</label>
+              <input type="text" id="first-name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+            <div>
+              <label for="last-name" class="block text-sm font-medium text-gray-900">PRINCIPAL LAST NAME:</label>
+              <input type="text" id="last-name" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+            <div>
+              <label for="degree" class="block text-sm font-medium text-gray-900">DEGREE:</label>
+              <input type="text" id="degree" class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5" />
+            </div>
+          </div>
+
+          <!-- Submit button -->
+          <button type="submit" class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">Submit</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://unpkg.com/flowbite@1.4.7/dist/flowbite.min.js"></script>
+  </body>
+</html>
