@@ -41,7 +41,8 @@ export async function GET(req) {
     ASSOC,     -- Provincial Association
     SDNUM,     -- Public School District #
     SD,        -- Name
-    ElectoralNew  -- Provincial Electoral District
+    ElectoralNew,
+    FISA  -- Check if they're a member of FISA  -- Provincial Electoral District
   FROM 
     "all_schools_2024-2025"
   WHERE 

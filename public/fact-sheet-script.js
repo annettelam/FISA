@@ -78,6 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("specialty").value = data.SPECIALTY;
 
       // Populate relationship fields
+      document.getElementById("fisa").value = data.FISA ? "Yes" : "No";
       document.getElementById("assoc").value = data.ASSOC;
       document.getElementById("sdnum").value = data.SDNUM;
       document.getElementById("sd").value = data.SD;
