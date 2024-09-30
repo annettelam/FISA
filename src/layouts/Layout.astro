@@ -1,6 +1,6 @@
 ---
 interface Props {
-	title: string;
+  title: string;
 }
 
 import Header from '../components/Header.astro';
@@ -10,55 +10,58 @@ const { title } = Astro.props;
 
 <!doctype html>
 <html lang="en">
-	<head>
-		<meta charset="UTF-8" />
-		<meta name="description" content="Astro description" />
-		<meta name="viewport" content="width=device-width" />
-		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
-		<!-- Add Tailwind CSS -->
-		<link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-		<!-- Add Flowbite CSS -->
-		<link href="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.css" rel="stylesheet" />
-	</head>
-	<body>
-		<Header />
-		<slot />
-		<!-- Add Flowbite JS -->
-		<script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.bundle.min.js"></script>
-		<script src="https://cdn.jsdelivr.net/npm/flowbite@2.5.2/dist/flowbite.min.js"></script>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="description" content="Astro description" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="generator" content={Astro.generator} />
+    <title>{title}</title>
 
-	</body>
+    <!-- Tailwind CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Flowbite CSS (Choose one version) -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body>
+    <Header />
+    <slot />
+
+	  <!-- Include the JavaScript file -->
+  <script defer src="/fact-sheet-script.js"></script>
+
+    <!-- Flowbite JS -->
+    <script
+      src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"
+    ></script>
+  </body>
 </html>
 
 <style is:global>
-	:root {
-		--accent: 136, 58, 234;
-		--accent-light: 224, 204, 250;
-		--accent-dark: 49, 10, 101;
-		--accent-gradient: linear-gradient(
-			45deg,
-			rgb(var(--accent)),
-			rgb(var(--accent-light)) 30%,
-			grey 60%
-		);
-	}
-	html {
-		font-family: system-ui, sans-serif;
-		/* background: #13151a; */
-		background: white;
-		
-	}
-	code {
-		font-family:
-			Menlo,
-			Monaco,
-			Lucida Console,
-			Liberation Mono,
-			DejaVu Sans Mono,
-			Bitstream Vera Sans Mono,
-			Courier New,
-			monospace;
-	}
+  :root {
+    --accent: 136, 58, 234;
+    --accent-light: 224, 204, 250;
+    --accent-dark: 49, 10, 101;
+    --accent-gradient: linear-gradient(
+      45deg,
+      rgb(var(--accent)),
+      rgb(var(--accent-light)) 30%,
+      grey 60%
+    );
+  }
+  html {
+    font-family: system-ui, sans-serif;
+    background: white;
+  }
+  code {
+    font-family: Menlo, Monaco, 'Lucida Console', 'Liberation Mono',
+      'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Courier New', monospace;
+  }
 </style>
