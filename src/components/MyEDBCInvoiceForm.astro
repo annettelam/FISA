@@ -1,0 +1,258 @@
+<div class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+    <!-- Header Section for MyEDBC Invoice Information -->
+    <div class="text-center mb-6">
+        <h1 class="text-2xl font-bold text-gray-800">
+            MyEDBC iGroup Shared Costs Invoice (2023-2024)
+        </h1>
+        <p class="text-sm text-gray-600">
+            Please submit your payment to FISA BC by January 31, 2024. The fees
+            are based on your school's FTE data as of September 30, 2023.
+        </p>
+    </div>
+
+    <!-- MyEDBC Invoice Form -->
+    <form id="myedbc-form" class="space-y-6">
+        <!-- School Information Section -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">School Information</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label
+                    for="schoolName"
+                    class="block text-sm font-medium text-gray-900"
+                    >School Name:</label
+                >
+                <input
+                    type="text"
+                    id="schoolName"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter school name"
+                    required
+                />
+            </div>
+            <div>
+                <label
+                    for="ministryCode"
+                    class="block text-sm font-medium text-gray-900"
+                    >Ministry Code:</label
+                >
+                <input
+                    type="text"
+                    id="ministryCode"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter ministry code"
+                    required
+                />
+            </div>
+        </div>
+
+        <!-- FISA Affiliation Section for Member Schools -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">FISA Member School</h2>
+        <div class="grid grid-cols-1 gap-4">
+            <div>
+                <label class="block text-sm font-medium text-gray-900"
+                    >Check FISA affiliation:</label
+                >
+                <div class="flex gap-4">
+                    <label
+                        ><input
+                            type="checkbox"
+                            name="fisaAffiliation"
+                            value="AMS"
+                        /> AMS</label
+                    >
+                    <label
+                        ><input
+                            type="checkbox"
+                            name="fisaAffiliation"
+                            value="ACSI BC"
+                        /> ACSI BC</label
+                    >
+                    <label
+                        ><input
+                            type="checkbox"
+                            name="fisaAffiliation"
+                            value="SCSBC"
+                        /> SCSBC</label
+                    >
+                    <label
+                        ><input
+                            type="checkbox"
+                            name="fisaAffiliation"
+                            value="CIS"
+                        /> CIS</label
+                    >
+                    <label
+                        ><input
+                            type="checkbox"
+                            name="fisaAffiliation"
+                            value="ISABC"
+                        /> ISABC</label
+                    >
+                </div>
+            </div>
+        </div>
+
+        <!-- Enrollment Information and Fee Calculation Section for Member Schools -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            Enrollment and Fee Calculation (Member School)
+        </h2>
+        <div class="space-y-4">
+            <div>
+                <label
+                    for="regularStudents"
+                    class="block text-sm font-medium text-gray-900"
+                >
+                    Number of regular students enrolled (A):
+                </label>
+                <input
+                    type="number"
+                    id="regularStudents"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter number"
+                />
+            </div>
+            <div>
+                <label
+                    for="homeschoolers"
+                    class="block text-sm font-medium text-gray-900"
+                >
+                    Number of homeschoolers registered:
+                </label>
+                <input
+                    type="number"
+                    id="homeschoolers"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter number"
+                />
+            </div>
+
+            <!-- Calculation Result for Member School -->
+            <div>
+                <label
+                    for="totalPaymentMember"
+                    class="block text-sm font-medium text-gray-900"
+                >
+                    Total Payment (A + B) for Member Schools:
+                </label>
+                <input
+                    type="text"
+                    id="totalPaymentMember"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="0.00"
+                />
+            </div>
+        </div>
+
+        <!-- Enrollment Information and Fee Calculation Section for Non-Member Schools -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            Enrollment and Fee Calculation (Non-Member School)
+        </h2>
+        <div class="space-y-4">
+            <div>
+                <label
+                    for="nonMemberRegularStudents"
+                    class="block text-sm font-medium text-gray-900"
+                >
+                    Number of regular students enrolled (A):
+                </label>
+                <input
+                    type="number"
+                    id="nonMemberRegularStudents"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter number"
+                />
+            </div>
+            <div>
+                <label
+                    for="nonMemberHomeschoolers"
+                    class="block text-sm font-medium text-gray-900"
+                >
+                    Number of homeschoolers registered:
+                </label>
+                <input
+                    type="number"
+                    id="nonMemberHomeschoolers"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter number"
+                />
+            </div>
+
+            <!-- Calculation Result for Non-Member School -->
+            <div>
+                <label
+                    for="totalPaymentNonMember"
+                    class="block text-sm font-medium text-gray-900"
+                >
+                    Total Payment (A + B) for Non-Member Schools:
+                </label>
+                <input
+                    type="text"
+                    id="totalPaymentNonMember"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="0.00"
+                />
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+            type="submit"
+            class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
+            >Submit</button
+        >
+    </form>
+</div>
+
+<!-- Client-side Script for Calculation -->
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        function calculateMyEDBCFees() {
+            const regularStudents =
+                parseInt(document.getElementById("regularStudents").value) || 0;
+            const homeschoolers =
+                parseInt(document.getElementById("homeschoolers").value) || 0;
+
+            const totalPaymentMember =
+                regularStudents * 5.24 + homeschoolers * 1.05;
+            document.getElementById("totalPaymentMember").value =
+                totalPaymentMember.toFixed(2);
+
+            const nonMemberRegularStudents =
+                parseInt(
+                    document.getElementById("nonMemberRegularStudents").value,
+                ) || 0;
+            const nonMemberHomeschoolers =
+                parseInt(
+                    document.getElementById("nonMemberHomeschoolers").value,
+                ) || 0;
+
+            const totalPaymentNonMember =
+                nonMemberRegularStudents * 7.35 + nonMemberHomeschoolers * 1.05;
+            document.getElementById("totalPaymentNonMember").value =
+                totalPaymentNonMember.toFixed(2);
+        }
+
+        const regularStudentsInput = document.getElementById("regularStudents");
+        const homeschoolersInput = document.getElementById("homeschoolers");
+        const nonMemberRegularStudentsInput = document.getElementById(
+            "nonMemberRegularStudents",
+        );
+        const nonMemberHomeschoolersInput = document.getElementById(
+            "nonMemberHomeschoolers",
+        );
+
+        // Add event listeners for calculations
+        regularStudentsInput.addEventListener("input", calculateMyEDBCFees);
+        homeschoolersInput.addEventListener("input", calculateMyEDBCFees);
+        nonMemberRegularStudentsInput.addEventListener(
+            "input",
+            calculateMyEDBCFees,
+        );
+        nonMemberHomeschoolersInput.addEventListener(
+            "input",
+            calculateMyEDBCFees,
+        );
+    });
+</script>
