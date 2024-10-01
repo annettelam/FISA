@@ -1,6 +1,6 @@
 ---
 import Database from "better-sqlite3";
-
+import { DateTime } from 'luxon';
 // Open the SQLite database and fetch all logs
 const db = new Database('./data/FISA.db');
 const logsQuery = `
@@ -13,9 +13,17 @@ const logsQuery = `
 `;
 
 
-
 const logs = db.prepare(logsQuery).all();
 db.close();
+
+// Convert timestamps from UTC to Vancouver time before rendering
+logs.forEach(log => {
+  // Assuming the timestamp in the database is in UTC, we use fromSQL() with .setZone('UTC')
+  // and then convert to 'America/Vancouver'
+  log.timestamp = DateTime.fromSQL(log.timestamp, { zone: 'utc' })
+    .setZone("America/Vancouver")
+    .toLocaleString(DateTime.DATETIME_MED);
+});
 ---
 
 <html lang="en">
@@ -60,7 +68,8 @@ db.close();
                   <td class="px-4 py-2">{log.old_value || "N/A"}</td>
                   <td class="px-4 py-2">{log.new_value || "N/A"}</td>
                   <td class="px-4 py-2">{log.updated_by}</td>
-                  <td class="px-4 py-2">{new Date(log.timestamp).toLocaleString()}</td>
+                  <td class="px-4 py-2">{log.timestamp}</td>
+
                 </tr>
               ))
             )}

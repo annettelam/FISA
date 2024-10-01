@@ -1,4 +1,5 @@
 import Database from "better-sqlite3";
+import { DateTime } from "luxon";
 
 export async function POST({ request }) {
   // Parse the request body
@@ -13,15 +14,20 @@ export async function POST({ request }) {
   // Convert the rest of the formData to a JSON string
   const proposedData = JSON.stringify(formData);
 
+  // Get the current time in Vancouver timezone
+  const vancouverTime = DateTime.now()
+    .setZone("America/Vancouver")
+    .toISO({ includeOffset: false });
+
   // Open the SQLite database
   const db = new Database("./data/FISA.db");
 
-  // Insert into 'proposed_updates' table
+  // Insert into 'proposed_updates' table with Vancouver time
   const insertStmt = db.prepare(`
     INSERT INTO proposed_updates (school_number, proposed_data, status, submitted_at)
-    VALUES (?, ?, 'pending', datetime('now'))
+    VALUES (?, ?, 'pending', ?)
   `);
-  insertStmt.run(schoolNum, proposedData);
+  insertStmt.run(schoolNum, proposedData, vancouverTime);
 
   // Close the database connection
   db.close();
