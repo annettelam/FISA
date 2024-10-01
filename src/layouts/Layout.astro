@@ -3,8 +3,6 @@ interface Props {
   title: string;
 }
 
-import Header from "../components/Header.astro";
-
 const { title } = Astro.props;
 ---
 
@@ -12,10 +10,9 @@ const { title } = Astro.props;
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="MyEDBC Invoice Form" />
+    <meta name="description" content="Invoice Form" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
 
     <!-- Tailwind CSS -->
@@ -31,43 +28,28 @@ const { title } = Astro.props;
     />
   </head>
   <body class="bg-gray-100">
-    <!-- Header Component -->
-    <Header />
+    <header class="bg-blue-600 text-white py-4">
+      <div class="container mx-auto">
+        <h1 class="text-2xl font-bold">{title}</h1>
+      </div>
+    </header>
 
-    <!-- Main content -->
-    <main class="p-4">
-      <slot />
+    <main class="py-8">
+      <div class="container mx-auto">
+        <slot />
+      </div>
     </main>
 
-    <!-- Flowbite JavaScript -->
+    <footer class="bg-gray-800 text-white py-4 mt-12">
+      <div class="container mx-auto text-center">
+        <p>&copy; 2024 FISA Invoices. All rights reserved.</p>
+      </div>
+    </footer>
+
+    <!-- Flowbite JS -->
     <script
       defer
       src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"
     ></script>
-
-    <!-- Custom JavaScript -->
-    <script defer src="/custom-script.js"></script>
   </body>
 </html>
-
-<style is:global>
-  :root {
-    --accent: 136, 58, 234;
-    --accent-light: 224, 204, 250;
-    --accent-dark: 49, 10, 101;
-    --accent-gradient: linear-gradient(
-      45deg,
-      rgb(var(--accent)),
-      rgb(var(--accent-light)) 30%,
-      grey 60%
-    );
-  }
-  html {
-    font-family: system-ui, sans-serif;
-    background: white;
-  }
-  code {
-    font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono",
-      "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
-  }
-</style>

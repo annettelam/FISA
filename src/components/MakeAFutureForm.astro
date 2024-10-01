@@ -1,0 +1,295 @@
+---
+// No TypeScript in this section to avoid server-side execution issues
+---
+
+<div class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+    <!-- Header Section with Make a Future Invoice Information -->
+    <div class="flex justify-between items-center mb-6">
+        <img src="/fisa_logo_small.png" alt="FISA Logo" class="w-32 h-auto" />
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-gray-800">
+                Make a Future Fees Invoice (2023-2024)
+            </h1>
+            <p class="text-sm text-gray-600">
+                Make a Future annual payment for the service period from April
+                1, 2023 to March 31, 2024. Please mail your cheque payable to
+                FISABC with a copy of this invoice.
+            </p>
+        </div>
+    </div>
+
+    <!-- Make a Future Fee Form -->
+    <form id="makeAFutureForm" class="space-y-6">
+        <!-- School Information Section -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">School Information</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label
+                    for="schoolName"
+                    class="block text-sm font-medium text-gray-900"
+                    >School Name:</label
+                >
+                <input
+                    type="text"
+                    id="schoolName"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="Locked School Name"
+                    disabled
+                />
+            </div>
+            <div>
+                <label
+                    for="schoolId"
+                    class="block text-sm font-medium text-gray-900"
+                    >School ID:</label
+                >
+                <input
+                    type="text"
+                    id="schoolId"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="Locked School ID"
+                    disabled
+                />
+            </div>
+        </div>
+
+        <!-- Enrollment Information and Fee Calculation Section -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            Enrollment Information
+        </h2>
+        <div class="space-y-4">
+            <div>
+                <label
+                    for="fteEnrolment"
+                    class="block text-sm font-medium text-gray-900"
+                    >A. Total F.T.E. Enrolment (as of September 30, 2022):</label
+                >
+                <input
+                    type="number"
+                    id="fteEnrolment"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter FTE Enrolment"
+                    oninput="calculateMakeAFutureFee()"
+                />
+            </div>
+        </div>
+
+        <!-- Fee Calculation Section -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Fee Calculation</h2>
+        <div class="space-y-4">
+            <div>
+                <label
+                    for="totalFeeB"
+                    class="block text-sm font-medium text-gray-900"
+                    >B. Fee ($3.92 per FTE, minimum $300):</label
+                >
+                <input
+                    type="text"
+                    id="totalFeeB"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="0.00"
+                    disabled
+                />
+            </div>
+            <div>
+                <label
+                    for="setupFee"
+                    class="block text-sm font-medium text-gray-900"
+                    >C. One-time setup fee ($250):</label
+                >
+                <input
+                    type="number"
+                    id="setupFee"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="250"
+                    disabled
+                />
+            </div>
+            <div>
+                <label
+                    for="lateFee"
+                    class="block text-sm font-medium text-gray-900"
+                    >D. Late on-boarding fee ($100):</label
+                >
+                <input
+                    type="number"
+                    id="lateFee"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="100"
+                    disabled
+                />
+            </div>
+            <div>
+                <label for="gst" class="block text-sm font-medium text-gray-900"
+                    >E. GST (5% on B + C + D):</label
+                >
+                <input
+                    type="text"
+                    id="gst"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="0.00"
+                    disabled
+                />
+            </div>
+            <div>
+                <label
+                    for="finalAmount"
+                    class="block text-sm font-medium text-gray-900"
+                    >F. Total Fees Due (B + C + D + E):</label
+                >
+                <input
+                    type="text"
+                    id="finalAmount"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    readonly
+                    value="0.00"
+                    disabled
+                />
+            </div>
+        </div>
+
+        <!-- Primary Contact Information Section -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">
+            Primary Contact Information
+        </h2>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label
+                    for="contactName"
+                    class="block text-sm font-medium text-gray-900">Name:</label
+                >
+                <input
+                    type="text"
+                    id="contactName"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter name"
+                />
+            </div>
+            <div>
+                <label
+                    for="contactPosition"
+                    class="block text-sm font-medium text-gray-900"
+                    >Position:</label
+                >
+                <input
+                    type="text"
+                    id="contactPosition"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter position"
+                />
+            </div>
+            <div>
+                <label
+                    for="contactEmail"
+                    class="block text-sm font-medium text-gray-900"
+                    >Email:</label
+                >
+                <input
+                    type="email"
+                    id="contactEmail"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter email"
+                />
+            </div>
+            <div>
+                <label
+                    for="secondaryEmail"
+                    class="block text-sm font-medium text-gray-900"
+                    >Secondary Email:</label
+                >
+                <input
+                    type="email"
+                    id="secondaryEmail"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter secondary email"
+                />
+            </div>
+        </div>
+
+        <!-- Confirmation Section -->
+        <h2 class="text-xl font-bold text-gray-800 mb-4">Confirmation</h2>
+        <div class="grid grid-cols-2 gap-4">
+            <div>
+                <label
+                    for="date"
+                    class="block text-sm font-medium text-gray-900">Date:</label
+                >
+                <input
+                    type="date"
+                    id="date"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                />
+            </div>
+            <div>
+                <label
+                    for="signed"
+                    class="block text-sm font-medium text-gray-900"
+                    >Signed by:</label
+                >
+                <input
+                    type="text"
+                    id="signed"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter name"
+                />
+            </div>
+            <div>
+                <label
+                    for="position"
+                    class="block text-sm font-medium text-gray-900"
+                    >Position:</label
+                >
+                <input
+                    type="text"
+                    id="position"
+                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    placeholder="Enter position"
+                />
+            </div>
+        </div>
+
+        <!-- Submit Button -->
+        <button
+            type="submit"
+            class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
+        >
+            Submit
+        </button>
+    </form>
+</div>
+
+<!-- Ensure JavaScript is running on the client side -->
+<script>
+    window.calculateMakeAFutureFee = function () {
+        const fteEnrolment =
+            parseInt(document.getElementById("fteEnrolment").value) || 0;
+        const setupFee = 250; // Fixed one-time setup fee
+        const lateFee = 100; // Fixed late on-boarding fee
+
+        const feePerFTE = 3.92;
+        const minFee = 300;
+
+        // Calculate the FTE fee with a minimum of $300
+        const fteFee = Math.max(fteEnrolment * feePerFTE, minFee);
+
+        // Calculate subtotal (B + C + D)
+        const subtotal = fteFee + setupFee + lateFee;
+
+        // Calculate GST (5% on the subtotal)
+        const gst = subtotal * 0.05;
+
+        // Calculate the final amount (B + C + D + E)
+        const finalAmount = subtotal + gst;
+
+        // Update the form fields with the calculated values
+        document.getElementById("totalFeeB").value = fteFee.toFixed(2);
+        document.getElementById("gst").value = gst.toFixed(2);
+        document.getElementById("finalAmount").value = finalAmount.toFixed(2);
+    };
+</script>
