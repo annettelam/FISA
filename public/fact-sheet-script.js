@@ -2,6 +2,8 @@ document.addEventListener("DOMContentLoaded", function () {
   const searchForm = document.getElementById("search-form");
   const schoolDataDiv = document.getElementById("school-data");
   const schoolForm = document.getElementById("school-form");
+  // Simulate user role
+  const isAdmin = false; // Set to true if testing as admin, false as user
 
   // Function to calculate totals dynamically
   function calculateTotals() {
@@ -78,7 +80,8 @@ document.addEventListener("DOMContentLoaded", function () {
       document.getElementById("specialty").value = data.SPECIALTY;
 
       // Populate relationship fields
-     document.getElementById("fisa").value =data.FISA === "True" ? "True" : "False";
+      document.getElementById("fisa").value =
+        data.FISA === "True" ? "True" : "False";
       document.getElementById("assoc").value = data.ASSOC;
       document.getElementById("sdnum").value = data.SDNUM;
       document.getElementById("sd").value = data.SD;
@@ -110,7 +113,6 @@ document.addEventListener("DOMContentLoaded", function () {
   enrollmentFields.forEach((fieldId) => {
     document.getElementById(fieldId).addEventListener("input", calculateTotals);
   });
-
 
   schoolForm.addEventListener("submit", async function (event) {
     event.preventDefault();
@@ -149,24 +151,40 @@ document.addEventListener("DOMContentLoaded", function () {
       sdnum: document.getElementById("sdnum").value,
       sd: document.getElementById("sd").value,
       electoral: document.getElementById("electoral").value,
-      fisa: document.getElementById("fisa").value,  // This will be either "True" or "False"
-
+      fisa: document.getElementById("fisa").value, // This will be either "True" or "False"
     };
 
     try {
-      // Send the data to the server
-      const response = await fetch(`http://localhost:4321/api/update-school`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
-      });
+      let response;
+      if (isAdmin) {
+        // If admin, update the main database directly
+        response = await fetch(`http://localhost:4321/api/update-school`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+      } else {
+        // If user, submit proposed changes
+        response = await fetch(
+          `http://localhost:4321/api/client-update-school`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(formData),
+          }
+        );
+      }
 
       const result = await response.json();
       alert(result.message);
     } catch (error) {
-      console.error("Error updating school data:", error);
+      console.error("Error submitting data:", error);
+      alert(
+        "An error occurred while submitting your changes. Please try again."
+      );
     }
   });
+
 });
 
 
