@@ -3,7 +3,18 @@ import { getLogs } from '../../public/changelog';
 import ChangeLogTable from '../components/ChangelogTable.astro';
 import Layout from '../layouts/Layout.astro';
 
-const logs = getLogs();
+
+// Extract query parameters for pagination (use default values if not provided)
+const params = new URL(Astro.url).searchParams;
+const page = parseInt(params.get('page') || '1');
+const pageSize = 10;  // Set your desired page size
+
+// Fetch logs for the current page
+const logs = getLogs(page, pageSize);
+
+// Calculate next and previous page numbers
+const nextPage = page + 1;
+const prevPage = page > 1 ? page - 1 : null;
 
 const title = "School Change Log";
 ---
@@ -14,6 +25,19 @@ const title = "School Change Log";
       <h1 class="text-3xl font-bold text-gray-800">School Change Log</h1>
       <p class="text-gray-600">This tracks changes made to school data through a fact sheet by an admin (not a client).</p>
     </div>
+    
+    <!-- Render the change log table -->
     <ChangeLogTable logs={logs} />
+
+    <!-- Pagination controls -->
+    <div class="mt-6 flex justify-between">
+      {prevPage ? (
+        <a href={`?page=${prevPage}`} class="px-4 py-2 bg-blue-500 text-white rounded">Previous</a>
+      ) : (
+        <span class="px-4 py-2 text-gray-400">Previous</span>
+      )}
+      
+      <a href={`?page=${nextPage}`} class="px-4 py-2 bg-blue-500 text-white rounded">Next</a>
+    </div>
   </div>
 </Layout>

@@ -1,12 +1,14 @@
 import Database from "better-sqlite3";
 import { DateTime } from "luxon";
 
-// Function to fetch logs from the database
-export function getLogs() {
-  // Open the SQLite database
+// Function to fetch logs with pagination
+export function getLogs(page = 1, pageSize = 10) {
   const db = new Database("./data/FISA.db");
 
-  // Define the query to fetch logs
+  // Calculate the offset
+  const offset = (page - 1) * pageSize;
+
+  // Modify the query to limit the results
   const logsQuery = `
     SELECT school_num, field_changed, old_value, new_value, updated_by, timestamp 
     FROM school_change_log
@@ -14,12 +16,13 @@ export function getLogs() {
       MAX(timestamp) OVER (PARTITION BY school_num) DESC,
       school_num ASC,
       timestamp DESC
+    LIMIT ? OFFSET ?
   `;
 
-  // Execute the query and fetch logs
-  const logs = db.prepare(logsQuery).all();
+  // Execute the query with pagination
+  const logs = db.prepare(logsQuery).all(pageSize, offset);
 
-  // Close the database connection after fetching logs
+  // Close the database
   db.close();
 
   // Convert timestamps from UTC to Vancouver time
