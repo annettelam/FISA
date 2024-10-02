@@ -1,0 +1,25 @@
+---
+interface Log {
+  school_num: string;
+  field_changed: string;
+  old_value: string;
+  new_value: string;
+  updated_by: string;
+  timestamp: string;
+}
+
+interface Props {
+  log: Log;
+}
+
+const { log } = Astro.props;
+---
+
+<tr class="bg-white border-b">
+  <td class="px-4 py-2">{log.school_num}</td>
+  <td class="px-4 py-2">{log.field_changed}</td>
+  <td class="px-4 py-2">{log.old_value || "N/A"}</td>
+  <td class="px-4 py-2">{log.new_value || "N/A"}</td>
+  <td class="px-4 py-2">{log.updated_by}</td>
+  <td class="px-4 py-2">{log.timestamp}</td>
+</tr>
