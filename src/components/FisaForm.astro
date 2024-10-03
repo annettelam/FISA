@@ -55,67 +55,24 @@
         <div class="space-y-4">
             <div>
                 <label
-                    for="fullDayKindergarten"
-                    class="block text-sm font-medium text-gray-900"
-                >
-                    A. Enrolment in Full-day Kindergarten (as of September 30,
-                    2023):
-                </label>
-                <input
-                    type="number"
-                    id="fullDayKindergarten"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    placeholder="Enter number"
-                />
-            </div>
-            <div>
-                <label
                     for="grades1To12"
                     class="block text-sm font-medium text-gray-900"
                 >
-                    B. Enrolment in Grades 1-12 (as of September 30, 2023):
+                    Enrolment in Grades K-12 (as of September 30, 2023):
                 </label>
                 <input
                     type="number"
                     id="grades1To12"
                     class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
                     placeholder="Enter number"
-                />
-            </div>
-            <div>
-                <label
-                    for="halfDayKindergarten"
-                    class="block text-sm font-medium text-gray-900"
-                >
-                    C. Enrolment in Half-day Kindergarten (as of September 30,
-                    2023) (divided by two):
-                </label>
-                <input
-                    type="number"
-                    id="halfDayKindergarten"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    placeholder="Enter number"
-                />
-            </div>
-            <div>
-                <label
-                    for="totalFTE"
-                    class="block text-sm font-medium text-gray-900"
-                    >D. Total F.T.E. Enrolment (A + B + C/2):</label
-                >
-                <input
-                    type="text"
-                    id="totalFTE"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-3"
-                    readonly
-                    value="0.00"
+                    oninput="calculateFee()"
                 />
             </div>
             <div>
                 <label
                     for="membershipFees"
                     class="block text-sm font-medium text-gray-900"
-                    >E. Fee ($7.00 per F.T.E.):</label
+                    >Fee ($7.00 per F.T.E.):</label
                 >
                 <input
                     type="text"
@@ -238,39 +195,18 @@
 <!-- Client-side Script for Calculation -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        function calculateFTEAndFee() {
-            const fullDayKindergarten =
-                parseInt(
-                    document.getElementById("fullDayKindergarten").value,
-                ) || 0;
+        function calculateFee() {
             const grades1To12 =
                 parseInt(document.getElementById("grades1To12").value) || 0;
-            const halfDayKindergarten =
-                parseInt(
-                    document.getElementById("halfDayKindergarten").value,
-                ) || 0;
+            const fee = grades1To12 * 7; // $7 per FTE
 
-            // Calculate total FTE
-            const totalFTE =
-                fullDayKindergarten + grades1To12 + halfDayKindergarten / 2;
-            document.getElementById("totalFTE").value = totalFTE.toFixed(2);
-
-            // Calculate fee
-            const fee = totalFTE * 7; // $7 per FTE
+            // Update the fee field
             document.getElementById("membershipFees").value = fee.toFixed(2);
         }
 
-        const fullDayKindergartenInput = document.getElementById(
-            "fullDayKindergarten",
-        );
-        const grades1To12Input = document.getElementById("grades1To12");
-        const halfDayKindergartenInput = document.getElementById(
-            "halfDayKindergarten",
-        );
-
-        // Add event listeners to trigger the calculation when input changes
-        fullDayKindergartenInput.addEventListener("input", calculateFTEAndFee);
-        grades1To12Input.addEventListener("input", calculateFTEAndFee);
-        halfDayKindergartenInput.addEventListener("input", calculateFTEAndFee);
+        // Add event listener to the Grades K-12 input field
+        document
+            .getElementById("grades1To12")
+            .addEventListener("input", calculateFee);
     });
 </script>
