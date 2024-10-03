@@ -1,7 +1,7 @@
 ---
 import { getLogsBySchool, getAllSchoolNumbersOrderedByRecentChange } from '../../public/changelog';
 import ChangeLogTable from '../components/Changelog/ChangeLogTable.astro';
-import ChangeLogSearchForm from '../components/Changelog/ChangeLogSearchForm.astro'; // Import the new SearchForm component
+import ChangeLogSearchForm from '../components/Changelog/ChangeLogSearchForm.astro';
 import Layout from '../layouts/Layout.astro';
 
 // Extract query parameters for pagination and search
@@ -20,28 +20,57 @@ if (searchQuery) {
   );
 }
 
-const totalPages = Math.ceil(schoolNumbers.length); // Assuming one school per page
+const totalPages = schoolNumbers.length; // One school per page
 
 // Ensure the current page is within bounds
 const currentPage = Math.min(Math.max(page, 1), totalPages);
 
 // Fetch logs for the school corresponding to the current page
 const schoolNum = schoolNumbers[currentPage - 1];
-const logs = getLogsBySchool(schoolNum);
+const logs = getLogsBySchool(schoolNum); // Fetch logs for the current school
 
 // Generate the "Clear Search" URL by removing the 'search' parameter
 const clearSearchUrl = new URL(Astro.url);
 clearSearchUrl.searchParams.delete('search');
-// Optionally, reset to page 1 when clearing search to avoid invalid page numbers
 clearSearchUrl.searchParams.set('page', '1');
 
-const title = "School Change Log";
+// Pagination logic with ellipses (same as before)
+function getPageNumbers(currentPage, totalPages) {
+  const delta = 2;
+  const range = [];
+  const rangeWithDots = [];
+  let l;
+
+  for (let i = 1; i <= totalPages; i++) {
+    if (i == 1 || i == totalPages || (i >= currentPage - delta && i <= currentPage + delta)) {
+      range.push(i);
+    }
+  }
+
+  for (let i of range) {
+    if (l) {
+      if (i - l === 2) {
+        rangeWithDots.push(l + 1);
+      } else if (i - l !== 1) {
+        rangeWithDots.push('...');
+      }
+    }
+    rangeWithDots.push(i);
+    l = i;
+  }
+
+  return rangeWithDots;
+}
+
+const paginationPages = getPageNumbers(currentPage, totalPages);
+const shouldShowBottomPagination = logs.length > 10; // Only show bottom pagination if there are more than 10 logs
 ---
-<Layout title={title}>
+
+<Layout title="Changelog">
   <div class="max-w-7xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
     <div class="text-center mb-10">
       <h1 class="text-3xl font-bold text-gray-800">School Change Log</h1>
-      <p class="text-gray-600">This tracks changes made to school data through a fact sheet by an admin (not a client).</p>
+      <p class="text-gray-600">This tracks changes made to school data through a fact sheet by an admin (not a client). Each page tracks 1 school.</p>
     </div>
 
     <!-- Integrate the SearchForm component -->
@@ -52,75 +81,129 @@ const title = "School Change Log";
         <!-- Pagination Controls at the Top -->
         <div class="mb-4 flex justify-center space-x-2">
           {currentPage > 1 ? (
-            <a 
-              href={`?page=${currentPage - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
-              class="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Previous
-            </a>
+            <>
+              <a 
+                href={`?page=1${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                class="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                First
+              </a>
+              <a 
+                href={`?page=${currentPage - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                class="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Previous
+              </a>
+            </>
           ) : (
-            <span class="px-4 py-2 text-gray-400">Previous</span>
+            <>
+              <span class="px-4 py-2 text-gray-400">First</span>
+              <span class="px-4 py-2 text-gray-400">Previous</span>
+            </>
           )}
 
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(i => (
-            <a 
-              href={`?page=${i}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
-              class={`px-4 py-2 rounded ${i === currentPage ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}
-            >
-              {i}
-            </a>
+          {/* Page numbers with ellipses */}
+          {paginationPages.map(pageNumber => (
+            typeof pageNumber === 'number' ? (
+              <a 
+                href={`?page=${pageNumber}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                class={`px-4 py-2 rounded ${pageNumber === currentPage ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}
+              >
+                {pageNumber}
+              </a>
+            ) : (
+              <span class="px-4 py-2 text-gray-500">...</span>
+            )
           ))}
 
           {currentPage < totalPages ? (
-            <a 
-              href={`?page=${currentPage + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
-              class="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Next
-            </a>
+            <>
+              <a 
+                href={`?page=${currentPage + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                class="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Next
+              </a>
+              <a 
+                href={`?page=${totalPages}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                class="px-4 py-2 bg-blue-500 text-white rounded"
+              >
+                Last
+              </a>
+            </>
           ) : (
-            <span class="px-4 py-2 text-gray-400">Next</span>
+            <>
+              <span class="px-4 py-2 text-gray-400">Next</span>
+              <span class="px-4 py-2 text-gray-400">Last</span>
+            </>
           )}
         </div>
 
         <!-- Render the change log table -->
         <ChangeLogTable logs={logs} schoolNum={schoolNum} />
 
-        <!-- Pagination Controls at the Bottom -->
-        <div class="mt-6 flex justify-center space-x-2">
-          {currentPage > 1 ? (
-            <a 
-              href={`?page=${currentPage - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
-              class="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Previous
-            </a>
-          ) : (
-            <span class="px-4 py-2 text-gray-400">Previous</span>
-          )}
+        <!-- Conditional Pagination Controls at the Bottom -->
+        {shouldShowBottomPagination && (
+          <div class="mt-6 flex justify-center space-x-2">
+            {currentPage > 1 ? (
+              <>
+                <a 
+                  href={`?page=1${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                  class="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  First
+                </a>
+                <a 
+                  href={`?page=${currentPage - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                  class="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Previous
+                </a>
+              </>
+            ) : (
+              <>
+                <span class="px-4 py-2 text-gray-400">First</span>
+                <span class="px-4 py-2 text-gray-400">Previous</span>
+              </>
+            )}
 
-          {/* Page numbers */}
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(i => (
-            <a 
-              href={`?page=${i}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
-              class={`px-4 py-2 rounded ${i === currentPage ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}
-            >
-              {i}
-            </a>
-          ))}
+            {/* Page numbers with ellipses */}
+            {paginationPages.map(pageNumber => (
+              typeof pageNumber === 'number' ? (
+                <a 
+                  href={`?page=${pageNumber}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                  class={`px-4 py-2 rounded ${pageNumber === currentPage ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}
+                >
+                  {pageNumber}
+                </a>
+              ) : (
+                <span class="px-4 py-2 text-gray-500">...</span>
+              )
+            ))}
 
-          {currentPage < totalPages ? (
-            <a 
-              href={`?page=${currentPage + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
-              class="px-4 py-2 bg-blue-500 text-white rounded"
-            >
-              Next
-            </a>
-          ) : (
-            <span class="px-4 py-2 text-gray-400">Next</span>
-          )}
-        </div>
+            {currentPage < totalPages ? (
+              <>
+                <a 
+                  href={`?page=${currentPage + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                  class="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Next
+                </a>
+                <a 
+                  href={`?page=${totalPages}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+                  class="px-4 py-2 bg-blue-500 text-white rounded"
+                >
+                  Last
+                </a>
+              </>
+            ) : (
+              <>
+                <span class="px-4 py-2 text-gray-400">Next</span>
+                <span class="px-4 py-2 text-gray-400">Last</span>
+              </>
+            )}
+          </div>
+        )}
       </>
     ) : (
       <div class="text-center text-red-500">No results found for "{searchQuery}".</div>
