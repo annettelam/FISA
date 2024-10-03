@@ -1,21 +1,16 @@
 ---
-interface Props {
-  title: string;
-}
-
 import Header from "../components/Header.astro";
 
 const { title } = Astro.props;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class="dark">
   <head>
     <meta charset="UTF-8" />
-    <meta name="description" content="Astro description" />
-    <meta name="viewport" content="width=device-width" />
+    <meta name="description" content="FISA Application" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
 
     <!-- Tailwind CSS -->
@@ -24,44 +19,99 @@ const { title } = Astro.props;
       rel="stylesheet"
     />
 
-    <!-- Flowbite CSS (Choose one version) -->
+    <!-- Flowbite CSS -->
     <link
       href="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.css"
       rel="stylesheet"
     />
-  </head>
-  <body>
-    <Header />
-    <slot />
 
-    <!-- Include the JavaScript file -->
-    <script defer src="/fact-sheet-script.js"></script>
+    <!-- Font Awesome for Icons -->
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+      rel="stylesheet"
+    />
+
+    <style is:global>
+      :root {
+        --accent: 136, 58, 234;
+        --accent-light: 224, 204, 250;
+        --accent-dark: 49, 10, 101;
+        --accent-gradient: linear-gradient(
+          45deg,
+          rgb(var(--accent)),
+          rgb(var(--accent-light)) 30%,
+          grey 60%
+        );
+      }
+
+      body {
+        transition: background-color 0.3s, color 0.3s;
+      }
+
+      html.dark body {
+        --bg-color: #1f2937; /* Dark background */
+        --text-color: #f5f5f5; /* Light text */
+      }
+
+      html body {
+        --bg-color: white; /* Light background */
+        --text-color: black; /* Dark text */
+      }
+    </style>
+  </head>
+  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+    <!-- Main Header -->
+    <Header />
+
+    <!-- Page Content -->
+    <main>
+      <slot />
+    </main>
+
+    <!-- Dark Mode Toggle Script -->
+    <script>
+      document.addEventListener("DOMContentLoaded", () => {
+        const themeToggleButton = document.getElementById("theme-toggle");
+        const themeToggleDarkIcon = document.getElementById("theme-toggle-dark-icon");
+        const themeToggleLightIcon = document.getElementById("theme-toggle-light-icon");
+
+        if (!themeToggleButton || !themeToggleDarkIcon || !themeToggleLightIcon) {
+          console.error("Dark mode toggle elements not found!");
+          return;
+        }
+
+        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+
+        // Get current theme from localStorage or fallback to system preference
+        const currentTheme = localStorage.getItem("theme") || (prefersDarkScheme.matches ? "dark" : "light");
+        if (currentTheme === "dark") {
+          document.documentElement.classList.add("dark");
+          themeToggleLightIcon.classList.remove("hidden");
+          themeToggleDarkIcon.classList.add("hidden");
+        } else {
+          document.documentElement.classList.remove("dark");
+          themeToggleDarkIcon.classList.remove("hidden");
+          themeToggleLightIcon.classList.add("hidden");
+        }
+
+        // Toggle between light and dark mode on button click
+        themeToggleButton.addEventListener("click", () => {
+          if (document.documentElement.classList.contains("dark")) {
+            document.documentElement.classList.remove("dark");
+            localStorage.setItem("theme", "light");
+            themeToggleDarkIcon.classList.remove("hidden");
+            themeToggleLightIcon.classList.add("hidden");
+          } else {
+            document.documentElement.classList.add("dark");
+            localStorage.setItem("theme", "dark");
+            themeToggleLightIcon.classList.remove("hidden");
+            themeToggleDarkIcon.classList.add("hidden");
+          }
+        });
+      });
+    </script>
 
     <!-- Flowbite JS -->
-    <script
-      src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"
-    ></script>
+    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"></script>
   </body>
 </html>
-
-<style is:global>
-  :root {
-    --accent: 136, 58, 234;
-    --accent-light: 224, 204, 250;
-    --accent-dark: 49, 10, 101;
-    --accent-gradient: linear-gradient(
-      45deg,
-      rgb(var(--accent)),
-      rgb(var(--accent-light)) 30%,
-      grey 60%
-    );
-  }
-  html {
-    font-family: system-ui, sans-serif;
-    background: white;
-  }
-  code {
-    font-family: Menlo, Monaco, "Lucida Console", "Liberation Mono",
-      "DejaVu Sans Mono", "Bitstream Vera Sans Mono", "Courier New", monospace;
-  }
-</style>

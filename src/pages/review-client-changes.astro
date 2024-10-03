@@ -4,16 +4,23 @@
 import Layout from '../layouts/Layout.astro';
 import UpdateContainer from '../components/ReviewClientChanges/UpdateContainer.astro';
 ---
+
 <Layout title="Admin - Proposed Updates">
-  <div class="max-w-7xl mx-auto mt-10 p-8">
-    <h1 class="text-3xl font-bold text-gray-800 mb-6">Proposed Updates</h1>
-<h3 class="text-1xl font text-gray-800 mb-6">This page automatically refreshes every 3 seconds.</h3>
-    
-    <!-- Admin View Container -->
+  <div class="max-w-7xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800">Proposed Updates</h1>
+      <p class="text-gray-600">This page automatically refreshes every 3 seconds.</p>
+    </div>
+
+    <!-- Integrate Search Form or Action Container (If Required) -->
     <div id="alertContainer"></div>
+
+    <!-- Display updates or fallback message if no updates -->
     <div id="updatesContainer" class="space-y-4">
       <!-- UpdatesContainer component handles fetching and displaying updates -->
       <UpdateContainer />
     </div>
+
+    <!-- Optional Pagination Controls or Footer Actions -->
   </div>
 </Layout>
