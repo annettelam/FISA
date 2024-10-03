@@ -42,20 +42,56 @@ const { title } = Astro.props;
           rgb(var(--accent-light)) 30%,
           grey 60%
         );
+        --light-bg: #f0f0f0; /* Slightly off-white background */
+        --light-text: #1a1a1a; /* Darker text for light mode */
+        --dark-bg: #181818; /* Softer dark background */
+        --dark-text: #e0e0e0; /* Softer white text */
+        --button-bg-light: #e7e7e7; /* Light button background */
+        --button-bg-dark: #2c2c2c; /* Dark button background */
       }
 
       body {
+        background-color: var(--bg-color);
+        color: var(--text-color);
         transition: background-color 0.3s, color 0.3s;
       }
 
       html.dark body {
-        --bg-color: #1f2937; /* Dark background */
-        --text-color: #f5f5f5; /* Light text */
+        --bg-color: var(--dark-bg); /* Softer dark background */
+        --text-color: var(--dark-text); /* Softer light text */
       }
 
       html body {
-        --bg-color: white; /* Light background */
-        --text-color: black; /* Dark text */
+        --bg-color: var(--light-bg); /* Softer light background */
+        --text-color: var(--light-text); /* Darker text for better readability */
+      }
+
+      /* Button Styles */
+      button {
+        background-color: var(--button-bg);
+        color: var(--text-color);
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      html.dark button {
+        background-color: var(--button-bg-dark);
+        color: #f5f5f5;
+      }
+
+      html button {
+        background-color: var(--button-bg-light);
+        color: #333;
+      }
+
+      /* Header Styling */
+      header {
+        background: var(--accent-gradient);
+        color: white;
+      }
+
+      html.dark header {
+        background: var(--accent-dark);
+        color: #e0e0e0;
       }
     </style>
   </head>
