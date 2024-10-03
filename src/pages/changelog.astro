@@ -1,24 +1,41 @@
 ---
-// Import necessary components and data
 import { getLogsBySchool, getAllSchoolNumbersOrderedByRecentChange } from '../../public/changelog';
 import ChangeLogTable from '../components/ChangeLogTable.astro';
 import Layout from '../layouts/Layout.astro';
 
-// Extract query parameters for pagination (use default values if not provided)
+// Extract query parameters for pagination and search
 const params = new URL(Astro.url).searchParams;
 const page = parseInt(params.get('page') || '1');
+const searchQuery = params.get('search') || '';
 
 // Fetch all school numbers for pagination, ordered by recent changes
-const schoolNumbers = getAllSchoolNumbersOrderedByRecentChange();
-const totalPages = schoolNumbers.length; // Total pages equal the number of schools
+let schoolNumbers = getAllSchoolNumbersOrderedByRecentChange();
+
+// If a search query is present, filter the school numbers
+if (searchQuery) {
+  const query = searchQuery.trim().toLowerCase();
+  schoolNumbers = schoolNumbers.filter(schoolNum => 
+    schoolNum.toString().toLowerCase().includes(query)
+  );
+}
+
+const totalPages = Math.ceil(schoolNumbers.length); // Assuming one school per page
+
+// Ensure the current page is within bounds
+const currentPage = Math.min(Math.max(page, 1), totalPages);
 
 // Fetch logs for the school corresponding to the current page
-const schoolNum = schoolNumbers[page - 1];
+const schoolNum = schoolNumbers[currentPage - 1];
 const logs = getLogsBySchool(schoolNum);
+
+// Generate the "Clear Search" URL by removing the 'search' parameter
+const clearSearchUrl = new URL(Astro.url);
+clearSearchUrl.searchParams.delete('search');
+// Optionally, reset to page 1 when clearing search to avoid invalid page numbers
+clearSearchUrl.searchParams.set('page', '1');
 
 const title = "School Change Log";
 ---
-
 <Layout title={title}>
   <div class="max-w-7xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
     <div class="text-center mb-10">
@@ -26,29 +43,110 @@ const title = "School Change Log";
       <p class="text-gray-600">This tracks changes made to school data through a fact sheet by an admin (not a client).</p>
     </div>
 
-    <!-- Render the change log table -->
-    <ChangeLogTable logs={logs} schoolNum={schoolNum} />
-
-    <!-- Pagination controls -->
-    <div class="mt-6 flex justify-center space-x-2">
-      {page > 1 ? (
-        <a href={`?page=${page - 1}`} class="px-4 py-2 bg-blue-500 text-white rounded">Previous</a>
-      ) : (
-        <span class="px-4 py-2 text-gray-400">Previous</span>
-      )}
-
-      <!-- Page numbers -->
-      {[...Array(totalPages).keys()].map(i => (
-        <a href={`?page=${i + 1}`} class={`px-4 py-2 rounded ${i + 1 === page ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}>
-          {i + 1}
-        </a>
-      ))}
-
-      {page < totalPages ? (
-        <a href={`?page=${page + 1}`} class="px-4 py-2 bg-blue-500 text-white rounded">Next</a>
-      ) : (
-        <span class="px-4 py-2 text-gray-400">Next</span>
-      )}
+    <!-- Search Form with Clear Button -->
+    <div class="mb-6 flex justify-center">
+      <form method="GET" class="flex space-x-2 items-center">
+        <input 
+          type="text" 
+          name="search" 
+          placeholder="Enter School Number" 
+          value={searchQuery} 
+          class="px-4 py-2 border rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+        />
+        <button 
+          type="submit" 
+          class="px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600"
+        >
+          Search
+        </button>
+        {searchQuery && (
+          <a 
+            href={clearSearchUrl.pathname + clearSearchUrl.search} 
+            class="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600"
+          >
+            Clear
+          </a>
+        )}
+      </form>
     </div>
+
+    {schoolNumbers.length > 0 ? (
+      <>
+        <!-- Pagination Controls at the Top -->
+        <div class="mb-4 flex justify-center space-x-2">
+          {currentPage > 1 ? (
+            <a 
+              href={`?page=${currentPage - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+              class="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Previous
+            </a>
+          ) : (
+            <span class="px-4 py-2 text-gray-400">Previous</span>
+          )}
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(i => (
+            <a 
+              href={`?page=${i}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+              class={`px-4 py-2 rounded ${i === currentPage ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}
+            >
+              {i}
+            </a>
+          ))}
+
+          {currentPage < totalPages ? (
+            <a 
+              href={`?page=${currentPage + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+              class="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Next
+            </a>
+          ) : (
+            <span class="px-4 py-2 text-gray-400">Next</span>
+          )}
+        </div>
+
+        <!-- Render the change log table -->
+        <ChangeLogTable logs={logs} schoolNum={schoolNum} />
+
+        <!-- Pagination Controls at the Bottom -->
+        <div class="mt-6 flex justify-center space-x-2">
+          {currentPage > 1 ? (
+            <a 
+              href={`?page=${currentPage - 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+              class="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Previous
+            </a>
+          ) : (
+            <span class="px-4 py-2 text-gray-400">Previous</span>
+          )}
+
+          {/* Page numbers */}
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(i => (
+            <a 
+              href={`?page=${i}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+              class={`px-4 py-2 rounded ${i === currentPage ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}
+            >
+              {i}
+            </a>
+          ))}
+
+          {currentPage < totalPages ? (
+            <a 
+              href={`?page=${currentPage + 1}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
+              class="px-4 py-2 bg-blue-500 text-white rounded"
+            >
+              Next
+            </a>
+          ) : (
+            <span class="px-4 py-2 text-gray-400">Next</span>
+          )}
+        </div>
+      </>
+    ) : (
+      <div class="text-center text-red-500">No results found for "{searchQuery}".</div>
+    )}
   </div>
 </Layout>
