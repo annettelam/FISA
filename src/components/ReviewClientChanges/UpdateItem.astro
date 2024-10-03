@@ -1,0 +1,54 @@
+---
+// src/components/UpdateItem.astro
+
+const { update } = Astro.props;
+const { id, school_number, submitted_at, diffs, error } = update;
+
+// Format the submission date
+const formattedDate = new Date(submitted_at).toLocaleString();
+---
+
+<div class="p-6 bg-white rounded-lg border shadow-md">
+  <div class="flex justify-between items-center mb-4">
+    <h3 class="text-xl font-semibold text-gray-800">School Number: {school_number}</h3>
+    <p class="text-sm text-gray-500">Submitted At: {formattedDate}</p>
+  </div>
+
+  {error ? (
+    <div class="p-4 mb-4 text-sm text-red-700 bg-red-100 rounded-lg" role="alert">
+      Error: {error}
+    </div>
+  ) : diffs && Object.keys(diffs).length > 0 ? (
+    <div class="overflow-x-auto mb-4">
+      <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+          <tr>
+            <th class="px-4 py-2">Field</th>
+            <th class="px-4 py-2">Current Value</th>
+            <th class="px-4 py-2">Proposed Value</th>
+          </tr>
+        </thead>
+        <tbody>
+          {Object.entries(diffs).map(([field, values]) => (
+            <tr class="bg-white border-b">
+              <td class="px-4 py-2 font-medium text-gray-900">{field}</td>
+              <td class="px-4 py-2">{values.current}</td>
+              <td class="px-4 py-2">{values.proposed}</td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  ) : (
+    <p>No differences found.</p>
+  )}
+
+  <div class="flex space-x-2">
+    <button class="accept-btn bg-green-500 hover:bg-green-600 text-white px-4 py-2 rounded" data-id={id}>
+      Accept
+    </button>
+    <button class="reject-btn bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded" data-id={id}>
+      Reject
+    </button>
+  </div>
+</div>
