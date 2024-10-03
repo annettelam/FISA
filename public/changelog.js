@@ -34,3 +34,21 @@ export function getLogs(page = 1, pageSize = 10) {
 
   return logs;
 }
+
+// Function to get total log count
+export function getTotalLogCount() {
+  const db = new Database("./data/FISA.db");
+
+  // Query to get the total number of logs
+  const totalLogsQuery = `
+    SELECT COUNT(*) as totalLogs 
+    FROM school_change_log
+  `;
+
+  const result = db.prepare(totalLogsQuery).get();
+
+  // Close the database
+  db.close();
+
+  return result.totalLogs;
+}
