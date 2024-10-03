@@ -1,31 +1,23 @@
 import Database from "better-sqlite3";
 import { DateTime } from "luxon";
 
-// Function to fetch logs with pagination
-export function getLogs(page = 1, pageSize = 10) {
+// Fetch logs for a single school
+export function getLogsBySchool(schoolNum) {
   const db = new Database("./data/FISA.db");
 
-  // Calculate the offset
-  const offset = (page - 1) * pageSize;
-
-  // Modify the query to limit the results
+  // Fetch logs for a single school, ordered by timestamp (most recent first)
   const logsQuery = `
     SELECT school_num, field_changed, old_value, new_value, updated_by, timestamp 
     FROM school_change_log
-    ORDER BY 
-      MAX(timestamp) OVER (PARTITION BY school_num) DESC,
-      school_num ASC,
-      timestamp DESC
-    LIMIT ? OFFSET ?
+    WHERE school_num = ?
+    ORDER BY timestamp DESC
   `;
 
-  // Execute the query with pagination
-  const logs = db.prepare(logsQuery).all(pageSize, offset);
+  const logs = db.prepare(logsQuery).all(schoolNum);
 
-  // Close the database
   db.close();
 
-  // Convert timestamps from UTC to Vancouver time
+  // Convert timestamps to Vancouver time
   logs.forEach((log) => {
     log.timestamp = DateTime.fromSQL(log.timestamp, { zone: "utc" })
       .setZone("America/Vancouver")
@@ -35,20 +27,21 @@ export function getLogs(page = 1, pageSize = 10) {
   return logs;
 }
 
-// Function to get total log count
-export function getTotalLogCount() {
+// Fetch all school numbers ordered by the most recent change
+export function getAllSchoolNumbersOrderedByRecentChange() {
   const db = new Database("./data/FISA.db");
 
-  // Query to get the total number of logs
-  const totalLogsQuery = `
-    SELECT COUNT(*) as totalLogs 
+  // Query to get unique school numbers, ordered by the most recent timestamp of any change
+  const schoolNumbersQuery = `
+    SELECT school_num
     FROM school_change_log
+    GROUP BY school_num
+    ORDER BY MAX(timestamp) DESC
   `;
 
-  const result = db.prepare(totalLogsQuery).get();
+  const schoolNumbers = db.prepare(schoolNumbersQuery).all();
 
-  // Close the database
   db.close();
 
-  return result.totalLogs;
+  return schoolNumbers.map((school) => school.school_num);
 }

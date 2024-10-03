@@ -1,58 +1,20 @@
 ---
 // Import necessary components and data
-import { getLogs, getTotalLogCount } from '../../public/changelog';
+import { getLogsBySchool, getAllSchoolNumbersOrderedByRecentChange } from '../../public/changelog';
 import ChangeLogTable from '../components/ChangeLogTable.astro';
 import Layout from '../layouts/Layout.astro';
 
 // Extract query parameters for pagination (use default values if not provided)
 const params = new URL(Astro.url).searchParams;
 const page = parseInt(params.get('page') || '1');
-const pageSize = 10;  // Set your desired page size
 
-// Fetch total log count to calculate total pages
-const totalLogs = getTotalLogCount();
-const totalPages = Math.ceil(totalLogs / pageSize);
+// Fetch all school numbers for pagination, ordered by recent changes
+const schoolNumbers = getAllSchoolNumbersOrderedByRecentChange();
+const totalPages = schoolNumbers.length; // Total pages equal the number of schools
 
-// Fetch logs for the current page
-const logs = getLogs(page, pageSize);
-
-// Calculate next and previous page numbers
-const nextPage = page < totalPages ? page + 1 : null;
-const prevPage = page > 1 ? page - 1 : null;
-
-// Function to generate a range of pages with truncation
-function getPageRange(current, total) {
-  const delta = 2; // Number of pages to show before and after the current page
-  const range = [];
-
-  // Always show first two pages
-  if (current > delta + 2) {
-    range.push(1, 2, "...");
-  } else {
-    for (let i = 1; i <= Math.min(3, total); i++) {
-      range.push(i);
-    }
-  }
-
-  // Show pages around the current page
-  for (let i = Math.max(3, current - delta); i <= Math.min(total - 2, current + delta); i++) {
-    range.push(i);
-  }
-
-  // Always show last two pages
-  if (current < total - delta - 1) {
-    range.push("...", total - 1, total);
-  } else {
-    for (let i = Math.max(total - 2, 1); i <= total; i++) {
-      range.push(i);
-    }
-  }
-
-  return range;
-}
-
-// Generate a page range with truncation
-const pageRange = getPageRange(page, totalPages);
+// Fetch logs for the school corresponding to the current page
+const schoolNum = schoolNumbers[page - 1];
+const logs = getLogsBySchool(schoolNum);
 
 const title = "School Change Log";
 ---
@@ -63,52 +25,29 @@ const title = "School Change Log";
       <h1 class="text-3xl font-bold text-gray-800">School Change Log</h1>
       <p class="text-gray-600">This tracks changes made to school data through a fact sheet by an admin (not a client).</p>
     </div>
-    
+
     <!-- Render the change log table -->
-    <ChangeLogTable logs={logs} />
+    <ChangeLogTable logs={logs} schoolNum={schoolNum} />
 
     <!-- Pagination controls -->
     <div class="mt-6 flex justify-center space-x-2">
-      
-      <!-- First Page Button -->
       {page > 1 ? (
-        <a href="?page=1" class="px-4 py-2 bg-blue-500 text-white rounded">First</a>
-      ) : (
-        <span class="px-4 py-2 text-gray-400">First</span>
-      )}
-
-      <!-- Previous Page Button -->
-      {prevPage ? (
-        <a href={`?page=${prevPage}`} class="px-4 py-2 bg-blue-500 text-white rounded">Previous</a>
+        <a href={`?page=${page - 1}`} class="px-4 py-2 bg-blue-500 text-white rounded">Previous</a>
       ) : (
         <span class="px-4 py-2 text-gray-400">Previous</span>
       )}
 
-      <!-- Page number buttons with truncation -->
-      {pageRange.map((pageNum, index) =>
-        typeof pageNum === "number" ? (
-          <a href={`?page=${pageNum}`} 
-             class={`px-4 py-2 rounded ${pageNum === page ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`} 
-             key={index}>
-            {pageNum}
-          </a>
-        ) : (
-          <span class="px-4 py-2 text-gray-500" key={index}>...</span>
-        )
-      )}
+      <!-- Page numbers -->
+      {[...Array(totalPages).keys()].map(i => (
+        <a href={`?page=${i + 1}`} class={`px-4 py-2 rounded ${i + 1 === page ? 'bg-gray-300 text-white' : 'bg-blue-500 text-white'}`}>
+          {i + 1}
+        </a>
+      ))}
 
-      <!-- Next Page Button -->
-      {nextPage ? (
-        <a href={`?page=${nextPage}`} class="px-4 py-2 bg-blue-500 text-white rounded">Next</a>
+      {page < totalPages ? (
+        <a href={`?page=${page + 1}`} class="px-4 py-2 bg-blue-500 text-white rounded">Next</a>
       ) : (
         <span class="px-4 py-2 text-gray-400">Next</span>
-      )}
-
-      <!-- Last Page Button -->
-      {page < totalPages ? (
-        <a href={`?page=${totalPages}`} class="px-4 py-2 bg-blue-500 text-white rounded">Last</a>
-      ) : (
-        <span class="px-4 py-2 text-gray-400">Last</span>
       )}
     </div>
   </div>
