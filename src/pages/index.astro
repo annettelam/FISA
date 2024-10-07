@@ -2,101 +2,102 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 ---
-
 <Layout title="Welcome to FISA Portal">
-	<main class="mx-auto max-w-7xl py-12 px-4 sm:px-6 lg:px-8 text-center">
-		<h1 class="text-4xl font-bold text-gradient mb-6">
-			Welcome to <span class="text-gradient">FISA Portal</span>
-		</h1>
-		<p class="instructions text-lg leading-6 text-gray-100 mb-8 max-w-3xl mx-auto">
-			<strong>All your registration needs:</strong><br />
-			To get started, have your school information such as ID number ready.
-		</p>
+  <!-- Header Section -->
+  <header class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md">
+        Welcome to <span class="text-white">FISA Portal</span>
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+        <strong>Your all-in-one registration hub:</strong><br />
+        Get started by having your school ID number ready.
+      </p>
+      <div class="mt-6 sm:mt-8">
+        <a href="/register" class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition">
+          Get Started
+        </a>
+      </div>
+    </div>
+  </header>
 
-		<!-- Grid for cards -->
-		<ul role="list" class="link-card-grid grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-			<Card
-				href="/register"
-				title="Register"
-				body="New independent school? Register with us."
-			/>
-			<Card
-				href="/login"
-				title="Login"
-				body="Already registered? Login to your account to make payments or edit profile."
-			/>
-			<Card
-				href="fact-sheet"
-				title="FISA Fact Sheet"
-				body="Fact sheet where users and admins can submit updates to information for school."
-			/>
-		<Card
-				href="changelog"
-				title="FISA Changelog"
-				body="Admins can review all changes made to schools here."
-			/>
-			<Card
-				href="review-client-changes"
-				title="Review Pending School Updates."
-				body="Admins can accept or reject school update requests here."
-			/>
-			<Card
-				href="fisa-fees"
-				title="FISA Fees Invoice"
-				body="Math formulas working, but not submitting to a server."
-			/>
-			<Card
-				href="myedbc"
-				title="My EDBC Fees Invoice"
-				body="Math formulas working, but not submitting to a server."
-			/>
-			<Card
-				href="makeafuture"
-				title="Make a Future Fees Invoice"
-				body="Math formulas working, but not submitting to a server."
-			/>
-		</ul>
-	</main>
+  <!-- Main Content -->
+  <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
+    <div class="max-w-7xl mx-auto px-4">
+      <!-- Services Section -->
+      <section class="text-center mb-12 sm:mb-16">
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white">
+          Our Services
+        </h2>
+        <p class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Explore the various features we offer to streamline your registration and management processes.
+        </p>
+      </section>
+
+      <!-- Grid for Cards -->
+      <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <!-- Repeated Card Components -->
+        <Card
+          href="/register"
+          icon="fa-solid fa-user-plus"
+          title="Register"
+          body="New independent school? Register with us seamlessly."
+        />
+        <Card
+          href="/login"
+          icon="fa-solid fa-sign-in-alt"
+          title="Login"
+          body="Already registered? Access your account to manage payments or update your profile."
+        />
+        <Card
+          href="/fact-sheet"
+          icon="fa-solid fa-file-alt"
+          title="FISA Fact Sheet"
+          body="View and submit updates to school information easily."
+        />
+        <Card
+          href="/changelog"
+          icon="fa-solid fa-list-alt"
+          title="FISA Changelog"
+          body="Admins can review all changes made to schools here."
+        />
+        <Card
+          href="/review-client-changes"
+          icon="fa-solid fa-check-circle"
+          title="Review Pending Updates"
+          body="Admins can approve or reject school update requests efficiently."
+        />
+        <Card
+          href="/fisa-fees"
+          icon="fa-solid fa-receipt"
+          title="FISA Fees Invoice"
+          body="Manage and review your fee invoices with ease."
+        />
+        <Card
+          href="/myedbc"
+          icon="fa-solid fa-calculator"
+          title="My EDBC Fees Invoice"
+          body="Calculate and submit your EDBC fee invoices seamlessly."
+        />
+        <Card
+          href="/makeafuture"
+          icon="fa-solid fa-rocket"
+          title="Make a Future Fees Invoice"
+          body="Plan and submit future fee invoices effortlessly."
+        />
+      </ul>
+    </div>
+  </main>
+
+  <!-- Footer Section -->
+  <footer class="bg-blue-700 text-white py-4 sm:py-6">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p class="text-sm">&copy; {new Date().getFullYear()} FISA Portal. All rights reserved.</p>
+    </div>
+  </footer>
 </Layout>
 
 <style>
-	/* Main Layout Styles */
-	main {
-		color: #f5f5f5;
-	}
-
-	/* Typography */
-	h1 {
-		font-size: 2.5rem;
-		font-weight: 800;
-		line-height: 1.2;
-		margin-bottom: 1.5rem;
-	}
-	.text-gradient {
-		background-image: linear-gradient(90deg, #38bdf8, #3b82f6, #6366f1);
-		-webkit-background-clip: text;
-		-webkit-text-fill-color: transparent;
-	}
-
-	/* Instructions Box */
-	.instructions {
-		padding: 1.25rem;
-		border-radius: 0.5rem;
-		background: linear-gradient(135deg, #111827, #1f2937);
-		border: 1px solid rgba(255, 255, 255, 0.2);
-	}
-
-	/* Card Grid */
-	.link-card-grid {
-		display: grid;
-		grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-		gap: 1.5rem;
-	}
-
-	/* Responsive Styles for Card */
-	@media (min-width: 1024px) {
-		h1 {
-			font-size: 3.5rem;
-		}
-	}
+  /* Import Font Awesome for icons */
+  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
 </style>
