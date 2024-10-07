@@ -145,14 +145,21 @@ const { title } = Astro.props;
       }
     </style>
   </head>
-  <body class="transition-colors duration-300">
+  <body class="min-h-screen flex flex-col transition-colors duration-300">
     <!-- Main Header -->
     <Header />
 
     <!-- Page Content -->
-    <main class="p-4">
+    <main class="flex-grow">
       <slot />
     </main>
+
+    <!-- Footer Section -->
+    <footer class="bg-blue-700 text-white py-4 sm:py-6">
+      <div class="w-full text-center">
+        <p class="text-sm">&copy; {new Date().getFullYear()} FISA Portal. All rights reserved.</p>
+      </div>
+    </footer>
 
     <!-- Dark Mode Toggle Script -->
     <script>
