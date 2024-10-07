@@ -1,7 +1,7 @@
 ---
 const { href, icon, title, body } = Astro.props;
 ---
-<a href={href} class="flex flex-col items-start p-6 bg-white dark:bg-gray-800 rounded-lg shadow hover:shadow-xl transition duration-300">
+<a href={href} class="flex flex-col items-start p-6 bg-white dark:bg-gray-800 rounded-lg shadow-md dark:shadow-lg hover:shadow-2xl dark:hover:shadow-2xl transition duration-300 transform hover:-translate-y-1 hover:scale-105">
   <div class="mb-4 text-indigo-600 dark:text-indigo-400">
     <i class={icon + " text-3xl"}></i>
   </div>
