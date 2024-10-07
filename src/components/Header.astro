@@ -1,6 +1,3 @@
----
-/* src/components/Header.astro */
----
 <header>
   <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
     <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
@@ -43,8 +40,7 @@
       <!-- Right Side: Dark Mode Toggle and Login -->
       <div class="flex items-center lg:order-2">
         <!-- Dark Mode Toggle -->
-        <button id="theme-toggle" class="bg-gray-200 dark:bg-gray-800 text-black dark:text-white px-4 py-2 rounded-md mr-4">
-          <!-- Icon will be dynamically inserted here -->
+        <button id="theme-toggle" class="theme-toggle-btn">
           <span id="theme-toggle-icon"></span>
         </button>
 
@@ -59,22 +55,20 @@
   <script is:inline>
     (function() {
       try {
-        // Determine current theme from localStorage or system preference
         const theme = localStorage.getItem('theme');
         const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-        
+
         const themeToggleIcon = document.getElementById('theme-toggle-icon');
-        
-        // Apply the correct icon based on the theme
+
         function setIcon(theme) {
           if (theme === 'dark') {
-            themeToggleIcon.innerHTML = '<i class="fa-solid fa-moon"></i>'; // Moon for dark mode
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-moon"></i>';
           } else {
-            themeToggleIcon.innerHTML = '<i class="fa-solid fa-sun"></i>'; // Sun for light mode
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-sun"></i>';
           }
         }
-        
-        // Set the icon initially based on the saved theme or system preference
+
+        // Set the icon based on the theme
         if (theme === 'dark' || (!theme && prefersDark)) {
           document.documentElement.classList.add('dark');
           setIcon('dark');
@@ -87,4 +81,51 @@
       }
     })();
   </script>
+
+  <style is:global>
+    /* Styling the toggle button */
+    .theme-toggle-btn {
+      background-color: transparent; /* No background color to remove the grey box */
+      border: none; /* No border */
+      padding: 0.5rem; /* Add some padding for clickable area */
+      border-radius: 50%; /* Circular button */
+      transition: background-color 0.3s ease;
+    }
+
+    /* Add hover effect for the button */
+    .theme-toggle-btn:hover {
+      background-color: rgba(0, 0, 0, 0.05); /* Very subtle background on hover in light mode */
+    }
+
+    /* Dark mode toggle button hover effect */
+    .dark .theme-toggle-btn:hover {
+      background-color: rgba(255, 255, 255, 0.05); /* Very subtle background in dark mode */
+    }
+
+    /* Icon Styling */
+    .theme-toggle-btn i {
+      font-size: 1.5rem;
+      transition: transform 0.3s ease, color 0.3s ease;
+    }
+
+    /* Add color transitions */
+    .theme-toggle-btn i.fa-sun {
+      color: #facc15; /* Yellow for the sun */
+    }
+
+    .theme-toggle-btn i.fa-moon {
+      color: #60a5fa; /* Blue for the moon */
+    }
+
+    /* Hover effect */
+    .theme-toggle-btn:hover i {
+      transform: rotate(20deg) scale(1.1); /* Slight rotation and zoom on hover */
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); /* Glow effect */
+    }
+
+    /* Scale effect on click */
+    .theme-toggle-btn:active i {
+      transform: scale(0.9); /* Slight zoom in on click */
+    }
+  </style>
 </header>
