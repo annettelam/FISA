@@ -55,19 +55,19 @@ const { title } = Astro.props;
     <style is:global>
       /* Define CSS Variables */
       :root {
-        --accent: 136, 58, 234;
-        --accent-light: 224, 204, 250;
-        --accent-dark: 49, 10, 101;
+        --accent: 59, 130, 246; /* Blue-500 */
+        --accent-light: 147, 197, 253; /* Blue-300 */
+        --accent-dark: 30, 58, 138; /* Blue-700 */
         --accent-gradient: linear-gradient(
           45deg,
           rgb(var(--accent)),
           rgb(var(--accent-light)) 30%,
           grey 60%
         );
-        --light-bg: #f0f0f0;
-        --light-text: #1a1a1a;
-        --dark-bg: #181818;
-        --dark-text: #e0e0e0;
+        --light-bg: #ffffff; /* Pure White */
+        --light-text: #1a1a1a; /* Dark Text */
+        --dark-bg: #181818; /* Dark Grey */
+        --dark-text: #e0e0e0; /* Light Text */
         --button-bg-light: #e7e7e7;
         --button-bg-dark: #2c2c2c;
         --card-bg-light: #ffffff;
@@ -136,7 +136,7 @@ const { title } = Astro.props;
 
       /* Reusable Card Class */
       .card {
-        @apply bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-md p-6 transition-colors duration-300;
+        @apply bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-md dark:shadow-lg transition-colors duration-300;
       }
 
       /* Ensure Smooth Transitions for All Elements */
