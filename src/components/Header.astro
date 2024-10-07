@@ -45,10 +45,7 @@
         <!-- Dark Mode Toggle -->
         <button id="theme-toggle" class="bg-gray-200 dark:bg-gray-800 text-black dark:text-white px-4 py-2 rounded-md mr-4">
           <!-- Icon will be dynamically inserted here -->
-          <span id="theme-toggle-icon">
-            <!-- Sun icon for light mode as default -->
-            <i class="fa-solid fa-sun"></i>
-          </span>
+          <span id="theme-toggle-icon"></span>
         </button>
 
         <!-- Login Button -->
@@ -58,4 +55,36 @@
       </div>
     </div>
   </nav>
+
+  <script is:inline>
+    (function() {
+      try {
+        // Determine current theme from localStorage or system preference
+        const theme = localStorage.getItem('theme');
+        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        
+        const themeToggleIcon = document.getElementById('theme-toggle-icon');
+        
+        // Apply the correct icon based on the theme
+        function setIcon(theme) {
+          if (theme === 'dark') {
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-moon"></i>'; // Moon for dark mode
+          } else {
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-sun"></i>'; // Sun for light mode
+          }
+        }
+        
+        // Set the icon initially based on the saved theme or system preference
+        if (theme === 'dark' || (!theme && prefersDark)) {
+          document.documentElement.classList.add('dark');
+          setIcon('dark');
+        } else {
+          document.documentElement.classList.remove('dark');
+          setIcon('light');
+        }
+      } catch (e) {
+        console.error('Error setting theme or icon:', e);
+      }
+    })();
+  </script>
 </header>
