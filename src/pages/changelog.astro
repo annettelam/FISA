@@ -1,5 +1,5 @@
 ---
-import { getLogsBySchool, getAllSchoolNumbersOrderedByRecentChange } from '../../public/changelog';
+import { getLogsBySchool, getAllSchoolNumbersOrderedByRecentChange } from './api/changelog'
 import ChangeLogTable from '../components/Changelog/ChangeLogTable.astro';
 import ChangeLogSearchForm from '../components/Changelog/ChangeLogSearchForm.astro';
 import Layout from '../layouts/Layout.astro';
@@ -111,7 +111,6 @@ const shouldShowBottomPagination = logs.length > 10; // Only show bottom paginat
           {paginationPages.map((pageNumber, index) => (
             typeof pageNumber === 'number' ? (
               <a 
-                key={index}
                 href={`?page=${pageNumber}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
                 class={`px-4 py-2 rounded ${
                   pageNumber === currentPage 
@@ -122,9 +121,11 @@ const shouldShowBottomPagination = logs.length > 10; // Only show bottom paginat
                 {pageNumber}
               </a>
             ) : (
-              <span key={index} class="px-4 py-2 text-gray-500 dark:text-gray-400">...</span>
+              <span class="px-4 py-2 text-gray-500 dark:text-gray-400">...</span>
             )
           ))}
+
+
 
           {currentPage < totalPages ? (
             <>
@@ -181,7 +182,6 @@ const shouldShowBottomPagination = logs.length > 10; // Only show bottom paginat
             {paginationPages.map((pageNumber, index) => (
               typeof pageNumber === 'number' ? (
                 <a 
-                  key={index}
                   href={`?page=${pageNumber}${searchQuery ? `&search=${encodeURIComponent(searchQuery)}` : ''}`} 
                   class={`px-4 py-2 rounded ${
                     pageNumber === currentPage 
@@ -192,9 +192,10 @@ const shouldShowBottomPagination = logs.length > 10; // Only show bottom paginat
                   {pageNumber}
                 </a>
               ) : (
-                <span key={index} class="px-4 py-2 text-gray-500 dark:text-gray-400">...</span>
+                <span class="px-4 py-2 text-gray-500 dark:text-gray-400">...</span>
               )
             ))}
+
 
             {currentPage < totalPages ? (
               <>
