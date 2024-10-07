@@ -3,15 +3,32 @@ import Header from "../components/Header.astro";
 
 const { title } = Astro.props;
 ---
-
 <!doctype html>
-<html lang="en" >
+<html lang="en">
   <head>
+    <!-- Meta Tags -->
     <meta charset="UTF-8" />
     <meta name="description" content="FISA Application" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <title>{title}</title>
+
+    <!-- Theme Initialization Script to Prevent Flash of Incorrect Theme (FOUC) -->
+    <script>
+      (function() {
+        try {
+          const theme = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+          if (theme === 'dark' || (!theme && prefersDark)) {
+            document.documentElement.classList.add('dark');
+          } else {
+            document.documentElement.classList.remove('dark');
+          }
+        } catch (e) {
+          console.error('Error setting theme:', e);
+        }
+      })();
+    </script>
 
     <!-- Tailwind CSS -->
     <link
@@ -31,7 +48,9 @@ const { title } = Astro.props;
       rel="stylesheet"
     />
 
+    <!-- Custom Global Styles -->
     <style is:global>
+      /* Define CSS Variables */
       :root {
         --accent: 136, 58, 234;
         --accent-light: 224, 204, 250;
@@ -54,17 +73,20 @@ const { title } = Astro.props;
         --border-color-dark: #3a3a3a;
       }
 
+      /* Body Styles */
       body {
         background-color: var(--bg-color);
         color: var(--text-color);
         transition: background-color 0.3s, color 0.3s;
       }
 
+      /* Dark Mode Body Styles */
       html.dark body {
         --bg-color: var(--dark-bg);
         --text-color: var(--dark-text);
       }
 
+      /* Light Mode Body Styles */
       html body {
         --bg-color: var(--light-bg);
         --text-color: var(--light-text);
@@ -77,6 +99,7 @@ const { title } = Astro.props;
         transition: background-color 0.3s ease, color 0.3s ease;
       }
 
+      /* Dark Mode Button Styles */
       html.dark button {
         background-color: var(--button-bg-dark);
         color: #f5f5f5;
@@ -89,30 +112,37 @@ const { title } = Astro.props;
         transition: background 0.3s, color 0.3s;
       }
 
+      /* Dark Mode Header Styling */
       html.dark header {
         background: rgb(var(--accent-dark));
         color: #e0e0e0;
       }
 
-      /* Card Styles */
+      /* Reusable Button Classes */
+      .btn-primary {
+        @apply bg-blue-600 dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700 text-white px-5 py-3 rounded-lg font-medium text-sm text-center transition-colors duration-300 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-300;
+      }
+
+      .btn-success {
+        @apply bg-green-500 dark:bg-green-500 hover:bg-green-600 dark:hover:bg-green-600 text-white px-4 py-2 rounded transition-colors duration-300;
+      }
+
+      .btn-danger {
+        @apply bg-red-500 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-300;
+      }
+
+      /* Reusable Card Class */
       .card {
-        background-color: var(--card-bg-light);
-        border: 1px solid var(--border-color-light);
-        transition: background-color 0.3s, border-color 0.3s;
+        @apply bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-700 rounded-lg shadow-md p-6 transition-colors duration-300;
       }
 
-      html.dark .card {
-        background-color: var(--card-bg-dark);
-        border-color: var(--border-color-dark);
-      }
-
-      /* Additional Styles */
+      /* Ensure Smooth Transitions for All Elements */
       * {
         transition: background-color 0.3s, color 0.3s, border-color 0.3s;
       }
     </style>
   </head>
-  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+  <body class="transition-colors duration-300">
     <!-- Main Header -->
     <Header />
 
@@ -125,40 +155,41 @@ const { title } = Astro.props;
     <script>
       document.addEventListener("DOMContentLoaded", () => {
         const themeToggleButton = document.getElementById("theme-toggle");
-        const themeToggleDarkIcon = document.getElementById("theme-toggle-dark-icon");
-        const themeToggleLightIcon = document.getElementById("theme-toggle-light-icon");
+        const themeToggleIcon = document.getElementById("theme-toggle-icon");
 
-        if (!themeToggleButton || !themeToggleDarkIcon || !themeToggleLightIcon) {
+        if (!themeToggleButton || !themeToggleIcon) {
           console.error("Dark mode toggle elements not found!");
           return;
         }
 
-        const prefersDarkScheme = window.matchMedia("(prefers-color-scheme: dark)");
+        // Function to update the icon based on the current theme
+        function updateIcon(theme) {
+          if (theme === "dark") {
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-moon"></i>'; // Moon icon for dark mode
+          } else {
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-sun"></i>'; // Sun icon for light mode
+          }
+        }
 
-        // Get current theme from localStorage or fallback to system preference
-        const currentTheme = localStorage.getItem("theme") || (prefersDarkScheme.matches ? "dark" : "light");
+        // Set initial theme and icon based on saved or system preference
+        const currentTheme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
         if (currentTheme === "dark") {
           document.documentElement.classList.add("dark");
-          themeToggleLightIcon.classList.remove("hidden");
-          themeToggleDarkIcon.classList.add("hidden");
+          updateIcon("dark");
         } else {
           document.documentElement.classList.remove("dark");
-          themeToggleDarkIcon.classList.remove("hidden");
-          themeToggleLightIcon.classList.add("hidden");
+          updateIcon("light");
         }
 
         // Toggle between light and dark mode on button click
         themeToggleButton.addEventListener("click", () => {
+          document.documentElement.classList.toggle("dark");
           if (document.documentElement.classList.contains("dark")) {
-            document.documentElement.classList.remove("dark");
-            localStorage.setItem("theme", "light");
-            themeToggleDarkIcon.classList.remove("hidden");
-            themeToggleLightIcon.classList.add("hidden");
-          } else {
-            document.documentElement.classList.add("dark");
             localStorage.setItem("theme", "dark");
-            themeToggleLightIcon.classList.remove("hidden");
-            themeToggleDarkIcon.classList.add("hidden");
+            updateIcon("dark");
+          } else {
+            localStorage.setItem("theme", "light");
+            updateIcon("light");
           }
         });
       });
