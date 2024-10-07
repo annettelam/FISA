@@ -42,12 +42,16 @@ const { title } = Astro.props;
           rgb(var(--accent-light)) 30%,
           grey 60%
         );
-        --light-bg: #f0f0f0; /* Slightly off-white background */
-        --light-text: #1a1a1a; /* Darker text for light mode */
-        --dark-bg: #181818; /* Softer dark background */
-        --dark-text: #e0e0e0; /* Softer white text */
-        --button-bg-light: #e7e7e7; /* Light button background */
-        --button-bg-dark: #2c2c2c; /* Dark button background */
+        --light-bg: #f0f0f0;
+        --light-text: #1a1a1a;
+        --dark-bg: #181818;
+        --dark-text: #e0e0e0;
+        --button-bg-light: #e7e7e7;
+        --button-bg-dark: #2c2c2c;
+        --card-bg-light: #ffffff;
+        --card-bg-dark: #242424;
+        --border-color-light: #e5e5e5;
+        --border-color-dark: #3a3a3a;
       }
 
       body {
@@ -57,19 +61,19 @@ const { title } = Astro.props;
       }
 
       html.dark body {
-        --bg-color: var(--dark-bg); /* Softer dark background */
-        --text-color: var(--dark-text); /* Softer light text */
+        --bg-color: var(--dark-bg);
+        --text-color: var(--dark-text);
       }
 
       html body {
-        --bg-color: var(--light-bg); /* Softer light background */
-        --text-color: var(--light-text); /* Darker text for better readability */
+        --bg-color: var(--light-bg);
+        --text-color: var(--light-text);
       }
 
       /* Button Styles */
       button {
-        background-color: var(--button-bg);
-        color: var(--text-color);
+        background-color: var(--button-bg-light);
+        color: #333;
         transition: background-color 0.3s ease, color 0.3s ease;
       }
 
@@ -78,29 +82,42 @@ const { title } = Astro.props;
         color: #f5f5f5;
       }
 
-      html button {
-        background-color: var(--button-bg-light);
-        color: #333;
-      }
-
       /* Header Styling */
       header {
         background: var(--accent-gradient);
         color: white;
+        transition: background 0.3s, color 0.3s;
       }
 
       html.dark header {
-        background: var(--accent-dark);
+        background: rgb(var(--accent-dark));
         color: #e0e0e0;
+      }
+
+      /* Card Styles */
+      .card {
+        background-color: var(--card-bg-light);
+        border: 1px solid var(--border-color-light);
+        transition: background-color 0.3s, border-color 0.3s;
+      }
+
+      html.dark .card {
+        background-color: var(--card-bg-dark);
+        border-color: var(--border-color-dark);
+      }
+
+      /* Additional Styles */
+      * {
+        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
       }
     </style>
   </head>
-  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100">
+  <body class="bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
     <!-- Main Header -->
     <Header />
 
     <!-- Page Content -->
-    <main>
+    <main class="p-4">
       <slot />
     </main>
 

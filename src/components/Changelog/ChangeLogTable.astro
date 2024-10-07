@@ -1,5 +1,4 @@
 ---
-// Import the ChangeLogRow component
 import ChangeLogRow from './ChangeLogRow.astro';
 
 interface Log {
@@ -21,20 +20,20 @@ const { logs, schoolNum } = Astro.props;
 
 <div class="overflow-x-auto">
   {logs.length === 0 ? (
-    <div class="text-center py-4">No changes logged yet for school {schoolNum}.</div>
+    <div class="text-center py-4 text-gray-900 dark:text-gray-100">No changes logged yet for school {schoolNum}.</div>
   ) : (
-    <div class="border-b-4 border-gray-200 mb-6">
-      <div class="bg-gray-100 p-4 rounded-t-lg">
-        <h2 class="text-2xl font-semibold text-gray-800">School Number: {schoolNum}</h2>
+    <div class="border-b-4 border-gray-200 dark:border-gray-700 mb-6">
+      <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-t-lg">
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">School Number: {schoolNum}</h2>
       </div>
-      <table class="table-auto w-full text-left text-sm text-gray-500">
-        <thead class="bg-gray-50">
+      <table class="table-auto w-full text-left text-sm text-gray-500 dark:text-gray-300">
+        <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
-            <th class="px-4 py-2">Field Changed</th>
-            <th class="px-4 py-2">Old Value</th>
-            <th class="px-4 py-2">New Value</th>
-            <th class="px-4 py-2">Updated By</th>
-            <th class="px-4 py-2">Timestamp</th>
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Field Changed</th>
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Old Value</th>
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">New Value</th>
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Updated By</th>
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Timestamp</th>
           </tr>
         </thead>
         <tbody>
