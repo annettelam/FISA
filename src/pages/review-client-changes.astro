@@ -1,18 +1,15 @@
 ---
-// src/pages/admin/review-client-changes.astro
-
 import Layout from '../layouts/Layout.astro';
 import UpdateContainer from '../components/ReviewClientChanges/UpdateContainer.astro';
 ---
-
 <Layout title="Admin - Proposed Updates">
-  <div class="max-w-7xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+  <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md dark:shadow-lg rounded-lg transition-colors duration-300">
     <div class="text-center mb-10">
-      <h1 class="text-3xl font-bold text-gray-800">Proposed Updates</h1>
-      <p class="text-gray-600">This page automatically refreshes every 3 seconds.</p>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Proposed Updates</h1>
+      <p class="text-gray-600 dark:text-gray-300">This page automatically refreshes every 3 seconds.</p>
     </div>
 
-    <!-- Integrate Search Form or Action Container (If Required) -->
+    <!-- Alert Container -->
     <div id="alertContainer"></div>
 
     <!-- Display updates or fallback message if no updates -->
