@@ -5,12 +5,12 @@ import FactSheetForm from '../components/FactSheet/FactSheetForm.astro';
 ---
 
 <Layout title="Fact Sheet">
-  <div class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+  <div class="max-w-3xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md dark:shadow-lg rounded-lg transition-colors duration-300">
     <!-- Search Section -->
     <SearchForm />
 
     <!-- Fact Sheet Form -->
     <FactSheetForm />
-     <script defer src="/fact-sheet-script.js"></script>
+    <script defer src="/fact-sheet-script.js"></script>
   </div>
 </Layout>

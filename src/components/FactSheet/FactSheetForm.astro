@@ -1,22 +1,21 @@
 ---
-// src/components/FactSheetForm.astro
+/* src/components/FactSheetForm.astro */
 ---
-
 <!-- Fact Sheet Form -->
 <div id="school-data" class="hidden">
   <!-- Header with Logo and Title -->
   <div class="flex justify-between items-center mb-6">
     <img src="/fisa_logo_small.png" alt="FISA Logo" class="w-32 h-auto" />
     <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-800">
+      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
         FACT SHEET FOR SCHOOL YEAR 2023 - 2024
       </h1>
-      <p class="text-sm text-gray-600">
+      <p class="text-sm text-gray-600 dark:text-gray-300">
         Please complete or correct where necessary the following information<br />
         Return by Canada Post or email to
         <a
           href="mailto:info@fisabc.ca"
-          class="text-blue-600 underline"
+          class="text-blue-600 dark:text-blue-400 underline"
           >info@fisabc.ca</a
         >
         by October 20, 2023.
@@ -25,31 +24,31 @@
   </div>
 
   <!-- Fact Sheet Form -->
-  <h2 class="text-xl font-bold text-gray-800 mb-4">1. GENERAL INFORMATION</h2>
+  <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">1. GENERAL INFORMATION</h2>
   <form id="school-form" class="space-y-4">
     <!-- School Number and Year Founded -->
     <div class="grid grid-cols-3 gap-4">
       <div class="col-span-2">
         <label
           for="school-number"
-          class="block text-sm font-medium text-gray-900"
+          class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL NUMBER:</label
         >
         <input
           type="text"
           id="school-number"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
           disabled
         />
       </div>
       <div>
-        <label for="founded" class="block text-sm font-medium text-gray-900"
+        <label for="founded" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >YEAR FOUNDED:</label
         >
         <input
           type="text"
           id="founded"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -57,25 +56,25 @@
     <!-- School Name and Authority -->
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="school" class="block text-sm font-medium text-gray-900"
+        <label for="school" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >NAME OF SCHOOL:</label
         >
         <input
           type="text"
           id="school"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
         <label
           for="authority"
-          class="block text-sm font-medium text-gray-900"
+          class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >NAME OF AUTHORITY:</label
         >
         <input
           type="text"
           id="authority"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -83,23 +82,23 @@
     <!-- Mailing Address and School Address -->
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="address" class="block text-sm font-medium text-gray-900"
+        <label for="address" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >MAILING ADDRESS:</label
         >
         <input
           type="text"
           id="address"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="saddress" class="block text-sm font-medium text-gray-900"
+        <label for="saddress" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL ADDRESS (if different):</label
         >
         <input
           type="text"
           id="saddress"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -107,23 +106,23 @@
     <!-- City and Postal Code -->
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="city" class="block text-sm font-medium text-gray-900"
+        <label for="city" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >CITY:</label
         >
         <input
           type="text"
           id="city"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="postal" class="block text-sm font-medium text-gray-900"
+        <label for="postal" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >POSTAL CODE:</label
         >
         <input
           type="text"
           id="postal"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -131,46 +130,46 @@
     <!-- Phone, Fax, Website, and Email -->
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="phone" class="block text-sm font-medium text-gray-900"
+        <label for="phone" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL PHONE:</label
         >
         <input
           type="text"
           id="phone"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="fax" class="block text-sm font-medium text-gray-900"
+        <label for="fax" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL FAX:</label
         >
         <input
           type="text"
           id="fax"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
 
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="website" class="block text-sm font-medium text-gray-900"
+        <label for="website" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >WEBSITE:</label
         >
         <input
           type="text"
           id="website"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="email" class="block text-sm font-medium text-gray-900"
+        <label for="email" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >EMAIL:</label
         >
         <input
           type="text"
           id="email"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -180,73 +179,73 @@
       <div>
         <label
           for="first-name"
-          class="block text-sm font-medium text-gray-900"
+          class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >PRINCIPAL FIRST NAME:</label
         >
         <input
           type="text"
           id="first-name"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
         <label
           for="last-name"
-          class="block text-sm font-medium text-gray-900"
+          class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >PRINCIPAL LAST NAME:</label
         >
         <input
           type="text"
           id="last-name"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="degree" class="block text-sm font-medium text-gray-900"
+        <label for="degree" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >DEGREE:</label
         >
         <input
           type="text"
           id="degree"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
 
     <!-- Enrollment Section -->
-    <h2 class="text-xl font-bold text-gray-800 mb-4">2. ENROLMENT</h2>
+    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">2. ENROLMENT</h2>
 
     <div class="grid grid-cols-3 gap-4">
       <div>
         <label
           for="prek-age4"
-          class="block text-sm font-medium text-gray-900"
+          class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Pre-K Ages 3-4:</label
         >
         <input
           type="text"
           id="prek-age4"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="halfday-k" class="block text-sm font-medium text-gray-900"
+        <label for="halfday-k" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Half-day K:</label
         >
         <input
           type="text"
           id="halfday-k"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="fullday-k" class="block text-sm font-medium text-gray-900"
+        <label for="fullday-k" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Full-day K:</label
         >
         <input
           type="text"
           id="fullday-k"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -254,25 +253,25 @@
     <!-- Grade 1-7 and Ungraded Elementary -->
     <div class="grid grid-cols-2 gap-4 mt-4">
       <div>
-        <label for="grade-1-7" class="block text-sm font-medium text-gray-900"
+        <label for="grade-1-7" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Grade 1-7:</label
         >
         <input
           type="text"
           id="grade-1-7"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
         <label
           for="ungraded-elem"
-          class="block text-sm font-medium text-gray-900"
+          class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Ungraded Elem:</label
         >
         <input
           type="text"
           id="ungraded-elem"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -280,156 +279,156 @@
     <!-- Grades 8-12 and Ungraded Secondary -->
     <div class="grid grid-cols-2 gap-4 mt-4">
       <div>
-        <label for="grade-8" class="block text-sm font-medium text-gray-900"
+        <label for="grade-8" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Grade 8:</label
         >
         <input
           type="text"
           id="grade-8"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="grade-9" class="block text-sm font-medium text-gray-900"
+        <label for="grade-9" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Grade 9:</label
         >
         <input
           type="text"
           id="grade-9"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="grade-10" class="block text-sm font-medium text-gray-900"
+        <label for="grade-10" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Grade 10:</label
         >
         <input
           type="text"
           id="grade-10"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="grade-11" class="block text-sm font-medium text-gray-900"
+        <label for="grade-11" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Grade 11:</label
         >
         <input
           type="text"
           id="grade-11"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="grade-12" class="block text-sm font-medium text-gray-900"
+        <label for="grade-12" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Grade 12:</label
         >
         <input
           type="text"
           id="grade-12"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
 
     <!-- Ungraded Secondary -->
     <div class="mt-4">
-      <label for="ungraded-sec" class="block text-sm font-medium text-gray-900"
+      <label for="ungraded-sec" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
         >Ungraded Sec:</label
       >
       <input
         type="text"
         id="ungraded-sec"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+        class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
       />
     </div>
 
     <!-- Totals Section -->
     <div class="grid grid-cols-3 gap-4 mt-4">
       <div>
-        <label for="total-k-7" class="block text-sm font-medium text-gray-900"
+        <label for="total-k-7" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Total K-7:</label
         >
         <input
           type="text"
           id="total-k-7"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
           readonly
         />
       </div>
       <div>
-        <label for="total-8-12" class="block text-sm font-medium text-gray-900"
+        <label for="total-8-12" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Total 8-12:</label
         >
         <input
           type="text"
           id="total-8-12"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
           readonly
         />
       </div>
       <div>
-        <label for="total-k-12" class="block text-sm font-medium text-gray-900"
+        <label for="total-k-12" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >Total K-12:</label
         >
         <input
           type="text"
           id="total-k-12"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
           readonly
         />
       </div>
     </div>
 
     <!-- School Type Section -->
-    <h2 class="text-xl font-bold text-gray-800 mb-4">3. SCHOOL TYPE</h2>
+    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">3. SCHOOL TYPE</h2>
 
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="funding" class="block text-sm font-medium text-gray-900"
+        <label for="funding" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL CLASSIFICATION:</label
         >
         <input
           type="text"
           id="funding"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="specialty" class="block text-sm font-medium text-gray-900"
+        <label for="specialty" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL SPECIALTY (IF ANY):</label
         >
         <input
           type="text"
           id="specialty"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
 
     <!-- Relationship Section -->
-    <h2 class="text-xl font-bold text-gray-800 mb-4">4. RELATIONSHIP</h2>
+    <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">4. RELATIONSHIP</h2>
 
     <div class="grid grid-cols-2 gap-4">
       <div>
-        <label for="fisa" class="block text-sm font-medium text-gray-900"
+        <label for="fisa" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL IS MEMBER OF FISA BC:</label
         >
         <select
           id="fisa"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         >
           <option value="True">Yes</option>
           <option value="False">No</option>
         </select>
       </div>
       <div>
-        <label for="assoc" class="block text-sm font-medium text-gray-900"
+        <label for="assoc" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >SCHOOL IS MEMBER OF PROVINCIAL ASSOCIATION:</label
         >
         <input
           type="text"
           id="assoc"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -437,33 +436,33 @@
     <!-- Public School District and Provincial Electoral District -->
     <div class="grid grid-cols-3 gap-4 mt-4">
       <div>
-        <label for="sdnum" class="block text-sm font-medium text-gray-900"
+        <label for="sdnum" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >PUBLIC SCHOOL DISTRICT #:</label
         >
         <input
           type="text"
           id="sdnum"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="sd" class="block text-sm font-medium text-gray-900"
+        <label for="sd" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >NAME:</label
         >
         <input
           type="text"
           id="sd"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
       <div>
-        <label for="electoral" class="block text-sm font-medium text-gray-900"
+        <label for="electoral" class="block text-sm font-medium text-gray-900 dark:text-gray-100"
           >PROVINCIAL ELECTORAL DISTRICT:</label
         >
         <input
           type="text"
           id="electoral"
-          class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+          class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-400 focus:border-blue-500 dark:focus:border-blue-400 block w-full p-2.5 transition-colors duration-300"
         />
       </div>
     </div>
@@ -471,7 +470,7 @@
     <!-- Submit Button -->
     <button
       type="submit"
-      class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center"
+     class="w-full text-white bg-blue-600 dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 text-center transition-colors duration-300"
     >
       Submit
     </button>
