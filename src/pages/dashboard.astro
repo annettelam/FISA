@@ -1,0 +1,18 @@
+---
+import { authMiddleware } from '../middleware/auth';
+
+const auth = await authMiddleware(Astro.request);
+
+if (!auth.authenticated) {
+  return Astro.redirect('/login');
+}
+---
+<html>
+  <head>
+    <title>Dashboard</title>
+  </head>
+  <body>
+    <h1>Welcome to your dashboard, {auth.user.email}!</h1>
+    <a href="/api/logout">Logout</a>
+  </body>
+</html>
