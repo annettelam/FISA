@@ -20,11 +20,38 @@
           <li>
             <a
               href="/"
-              class="block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700"
+              class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
               >Home</a
             >
           </li>
-          <!-- other menu links -->
+          <li>
+            <a
+              href="https://fisabc.ca/"
+              class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+              >FISA</a
+            >
+          </li>
+          <li>
+            <a
+              href="/register"
+              class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+              >Register</a
+            >
+          </li>
+          <li>
+            <a
+              href="/about"
+              class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+              >About</a
+            >
+          </li>
+          <li>
+            <a
+              href="/contact"
+              class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700"
+              >Contact</a
+            >
+          </li>
         </ul>
       </div>
 
@@ -34,7 +61,7 @@
         <div class="relative">
           <button
             id="notificationButton"
-            class="relative text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400"
+            class="relative text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400 focus:outline-none"
           >
             <i class="fas fa-bell fa-lg"></i>
             <!-- Notification Badge -->
@@ -65,16 +92,17 @@
         </div>
 
         <!-- Dark Mode Toggle -->
-        <button id="theme-toggle" class="theme-toggle-btn"
-          ><span id="theme-toggle-icon"></span></button
-        >
+        <button id="theme-toggle" class="theme-toggle-btn">
+          <span id="theme-toggle-icon"></span>
+        </button>
 
         <!-- Login Button -->
         <a
           href="/login"
-          class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 dark:hover:bg-gray-700"
-          >Log in</a
+          class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
         >
+          Log in
+        </a>
       </div>
     </div>
   </nav>
@@ -171,4 +199,81 @@
       // setInterval(fetchNotifications, 10000); // Uncomment this if you want to keep updating
     });
   </script>
+
+  <!-- Dark Mode Script -->
+  <script is:inline>
+    (function () {
+      try {
+        const theme = localStorage.getItem("theme");
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)",
+        ).matches;
+
+        const themeToggleIcon = document.getElementById("theme-toggle-icon");
+
+        function setIcon(theme) {
+          if (theme === "dark") {
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-moon"></i>';
+          } else {
+            themeToggleIcon.innerHTML = '<i class="fa-solid fa-sun"></i>';
+          }
+        }
+
+        // Set the icon based on the theme
+        if (theme === "dark" || (!theme && prefersDark)) {
+          document.documentElement.classList.add("dark");
+          setIcon("dark");
+        } else {
+          document.documentElement.classList.remove("dark");
+          setIcon("light");
+        }
+      } catch (e) {
+        console.error("Error setting theme or icon:", e);
+      }
+    })();
+  </script>
+
+  <!-- Styling for Dark Mode and Notification -->
+  <style is:global>
+    /* Styling the toggle button */
+    .theme-toggle-btn {
+      background-color: transparent;
+      border: none;
+      padding: 0.5rem;
+      border-radius: 50%;
+      transition: background-color 0.3s ease;
+    }
+
+    .theme-toggle-btn:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .dark .theme-toggle-btn:hover {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+
+    .theme-toggle-btn i {
+      font-size: 1.5rem;
+      transition:
+        transform 0.3s ease,
+        color 0.3s ease;
+    }
+
+    .theme-toggle-btn i.fa-sun {
+      color: #facc15;
+    }
+
+    .theme-toggle-btn i.fa-moon {
+      color: #60a5fa;
+    }
+
+    .theme-toggle-btn:hover i {
+      transform: rotate(20deg) scale(1.1);
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+    }
+
+    .theme-toggle-btn:active i {
+      transform: scale(0.9);
+    }
+  </style>
 </header>
