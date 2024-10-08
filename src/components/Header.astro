@@ -1,131 +1,174 @@
 <header>
   <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
-    <div class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
+    <div
+      class="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl"
+    >
       <!-- Logo -->
-      <a href="http://localhost:4321/" class="flex items-center">
-        <img src="/fisa_logo_small.png" class="mr-3 h-6 sm:h-9" alt="FISA Logo" />
+      <a href="/" class="flex items-center">
+        <img
+          src="/fisa_logo_small.png"
+          class="mr-3 h-6 sm:h-9"
+          alt="FISA Logo"
+        />
       </a>
 
       <!-- Menu Links -->
       <div class="flex-grow lg:flex lg:w-auto lg:order-1 justify-center">
-        <ul class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0">
+        <ul
+          class="flex flex-col mt-4 font-medium lg:flex-row lg:space-x-8 lg:mt-0"
+        >
           <li>
-            <a href="/" class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
-              Home
-            </a>
+            <a
+              href="/"
+              class="block py-2 pr-4 pl-3 text-gray-700 hover:bg-gray-50 dark:text-gray-400 dark:hover:bg-gray-700"
+              >Home</a
+            >
           </li>
-          <li>
-            <a href="https://fisabc.ca/" class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
-              FISA
-            </a>
-          </li>
-          <li>
-            <a href="/register" class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
-              Register
-            </a>
-          </li>
-          <li>
-            <a href="/about" class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
-              About
-            </a>
-          </li>
-          <li>
-            <a href="/contact" class="block py-2 pr-4 pl-3 text-gray-700 border-b border-gray-100 hover:bg-gray-50 lg:hover:bg-transparent lg:border-0 lg:hover:text-primary-700 lg:p-0 dark:text-gray-400 lg:dark:hover:text-white dark:hover:bg-gray-700 dark:hover:text-white lg:dark:hover:bg-transparent dark:border-gray-700">
-              Contact
-            </a>
-          </li>
+          <!-- other menu links -->
         </ul>
       </div>
 
-      <!-- Right Side: Dark Mode Toggle and Login -->
-      <div class="flex items-center lg:order-2">
+      <!-- Right Side: Notifications, Dark Mode Toggle, and Login -->
+      <div class="flex items-center lg:order-2 space-x-4">
+        <!-- Notifications Dropdown -->
+        <div class="relative">
+          <button
+            id="notificationButton"
+            class="relative text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400"
+          >
+            <i class="fas fa-bell fa-lg"></i>
+            <!-- Notification Badge -->
+            <span
+              id="notificationBadge"
+              class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+              >0</span
+            >
+          </button>
+          <!-- Notification Dropdown -->
+          <div
+            id="notificationDropdown"
+            class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg overflow-hidden z-20"
+          >
+            <div id="notificationList" class="py-2">
+              <p class="text-gray-700 dark:text-gray-200 px-4 py-2">
+                No new notifications
+              </p>
+            </div>
+            <div class="py-2 text-center">
+              <a
+                href="/notifications"
+                class="text-blue-600 dark:text-blue-400 hover:underline"
+                >View all notifications</a
+              >
+            </div>
+          </div>
+        </div>
+
         <!-- Dark Mode Toggle -->
-        <button id="theme-toggle" class="theme-toggle-btn">
-          <span id="theme-toggle-icon"></span>
-        </button>
+        <button id="theme-toggle" class="theme-toggle-btn"
+          ><span id="theme-toggle-icon"></span></button
+        >
 
         <!-- Login Button -->
-        <a href="/login" class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800">
-          Log in
-        </a>
+        <a
+          href="/login"
+          class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 dark:hover:bg-gray-700"
+          >Log in</a
+        >
       </div>
     </div>
   </nav>
 
-  <script is:inline>
-    (function() {
-      try {
-        const theme = localStorage.getItem('theme');
-        const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+  <!-- Client-Side Script for Notifications -->
+  <script>
+    document.addEventListener("DOMContentLoaded", () => {
+      const notificationButton = document.getElementById("notificationButton");
+      const notificationDropdown = document.getElementById(
+        "notificationDropdown",
+      );
+      const notificationBadge = document.getElementById("notificationBadge");
+      const notificationList = document.getElementById("notificationList");
 
-        const themeToggleIcon = document.getElementById('theme-toggle-icon');
+      // Toggle notification dropdown
+      notificationButton.addEventListener("click", (event) => {
+        event.stopPropagation();
+        notificationDropdown.classList.toggle("hidden");
+      });
 
-        function setIcon(theme) {
-          if (theme === 'dark') {
-            themeToggleIcon.innerHTML = '<i class="fa-solid fa-moon"></i>';
-          } else {
-            themeToggleIcon.innerHTML = '<i class="fa-solid fa-sun"></i>';
-          }
+      // Close dropdown when clicking outside
+      document.addEventListener("click", (event) => {
+        if (
+          !notificationButton.contains(event.target) &&
+          !notificationDropdown.contains(event.target)
+        ) {
+          notificationDropdown.classList.add("hidden");
         }
+      });
 
-        // Set the icon based on the theme
-        if (theme === 'dark' || (!theme && prefersDark)) {
-          document.documentElement.classList.add('dark');
-          setIcon('dark');
+      // Function to simulate fetching notifications (using dummy data)
+      function fetchNotifications() {
+        // Dummy data to simulate payment notifications
+        const dummyData = [
+          {
+            id: 1,
+            school_name: "School A",
+            payment_amount: 500.0,
+            payment_date: new Date("2024-10-01T12:34:56"),
+          },
+          {
+            id: 2,
+            school_name: "School B",
+            payment_amount: 700.5,
+            payment_date: new Date("2024-10-05T14:20:00"),
+          },
+          {
+            id: 3,
+            school_name: "School C",
+            payment_amount: 350.75,
+            payment_date: new Date("2024-10-08T16:45:00"),
+          },
+        ];
+
+        // Update the notification badge
+        const unreadCount = dummyData.length;
+        if (unreadCount > 0) {
+          notificationBadge.textContent = unreadCount;
+          notificationBadge.classList.remove("hidden");
         } else {
-          document.documentElement.classList.remove('dark');
-          setIcon('light');
+          notificationBadge.classList.add("hidden");
         }
-      } catch (e) {
-        console.error('Error setting theme or icon:', e);
+
+        // Update the notification list
+        notificationList.innerHTML = "";
+        if (dummyData.length > 0) {
+          dummyData.forEach((notification) => {
+            const notificationItem = document.createElement("div");
+            notificationItem.classList.add(
+              "px-4",
+              "py-2",
+              "hover:bg-gray-100",
+              "dark:hover:bg-gray-700",
+              "cursor-pointer",
+            );
+
+            notificationItem.innerHTML = `
+              <p class="text-sm text-gray-700 dark:text-gray-200">Payment received from ${notification.school_name}</p>
+              <p class="text-xs text-gray-500 dark:text-gray-400">${new Date(notification.payment_date).toLocaleString()}</p>
+            `;
+
+            notificationList.appendChild(notificationItem);
+          });
+        } else {
+          notificationList.innerHTML =
+            '<p class="text-gray-700 dark:text-gray-200 px-4 py-2">No new notifications</p>';
+        }
       }
-    })();
+
+      // Fetch dummy notifications on load
+      fetchNotifications();
+
+      // Optionally: Simulate fetching notifications every 10 seconds
+      // setInterval(fetchNotifications, 10000); // Uncomment this if you want to keep updating
+    });
   </script>
-
-  <style is:global>
-    /* Styling the toggle button */
-    .theme-toggle-btn {
-      background-color: transparent; /* No background color to remove the grey box */
-      border: none; /* No border */
-      padding: 0.5rem; /* Add some padding for clickable area */
-      border-radius: 50%; /* Circular button */
-      transition: background-color 0.3s ease;
-    }
-
-    /* Add hover effect for the button */
-    .theme-toggle-btn:hover {
-      background-color: rgba(0, 0, 0, 0.05); /* Very subtle background on hover in light mode */
-    }
-
-    /* Dark mode toggle button hover effect */
-    .dark .theme-toggle-btn:hover {
-      background-color: rgba(255, 255, 255, 0.05); /* Very subtle background in dark mode */
-    }
-
-    /* Icon Styling */
-    .theme-toggle-btn i {
-      font-size: 1.5rem;
-      transition: transform 0.3s ease, color 0.3s ease;
-    }
-
-    /* Add color transitions */
-    .theme-toggle-btn i.fa-sun {
-      color: #facc15; /* Yellow for the sun */
-    }
-
-    .theme-toggle-btn i.fa-moon {
-      color: #60a5fa; /* Blue for the moon */
-    }
-
-    /* Hover effect */
-    .theme-toggle-btn:hover i {
-      transform: rotate(20deg) scale(1.1); /* Slight rotation and zoom on hover */
-      text-shadow: 0 0 10px rgba(255, 255, 255, 0.7); /* Glow effect */
-    }
-
-    /* Scale effect on click */
-    .theme-toggle-btn:active i {
-      transform: scale(0.9); /* Slight zoom in on click */
-    }
-  </style>
 </header>
