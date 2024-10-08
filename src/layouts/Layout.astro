@@ -3,6 +3,7 @@ import Header from "../components/Header.astro";
 
 const { title } = Astro.props;
 ---
+
 <!doctype html>
 <html lang="en">
   <head>
@@ -15,20 +16,22 @@ const { title } = Astro.props;
 
     <!-- Theme Initialization Script to Prevent Flash of Incorrect Theme (FOUC) -->
     <script is:inline>
-      (function() {
+      (function () {
         try {
           // Check localStorage for theme preference or use system preference
-          const theme = localStorage.getItem('theme');
-          const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-          
+          const theme = localStorage.getItem("theme");
+          const prefersDark = window.matchMedia(
+            "(prefers-color-scheme: dark)",
+          ).matches;
+
           // Apply the correct theme immediately
-          if (theme === 'dark' || (!theme && prefersDark)) {
-            document.documentElement.classList.add('dark');
+          if (theme === "dark" || (!theme && prefersDark)) {
+            document.documentElement.classList.add("dark");
           } else {
-            document.documentElement.classList.remove('dark');
+            document.documentElement.classList.remove("dark");
           }
         } catch (e) {
-          console.error('Error setting theme:', e);
+          console.error("Error setting theme:", e);
         }
       })();
     </script>
@@ -80,7 +83,9 @@ const { title } = Astro.props;
       body {
         background-color: var(--bg-color);
         color: var(--text-color);
-        transition: background-color 0.3s, color 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s;
       }
 
       /* Dark Mode Body Styles */
@@ -99,7 +104,9 @@ const { title } = Astro.props;
       button {
         background-color: var(--button-bg-light);
         color: #333;
-        transition: background-color 0.3s ease, color 0.3s ease;
+        transition:
+          background-color 0.3s ease,
+          color 0.3s ease;
       }
 
       /* Dark Mode Button Styles */
@@ -112,7 +119,9 @@ const { title } = Astro.props;
       header {
         background: var(--accent-gradient);
         color: white;
-        transition: background 0.3s, color 0.3s;
+        transition:
+          background 0.3s,
+          color 0.3s;
       }
 
       /* Dark Mode Header Styling */
@@ -141,7 +150,10 @@ const { title } = Astro.props;
 
       /* Ensure Smooth Transitions for All Elements */
       * {
-        transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        transition:
+          background-color 0.3s,
+          color 0.3s,
+          border-color 0.3s;
       }
     </style>
   </head>
@@ -157,7 +169,9 @@ const { title } = Astro.props;
     <!-- Footer Section -->
     <footer class="bg-blue-700 text-white py-4 sm:py-6">
       <div class="w-full text-center">
-        <p class="text-sm">&copy; {new Date().getFullYear()} FISA Portal. All rights reserved.</p>
+        <p class="text-sm">
+          &copy; {new Date().getFullYear()} FISA Portal. All rights reserved.
+        </p>
       </div>
     </footer>
 
@@ -182,7 +196,11 @@ const { title } = Astro.props;
         }
 
         // Set initial theme and icon based on saved or system preference
-        const currentTheme = localStorage.getItem("theme") || (window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        const currentTheme =
+          localStorage.getItem("theme") ||
+          (window.matchMedia("(prefers-color-scheme: dark)").matches
+            ? "dark"
+            : "light");
         if (currentTheme === "dark") {
           document.documentElement.classList.add("dark");
           updateIcon("dark");
@@ -206,6 +224,8 @@ const { title } = Astro.props;
     </script>
 
     <!-- Flowbite JS -->
-    <script src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"></script>
+    <script
+      src="https://cdn.jsdelivr.net/npm/flowbite@1.6.5/dist/flowbite.min.js"
+    ></script>
   </body>
 </html>
