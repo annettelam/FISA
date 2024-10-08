@@ -2,11 +2,16 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 ---
+
 <Layout title="Welcome to FISA Portal">
   <!-- Header Section -->
-  <header class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20">
+  <header
+    class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20"
+  >
     <div class="max-w-7xl mx-auto px-4 text-center">
-      <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md">
+      <h1
+        class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md"
+      >
         Welcome to <span class="text-white">FISA Portal</span>
       </h1>
       <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
@@ -14,7 +19,10 @@ import Card from "../components/Card.astro";
         Get started by having your school ID number ready.
       </p>
       <div class="mt-6 sm:mt-8">
-        <a href="/register" class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition">
+        <a
+          href="/register"
+          class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition"
+        >
           Get Started
         </a>
       </div>
@@ -26,16 +34,24 @@ import Card from "../components/Card.astro";
     <div class="max-w-7xl mx-auto px-4">
       <!-- Services Section -->
       <section class="text-center mb-12 sm:mb-16">
-        <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white">
+        <h2
+          class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white"
+        >
           Our Services
         </h2>
-        <p class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto">
-          Explore the various features we offer to streamline your registration and management processes.
+        <p
+          class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto"
+        >
+          Explore the various features we offer to streamline your registration
+          and management processes.
         </p>
       </section>
 
       <!-- Grid for Cards -->
-      <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+      <ul
+        role="list"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+      >
         <!-- Repeated Card Components -->
         <Card
           href="/register"
@@ -85,14 +101,18 @@ import Card from "../components/Card.astro";
           title="Make a Future Fees Invoice"
           body="Plan and submit future fee invoices effortlessly."
         />
+        <Card
+          href="/admin-notifications"
+          icon="fa-solid fa-exclamation-circle"
+          title="Overdue Payments"
+          body="View schools with overdue payments."
+        />
       </ul>
     </div>
   </main>
-
-
 </Layout>
 
 <style>
   /* Import Font Awesome for icons */
-  @import url('https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css');
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
 </style>
