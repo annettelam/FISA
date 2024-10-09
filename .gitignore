@@ -1,4 +1,4 @@
-/# build output
+# build output
 dist/
 
 # generated types
@@ -23,12 +23,23 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-# database
+# Prisma database files
+prisma/dev.db
+prisma/dev.db-journal
+
+# Prisma migrations (optional, you may want to keep migrations under version control)
+prisma/migrations/*
+
+# SQLite database files
 /data/FISA.db
 /data/test.db
 /FISA.db
 
-# test database path
 # Ignore all files in the data folder
 src/pages/api/data/*
 
+# TypeScript cache
+*.tsbuildinfo
+
+# VSCode settings
+.vscode/
