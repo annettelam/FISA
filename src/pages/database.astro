@@ -17,7 +17,7 @@ import Layout from "../layouts/Layout.astro";
       <!-- Schools by Association -->
       <div>
         <label for="association" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schools by Association</label>
-        <select id="association" name="association" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <select id="association" name="association" class="block w-full pl-3 pr-10 py-2 text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition-colors duration-300">
           <option value="">All Associations</option>
         </select>
       </div>
@@ -25,16 +25,23 @@ import Layout from "../layouts/Layout.astro";
       <!-- Schools by Name -->
       <div>
         <label for="schoolName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schools by Name</label>
-        <input type="text" id="schoolName" name="schoolName" placeholder="Search by school name" class="block w-full pl-3 pr-3 py-2 text-base border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <input type="text" id="schoolName" name="schoolName" placeholder="Search by school name" class="block w-full pl-3 pr-3 py-2 text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition-colors duration-300">
       </div>
 
       <!-- Sort by Column -->
       <div>
         <label for="sortColumn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort by Column</label>
-        <select id="sortColumn" name="sortColumn" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <select id="sortColumn" name="sortColumn" class="block w-full pl-3 pr-10 py-2 text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition-colors duration-300">
           <option value="">Select Column</option>
         </select>
       </div>
+    </div>
+
+    <!-- Clear All Filters Button -->
+    <div class="flex justify-end mb-4">
+      <button id="clear-filters" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">
+        Clear All Filters
+      </button>
     </div>
 
     <!-- Total Number of Schools -->
@@ -59,8 +66,11 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
-  <!-- Custom Script for dynamic table population -->
+  <!-- Custom Script for dynamic table population and Clear All Filters -->
   <script>
+    let originalData; // To store the unfiltered original data
+    let currentPage = 1;
+
     // Fetch data and initialize the table
     (async function() {
       try {
@@ -69,6 +79,7 @@ import Layout from "../layouts/Layout.astro";
           throw new Error(`HTTP error! status: ${response.status}`);
         }
         let data = await response.json();
+        originalData = data; // Store original data
 
         if (data.length === 0) {
           console.warn("No data received from the API.");
@@ -109,65 +120,8 @@ import Layout from "../layouts/Layout.astro";
         document.getElementById('schoolName').addEventListener('input', applyFilters);
         sortColumnSelect.addEventListener('change', applyFilters);
 
-        function applyFilters() {
-          let filteredData = data;
-
-          // Filter by Association
-          const assocValue = associationSelect.value;
-          if (assocValue) {
-            filteredData = filteredData.filter(item => item.ASSOC === assocValue);
-          }
-
-          // Filter by School Name
-          const schoolNameValue = document.getElementById('schoolName').value.toLowerCase();
-          if (schoolNameValue) {
-            filteredData = filteredData.filter(item => item.SCHOOL.toLowerCase().includes(schoolNameValue));
-          }
-
-          // Sort by Column
-          const sortColumnValue = sortColumnSelect.value;
-          if (sortColumnValue) {
-            filteredData.sort((a, b) => {
-              if (a[sortColumnValue] < b[sortColumnValue]) return -1;
-              if (a[sortColumnValue] > b[sortColumnValue]) return 1;
-              return 0;
-            });
-          }
-
-          // Update total schools displayed
-          document.getElementById('totalSchools').textContent = filteredData.length;
-
-          // Re-render table body
-          renderTableBody(filteredData);
-        }
-
-        function renderTableBody(dataToRender) {
-          const tbody = document.getElementById('table-body');
-          tbody.innerHTML = ''; // Clear existing rows
-
-          dataToRender.forEach((row, index) => {
-            const tr = document.createElement('tr');
-            tr.className = index % 2 === 0 ? '' : 'bg-gray-50 dark:bg-gray-700';
-            headers.forEach(key => {
-              const td = document.createElement('td');
-              td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300';
-
-              // Check if the current column should be a clickable link
-              if (key === 'SCHOOL') {
-                const schoolNum = row['SCHOOL_NUM']; // Use the SCHOOL_NUM for the link
-                const link = document.createElement('a');
-                link.href = `/fact-sheet?schoolNum=${encodeURIComponent(schoolNum)}`;
-                link.textContent = row[key];
-                link.className = 'text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500';
-                td.appendChild(link);
-              } else {
-                td.textContent = row[key];
-              }
-              tr.appendChild(td);
-            });
-            tbody.appendChild(tr);
-          });
-        }
+        // Event listener for clear filters
+        document.getElementById('clear-filters').addEventListener('click', clearFilters);
 
         // Initial render
         renderTableBody(data);
@@ -179,6 +133,80 @@ import Layout from "../layouts/Layout.astro";
         alert("An error occurred while loading the data. Please try again later.");
       }
     })();
+
+    function applyFilters() {
+      let filteredData = [...originalData];
+
+      const associationValue = document.getElementById('association').value;
+      const schoolNameValue = document.getElementById('schoolName').value.toLowerCase();
+      const sortColumnValue = document.getElementById('sortColumn').value;
+
+      // Filter by Association
+      if (associationValue) {
+        filteredData = filteredData.filter(item => item.ASSOC === associationValue);
+      }
+
+      // Filter by School Name
+      if (schoolNameValue) {
+        filteredData = filteredData.filter(item => item.SCHOOL.toLowerCase().includes(schoolNameValue));
+      }
+
+      // Sort by Column
+      if (sortColumnValue) {
+        filteredData.sort((a, b) => {
+          if (a[sortColumnValue] < b[sortColumnValue]) return -1;
+          if (a[sortColumnValue] > b[sortColumnValue]) return 1;
+          return 0;
+        });
+      }
+
+      // Update total schools displayed
+      document.getElementById('totalSchools').textContent = filteredData.length;
+
+      // Re-render table body
+      renderTableBody(filteredData);
+    }
+
+    function clearFilters() {
+      // Clear filter input fields
+      document.getElementById('association').value = "";
+      document.getElementById('schoolName').value = "";
+      document.getElementById('sortColumn').value = "";
+
+      // Reset table to original data
+      renderTableBody(originalData);
+
+      // Update total schools displayed
+      document.getElementById('totalSchools').textContent = originalData.length;
+    }
+
+    function renderTableBody(dataToRender) {
+      const tbody = document.getElementById('table-body');
+      tbody.innerHTML = ''; // Clear existing rows
+
+      dataToRender.forEach((row, index) => {
+        const tr = document.createElement('tr');
+        tr.className = index % 2 === 0 ? '' : 'bg-gray-50 dark:bg-gray-700';
+        Object.keys(row).forEach(key => {
+          const td = document.createElement('td');
+          td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300';
+
+          // Check if the current column should be a clickable link
+          if (key === 'SCHOOL') {
+            const schoolNum = row['SCHOOL_NUM']; // Use the SCHOOL_NUM for the link
+            const link = document.createElement('a');
+            link.href = `/fact-sheet?schoolNum=${encodeURIComponent(schoolNum)}`;
+            link.textContent = row[key];
+            link.className = 'text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500';
+            td.appendChild(link);
+          } else {
+            td.textContent = row[key];
+          }
+          tr.appendChild(td);
+        });
+        tbody.appendChild(tr);
+      });
+    }
   </script>
 </Layout>
 
