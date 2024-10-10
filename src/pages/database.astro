@@ -103,104 +103,125 @@
   <script>
     // Fetch data and initialize the table
     (async function() {
-      const response = await fetch('http://localhost:4321/api/data');
-      let data = await response.json();
-      const headers = Object.keys(data[0]);
+      try {
+        const response = await fetch('http://localhost:4321/api/data');
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        let data = await response.json();
 
-      // Populate table headers
-      const headerRow = document.getElementById('table-header');
-      headers.forEach(key => {
-        const th = document.createElement('th');
-        th.className = 'px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider';
-        th.textContent = key;
-        headerRow.appendChild(th);
-      });
-
-      // Populate filter options
-      const associations = [...new Set(data.map(item => item.ASSOC))].filter(Boolean).sort();
-      const associationSelect = document.getElementById('association');
-      associations.forEach(assoc => {
-        const option = document.createElement('option');
-        option.value = assoc;
-        option.textContent = assoc;
-        associationSelect.appendChild(option);
-      });
-
-      const sortColumnSelect = document.getElementById('sortColumn');
-      headers.forEach(header => {
-        const option = document.createElement('option');
-        option.value = header;
-        option.textContent = header;
-        sortColumnSelect.appendChild(option);
-      });
-
-      // Event listeners for filters
-      associationSelect.addEventListener('change', applyFilters);
-      document.getElementById('schoolName').addEventListener('input', applyFilters);
-      sortColumnSelect.addEventListener('change', applyFilters);
-
-      function applyFilters() {
-        let filteredData = data;
-
-        // Filter by Association
-        const assocValue = associationSelect.value;
-        if (assocValue) {
-          filteredData = filteredData.filter(item => item.ASSOC === assocValue);
+        if (data.length === 0) {
+          console.warn("No data received from the API.");
+          return;
         }
 
-        // Filter by School Name
-        const schoolNameValue = document.getElementById('schoolName').value.toLowerCase();
-        if (schoolNameValue) {
-          filteredData = filteredData.filter(item => item.SCHOOL.toLowerCase().includes(schoolNameValue));
-        }
+        const headers = Object.keys(data[0]);
 
-        // Sort by Column
-        const sortColumnValue = sortColumnSelect.value;
-        if (sortColumnValue) {
-          filteredData.sort((a, b) => {
-            if (a[sortColumnValue] < b[sortColumnValue]) return -1;
-            if (a[sortColumnValue] > b[sortColumnValue]) return 1;
-            return 0;
-          });
-        }
-
-        // Update total schools displayed
-        document.getElementById('totalSchools').textContent = filteredData.length;
-
-        // Re-render table body
-        renderTableBody(filteredData);
-      }
-
-      function renderTableBody(dataToRender) {
-        const tbody = document.getElementById('table-body');
-        tbody.innerHTML = ''; // Clear existing rows
-
-        dataToRender.forEach((row, index) => {
-          const tr = document.createElement('tr');
-          tr.className = index % 2 === 0 ? '' : 'bg-gray-50';
-          headers.forEach(key => {
-            const td = document.createElement('td');
-            td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700';
-            if (key === 'SCHOOL' || key === 'SDNUM') {
-              const link = document.createElement('a');
-              link.href = `/fact-sheet/${encodeURIComponent(row['SCHOOL'])}`;
-              link.textContent = row[key];
-              link.className = 'text-blue-600 hover:text-blue-900';
-              td.appendChild(link);
-            } else {
-              td.textContent = row[key];
-            }
-            tr.appendChild(td);
-          });
-          tbody.appendChild(tr);
+        // Populate table headers
+        const headerRow = document.getElementById('table-header');
+        headers.forEach(key => {
+          const th = document.createElement('th');
+          th.className = 'px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider';
+          th.textContent = key;
+          headerRow.appendChild(th);
         });
+
+        // Populate filter options
+        const associations = [...new Set(data.map(item => item.ASSOC))].filter(Boolean).sort();
+        const associationSelect = document.getElementById('association');
+        associations.forEach(assoc => {
+          const option = document.createElement('option');
+          option.value = assoc;
+          option.textContent = assoc;
+          associationSelect.appendChild(option);
+        });
+
+        const sortColumnSelect = document.getElementById('sortColumn');
+        headers.forEach(header => {
+          const option = document.createElement('option');
+          option.value = header;
+          option.textContent = header;
+          sortColumnSelect.appendChild(option);
+        });
+
+        // Event listeners for filters
+        associationSelect.addEventListener('change', applyFilters);
+        document.getElementById('schoolName').addEventListener('input', applyFilters);
+        sortColumnSelect.addEventListener('change', applyFilters);
+
+        function applyFilters() {
+          let filteredData = data;
+
+          // Filter by Association
+          const assocValue = associationSelect.value;
+          if (assocValue) {
+            filteredData = filteredData.filter(item => item.ASSOC === assocValue);
+          }
+
+          // Filter by School Name
+          const schoolNameValue = document.getElementById('schoolName').value.toLowerCase();
+          if (schoolNameValue) {
+            filteredData = filteredData.filter(item => item.SCHOOL.toLowerCase().includes(schoolNameValue));
+          }
+
+          // Sort by Column
+          const sortColumnValue = sortColumnSelect.value;
+          if (sortColumnValue) {
+            filteredData.sort((a, b) => {
+              if (a[sortColumnValue] < b[sortColumnValue]) return -1;
+              if (a[sortColumnValue] > b[sortColumnValue]) return 1;
+              return 0;
+            });
+          }
+
+          // Update total schools displayed
+          document.getElementById('totalSchools').textContent = filteredData.length;
+
+          // Re-render table body
+          renderTableBody(filteredData);
+        }
+
+        function renderTableBody(dataToRender) {
+          const tbody = document.getElementById('table-body');
+          tbody.innerHTML = ''; // Clear existing rows
+
+          dataToRender.forEach((row, index) => {
+            const tr = document.createElement('tr');
+            tr.className = index % 2 === 0 ? '' : 'bg-gray-50';
+            headers.forEach(key => {
+              const td = document.createElement('td');
+              td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700';
+              
+              // Check if the current column should be a clickable link
+              if (key === 'SCHOOL') {
+                const schoolNum = row['SCHOOL_NUM']; // Updated to 'SCHOOL_NUM'
+                
+                // Debugging Log
+                console.log(`Creating link for SCHOOL: ${row['SCHOOL']} with SCHOOL_NUM: ${schoolNum}`);
+                
+                const link = document.createElement('a');
+                link.href = `/fact-sheet?schoolNum=${encodeURIComponent(schoolNum)}`;
+                link.textContent = row[key];
+                link.className = 'text-blue-600 hover:text-blue-900';
+                td.appendChild(link);
+              } else {
+                td.textContent = row[key];
+              }
+              tr.appendChild(td);
+            });
+            tbody.appendChild(tr);
+          });
+        }
+
+        // Initial render
+        renderTableBody(data);
+
+        // Set initial total schools displayed
+        document.getElementById('totalSchools').textContent = data.length;
+      } catch (error) {
+        console.error("Error fetching or rendering data:", error);
+        alert("An error occurred while loading the data. Please try again later.");
       }
-
-      // Initial render
-      renderTableBody(data);
-
-      // Set initial total schools displayed
-      document.getElementById('totalSchools').textContent = data.length;
     })();
   </script>
 </body>

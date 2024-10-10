@@ -1,7 +1,11 @@
+/* src/components/FactSheet/fact-sheet-script.js */
+
 document.addEventListener("DOMContentLoaded", function () {
-  const searchForm = document.getElementById("search-form");
   const schoolDataDiv = document.getElementById("school-data");
   const schoolForm = document.getElementById("school-form");
+  const errorMessageDiv = document.getElementById("error-message"); // For displaying errors
+  const loadingSpinner = document.getElementById("loading-spinner"); // Loading spinner
+
   // Simulate user role
   const isAdmin = false; // Set to true if testing as admin, false as user
 
@@ -32,70 +36,136 @@ document.addEventListener("DOMContentLoaded", function () {
     document.getElementById("total-k-12").value = totalK12;
   }
 
-  searchForm.addEventListener("submit", async function (event) {
-    event.preventDefault();
+  // Function to get query parameters
+  function getQueryParam(param) {
+    const urlParams = new URLSearchParams(window.location.search);
+    return urlParams.get(param);
+  }
 
-    // Get the schoolNum value from the form input
-    const schoolNum = document.getElementById("schoolNum").value;
+  // Function to populate the form with fetched data
+  function populateForm(data, schoolNum) {
+    document.getElementById("school-number").value = schoolNum;
+    document.getElementById("founded").value = data.FOUNDED;
+    document.getElementById("school").value = data.SCHOOL;
+    document.getElementById("authority").value = data.AUTHORITY;
+    document.getElementById("address").value = data.ADDRESS;
+    document.getElementById("saddress").value = data.SADDRESS;
+    document.getElementById("city").value = data.CITY;
+    document.getElementById("postal").value = data.POSTAL;
+    document.getElementById("phone").value = data.PHONE;
+    document.getElementById("fax").value = data.FAX;
+    document.getElementById("website").value = data.Website;
+    document.getElementById("email").value = data.Email;
+    document.getElementById("first-name").value = data.FIRST;
+    document.getElementById("last-name").value = data.LAST;
+    document.getElementById("degree").value = data.DEGREE;
 
-    try {
-      // Fetch data from the API
-      const response = await fetch(
-        `http://localhost:4321/api/fact-sheet/?schoolNum=${schoolNum}`
-      );
-      const data = await response.json();
+    // Populate enrollment fields
+    document.getElementById("prek-age4").value = data.PrekAge4;
+    document.getElementById("halfday-k").value = data.Halfday_k;
+    document.getElementById("fullday-k").value = data.Fullday_k;
+    document.getElementById("grade-1-7").value = data["1_7"];
+    document.getElementById("ungraded-elem").value = data.UNE;
+    document.getElementById("grade-8").value = data["8"];
+    document.getElementById("grade-9").value = data["9"];
+    document.getElementById("grade-10").value = data["10"];
+    document.getElementById("grade-11").value = data["11"];
+    document.getElementById("grade-12").value = data["12"];
+    document.getElementById("ungraded-sec").value = data.UNS;
 
-      // Populate the form fields with fetched data
-      document.getElementById("school-number").value = schoolNum;
-      document.getElementById("founded").value = data.FOUNDED;
-      document.getElementById("school").value = data.SCHOOL;
-      document.getElementById("authority").value = data.AUTHORITY;
-      document.getElementById("address").value = data.ADDRESS;
-      document.getElementById("saddress").value = data.SADDRESS;
-      document.getElementById("city").value = data.CITY;
-      document.getElementById("postal").value = data.POSTAL;
-      document.getElementById("phone").value = data.PHONE;
-      document.getElementById("fax").value = data.FAX;
-      document.getElementById("website").value = data.Website;
-      document.getElementById("email").value = data.Email;
-      document.getElementById("first-name").value = data.FIRST;
-      document.getElementById("last-name").value = data.LAST;
-      document.getElementById("degree").value = data.DEGREE;
+    // Populate school type fields
+    document.getElementById("funding").value = data.FUNDING;
+    document.getElementById("specialty").value = data.SPECIALTY;
 
-      // Populate enrollment fields
-      document.getElementById("prek-age4").value = data.PrekAge4;
-      document.getElementById("halfday-k").value = data.Halfday_k;
-      document.getElementById("fullday-k").value = data.Fullday_k;
-      document.getElementById("grade-1-7").value = data["1_7"];
-      document.getElementById("ungraded-elem").value = data.UNE;
-      document.getElementById("grade-8").value = data["8"];
-      document.getElementById("grade-9").value = data["9"];
-      document.getElementById("grade-10").value = data["10"];
-      document.getElementById("grade-11").value = data["11"];
-      document.getElementById("grade-12").value = data["12"];
-      document.getElementById("ungraded-sec").value = data.UNS;
+    // Populate relationship fields
+    document.getElementById("fisa").value =
+      data.FISA === "True" ? "True" : "False";
+    document.getElementById("assoc").value = data.ASSOC;
+    document.getElementById("sdnum").value = data.SDNUM;
+    document.getElementById("sd").value = data.SD;
+    document.getElementById("electoral").value = data.ElectoralNew;
 
-      // Populate school type fields
-      document.getElementById("funding").value = data.FUNDING;
-      document.getElementById("specialty").value = data.SPECIALTY;
+    // Call calculateTotals to update totals
+    calculateTotals();
 
-      // Populate relationship fields
-      document.getElementById("fisa").value =
-        data.FISA === "True" ? "True" : "False";
-      document.getElementById("assoc").value = data.ASSOC;
-      document.getElementById("sdnum").value = data.SDNUM;
-      document.getElementById("sd").value = data.SD;
-      document.getElementById("electoral").value = data.ElectoralNew;
+    // Unhide the form for editing
+    schoolDataDiv.classList.remove("hidden");
+  }
 
-      // Call calculateTotals to update totals
-      calculateTotals();
-
-      // Unhide the form for editing
-      schoolDataDiv.classList.remove("hidden");
-    } catch (error) {
-      console.error("Error fetching school data:", error);
+  // Function to display error messages
+  function showError(message) {
+    if (errorMessageDiv) {
+      errorMessageDiv.textContent = message;
+      errorMessageDiv.classList.remove("hidden");
+    } else {
+      alert(message);
     }
-  });
+  }
+
+  function hideError() {
+    if (errorMessageDiv) {
+      errorMessageDiv.textContent = "";
+      errorMessageDiv.classList.add("hidden");
+    }
+  }
+
+  // Function to toggle loading spinner
+  function showLoading() {
+    if (loadingSpinner) {
+      loadingSpinner.classList.remove("hidden");
+    }
+  }
+
+  function hideLoading() {
+    if (loadingSpinner) {
+      loadingSpinner.classList.add("hidden");
+    }
+  }
+
+  // Automatically fetch and populate data based on 'schoolNum' in URL
+  (async function fetchAndPopulate() {
+    const schoolNum = getQueryParam("schoolNum");
+    if (schoolNum) {
+      try {
+        hideError(); // Hide any previous errors
+        showLoading(); // Show loading spinner
+        console.log(`Fetching data for schoolNum: ${schoolNum}`); // Debug log
+
+        // Fetch data from the API
+        const response = await fetch(
+          `/api/fact-sheet/?schoolNum=${encodeURIComponent(schoolNum)}`
+        );
+
+        if (!response.ok) {
+          if (response.status === 404) {
+            throw new Error("School not found.");
+          } else {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+        }
+
+        const data = await response.json();
+
+        // Check if the API returned an error
+        if (data.error) {
+          console.error("API Error:", data.error);
+          showError(`Error: ${data.error}`);
+          return;
+        }
+
+        // Populate the form with fetched data
+        populateForm(data, schoolNum);
+      } catch (error) {
+        console.error("Error fetching school data:", error);
+        showError(
+          error.message ||
+            "Failed to fetch school data. Please try again later."
+        );
+      } finally {
+        hideLoading(); // Hide loading spinner
+      }
+    }
+  })();
 
   // Recalculate totals when enrollment fields change
   const enrollmentFields = [
@@ -111,11 +181,18 @@ document.addEventListener("DOMContentLoaded", function () {
   ];
 
   enrollmentFields.forEach((fieldId) => {
-    document.getElementById(fieldId).addEventListener("input", calculateTotals);
+    const field = document.getElementById(fieldId);
+    if (field) {
+      field.addEventListener("input", calculateTotals);
+    }
   });
 
+  // Event listener for the school form submission
   schoolForm.addEventListener("submit", async function (event) {
     event.preventDefault();
+
+    hideError(); // Hide any previous errors
+    showLoading(); // Show loading spinner
 
     // Collect form data
     const formData = {
@@ -154,39 +231,40 @@ document.addEventListener("DOMContentLoaded", function () {
       fisa: document.getElementById("fisa").value, // This will be either "True" or "False"
     };
 
+    // Optional: Validate form data here
+
     try {
       let response;
       if (isAdmin) {
         // If admin, update the main database directly
-        response = await fetch(`http://localhost:4321/api/update-school`, {
+        response = await fetch(`/api/update-school`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(formData),
         });
       } else {
         // If user, submit proposed changes
-        response = await fetch(
-          `http://localhost:4321/api/client-update-school`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(formData),
-          }
-        );
+        response = await fetch(`/api/client-update-school`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(formData),
+        });
+      }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
       }
 
       const result = await response.json();
       alert(result.message);
     } catch (error) {
       console.error("Error submitting data:", error);
-      alert(
-        "An error occurred while submitting your changes. Please try again."
+      showError(
+        error.message ||
+          "An error occurred while submitting your changes. Please try again."
       );
+    } finally {
+      hideLoading(); // Hide loading spinner
     }
   });
-
 });
-
-
-
-
