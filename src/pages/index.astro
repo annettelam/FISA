@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 ---
-
+    
 <Layout title="Welcome to FISA Portal">
   <!-- Header Section -->
   <header
@@ -52,7 +52,7 @@ import Card from "../components/Card.astro";
         role="list"
         class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
       >
-        <!-- Repeated Card Components -->
+        <!-- Existing Card Components -->
         <Card
           href="/register"
           icon="fa-solid fa-user-plus"
@@ -108,12 +108,19 @@ import Card from "../components/Card.astro";
           body="View schools with overdue payments."
         />
         <Card
-  href="/database"
-  icon="fa-solid fa-database"
-  title="Database Visualization"
-  body="Explore the detailed data of all schools."
-/>
+          href="/database"
+          icon="fa-solid fa-database"
+          title="Database Visualization"
+          body="Explore the detailed data of all schools."
+        />
 
+        <!-- New Admin Card -->
+        <Card
+          href="/admin"
+          icon="fa-solid fa-user-shield"
+          title="Admin Dashboard"
+          body="Manage databases, create new tables, and oversee system settings."
+        />
       </ul>
     </div>
   </main>

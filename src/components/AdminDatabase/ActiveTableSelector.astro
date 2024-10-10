@@ -1,0 +1,140 @@
+---
+// src/components/AdminDatabase/ActiveTableSelector.astro
+---
+
+<div>
+  <form id="activeTableForm" class="flex flex-col space-y-4">
+    <div>
+      <label for="activeTableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Choose Active Table
+      </label>
+      <select id="activeTableSelect" name="activeTableSelect" class="block w-full p-2 border border-gray-300 dark:border-gray-700 rounded-md" required>
+        <option value="" disabled selected>Select a table</option>
+        <!-- Table options will be populated dynamically -->
+      </select>
+    </div>
+    <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 transition">
+      Set Active Table
+    </button>
+  </form>
+  <div id="activeTableMessage" class="mt-2 text-sm"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('activeTableForm');
+    const activeTableSelect = document.getElementById('activeTableSelect');
+    const messageDiv = document.getElementById('activeTableMessage');
+
+    // Function to fetch tables for the dropdown
+    async function fetchTables() {
+      try {
+        const response = await fetch('/api/list-tables');
+        if (response.ok) {
+          const data = await response.json();
+          populateTables(data.tables);
+          fetchActiveTable();
+        } else {
+          throw new Error('Failed to fetch tables.');
+        }
+      } catch (error) {
+        console.error(error);
+        messageDiv.textContent = 'Error fetching tables.';
+        messageDiv.className = 'text-red-600';
+      }
+    }
+
+    // Function to populate the tables dropdown
+    function populateTables(tables) {
+      // Clear existing options except the first
+      activeTableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
+
+      if (tables.length === 0) {
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "No tables available";
+        option.disabled = true;
+        activeTableSelect.appendChild(option);
+        activeTableSelect.disabled = true;
+        return;
+      }
+
+      activeTableSelect.disabled = false;
+
+      tables.forEach(table => {
+        const option = document.createElement('option');
+        option.value = table;
+        option.textContent = table;
+        activeTableSelect.appendChild(option);
+      });
+    }
+
+    // Function to fetch the currently active table
+    async function fetchActiveTable() {
+      try {
+        const response = await fetch('/api/get-active-table');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.activeTable) {
+            activeTableSelect.value = data.activeTable;
+          }
+        } else {
+          console.log('Active table not set.');
+        }
+      } catch (error) {
+        console.error('Error fetching active table:', error);
+      }
+    }
+
+    // Event listener for setting the active table
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageDiv.textContent = '';
+      messageDiv.className = '';
+
+      const selectedTable = activeTableSelect.value;
+
+      if (!selectedTable) {
+        messageDiv.textContent = 'Please select a table.';
+        messageDiv.className = 'text-red-600';
+        return;
+      }
+
+      // Optional: Add confirmation dialog
+      const confirmSet = confirm(`Are you sure you want to set "${selectedTable}" as the active table?`);
+      if (!confirmSet) {
+        messageDiv.textContent = 'Action cancelled.';
+        messageDiv.className = 'text-yellow-600';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/set-active-table', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ tableName: selectedTable }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageDiv.textContent = result.message;
+          messageDiv.className = 'text-green-600';
+          // Optionally, perform additional actions like updating other components
+        } else {
+          messageDiv.textContent = result.message || 'Error setting active table.';
+          messageDiv.className = 'text-red-600';
+        }
+      } catch (error) {
+        console.error(error);
+        messageDiv.textContent = 'An error occurred while setting the active table.';
+        messageDiv.className = 'text-red-600';
+      }
+    });
+
+    // Initialize by fetching tables and active table
+    fetchTables();
+  });
+</script>
