@@ -1,105 +1,65 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Database Visualization</title>
-  <!-- Include Tailwind CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/flowbite@1.5.1/dist/flowbite.min.css" rel="stylesheet">
-  <style>
-    .table-container {
-      position: relative;
-      width: 100%;
-      height: 70vh; /* Adjust as needed */
-      overflow: auto; /* Enable both horizontal and vertical scrolling */
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-    }
-    thead {
-      position: sticky;
-      top: 0;
-      z-index: 1;
-    }
-    thead th {
-      background-color: #f9fafb; /* Match header background */
-    }
-    th,
-    td {
-      text-align: left;
-      white-space: nowrap;
-      padding: 8px 12px;
-    }
-    /* Hover effect on rows */
-    tbody tr:hover {
-      background-color: #f1f5f9;
-    }
-    /* Custom scrollbar styling (optional) */
-    .table-container::-webkit-scrollbar {
-      height: 12px;
-    }
-    .table-container::-webkit-scrollbar-thumb {
-      background-color: #a0aec0;
-      border-radius: 6px;
-    }
-  </style>
-</head>
-<body class="bg-gray-100">
-  <div class="container mx-auto p-4">
-    <h1 class="text-3xl font-bold mb-6">Database Visualization</h1>
+---
+import Layout from "../layouts/Layout.astro";
+---
 
-    <!-- Filters -->
+<Layout title="Database Visualization">
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Visualization</h1>
+      <p class="text-gray-600 dark:text-gray-300">
+        Explore detailed data of all schools in the system, with filtering and sorting options.
+      </p>
+    </div>
+
+    <!-- Filters Section -->
     <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Schools by Association -->
       <div>
-        <label for="association" class="block text-sm font-medium text-gray-700 mb-1">Schools by Association</label>
-        <select id="association" name="association" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <label for="association" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schools by Association</label>
+        <select id="association" name="association" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
           <option value="">All Associations</option>
-          <!-- Options will be populated dynamically -->
         </select>
       </div>
 
       <!-- Schools by Name -->
       <div>
-        <label for="schoolName" class="block text-sm font-medium text-gray-700 mb-1">Schools by Name</label>
-        <input type="text" id="schoolName" name="schoolName" placeholder="Search by school name" class="block w-full pl-3 pr-3 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <label for="schoolName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schools by Name</label>
+        <input type="text" id="schoolName" name="schoolName" placeholder="Search by school name" class="block w-full pl-3 pr-3 py-2 text-base border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
       </div>
 
       <!-- Sort by Column -->
       <div>
-        <label for="sortColumn" class="block text-sm font-medium text-gray-700 mb-1">Sort by Column</label>
-        <select id="sortColumn" name="sortColumn" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+        <label for="sortColumn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort by Column</label>
+        <select id="sortColumn" name="sortColumn" class="block w-full pl-3 pr-10 py-2 text-base border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
           <option value="">Select Column</option>
-          <!-- Options will be populated dynamically -->
         </select>
       </div>
     </div>
 
     <!-- Total Number of Schools -->
-    <div class="mb-2 text-sm text-gray-700">
+    <div class="mb-2 text-sm text-gray-700 dark:text-gray-300">
       Total Schools Displayed: <span id="totalSchools">0</span>
     </div>
 
     <!-- Table with sticky headers and accessible scrollbar -->
-    <div class="table-container border border-gray-300 rounded-lg shadow">
-      <table class="min-w-full text-sm text-left text-gray-700">
+    <div class="table-container border border-gray-300 dark:border-gray-700 rounded-lg shadow">
+      <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-300">
         <!-- Table Header -->
-        <thead class="bg-gray-200">
+        <thead class="bg-gray-200 dark:bg-gray-700">
           <tr id="table-header">
             <!-- Headers will be populated dynamically -->
           </tr>
         </thead>
         <!-- Table Body -->
-        <tbody id="table-body" class="bg-white divide-y divide-gray-200">
+        <tbody id="table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
           <!-- Rows will be populated dynamically -->
         </tbody>
       </table>
     </div>
   </div>
 
-  <!-- Flowbite JavaScript -->
-  <script src="https://unpkg.com/flowbite@1.5.1/dist/flowbite.js"></script>
-  <!-- Custom Script -->
+  <!-- Custom Script for dynamic table population -->
   <script>
     // Fetch data and initialize the table
     (async function() {
@@ -121,7 +81,7 @@
         const headerRow = document.getElementById('table-header');
         headers.forEach(key => {
           const th = document.createElement('th');
-          th.className = 'px-6 py-3 text-xs font-medium text-gray-500 uppercase tracking-wider';
+          th.className = 'px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider';
           th.textContent = key;
           headerRow.appendChild(th);
         });
@@ -187,22 +147,18 @@
 
           dataToRender.forEach((row, index) => {
             const tr = document.createElement('tr');
-            tr.className = index % 2 === 0 ? '' : 'bg-gray-50';
+            tr.className = index % 2 === 0 ? '' : 'bg-gray-50 dark:bg-gray-700';
             headers.forEach(key => {
               const td = document.createElement('td');
-              td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700';
-              
+              td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300';
+
               // Check if the current column should be a clickable link
               if (key === 'SCHOOL') {
-                const schoolNum = row['SCHOOL_NUM']; // Updated to 'SCHOOL_NUM'
-                
-                // Debugging Log
-                console.log(`Creating link for SCHOOL: ${row['SCHOOL']} with SCHOOL_NUM: ${schoolNum}`);
-                
+                const schoolNum = row['SCHOOL_NUM']; // Use the SCHOOL_NUM for the link
                 const link = document.createElement('a');
                 link.href = `/fact-sheet?schoolNum=${encodeURIComponent(schoolNum)}`;
                 link.textContent = row[key];
-                link.className = 'text-blue-600 hover:text-blue-900';
+                link.className = 'text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500';
                 td.appendChild(link);
               } else {
                 td.textContent = row[key];
@@ -224,5 +180,32 @@
       }
     })();
   </script>
-</body>
-</html>
+</Layout>
+
+<style>
+  .table-container {
+    position: relative;
+    width: 100%;
+    height: 70vh;
+    overflow: auto;
+  }
+
+  thead {
+    position: sticky;
+    top: 0;
+    z-index: 1;
+  }
+
+  tbody tr:hover {
+    background-color: #f1f5f9;
+  }
+
+  .table-container::-webkit-scrollbar {
+    height: 12px;
+  }
+
+  .table-container::-webkit-scrollbar-thumb {
+    background-color: #a0aec0;
+    border-radius: 6px;
+  }
+</style>
