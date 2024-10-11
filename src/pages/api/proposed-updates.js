@@ -1,28 +1,13 @@
-// src/pages/api/proposed-updates.js
-
-import { openDatabase, getActiveTable } from "./db-utils";
+import { openDatabase } from "./db-utils";
 
 export async function GET() {
   let db;
   try {
     db = openDatabase();
 
-    // Fetch the active table name
-    let activeTable;
-    try {
-      activeTable = getActiveTable(db);
-    } catch (error) {
-      console.error("Error fetching active table:", error);
-      db.close();
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    // Get all pending proposed updates
+    // Get all pending proposed updates including active_table_at_submission
     const updatesStmt = db.prepare(`
-      SELECT id, school_number, proposed_data, submitted_at
+      SELECT id, school_number, proposed_data, submitted_at, active_table_at_submission
       FROM proposed_updates
       WHERE status = 'pending'
     `);
@@ -31,25 +16,60 @@ export async function GET() {
     const result = [];
 
     for (const update of updates) {
-      const { id, school_number, proposed_data, submitted_at } = update;
+      const {
+        id,
+        school_number,
+        proposed_data,
+        submitted_at,
+        active_table_at_submission,
+      } = update;
 
-      // Fetch current data for the school_number from the active table
+      if (!active_table_at_submission) {
+        result.push({
+          id,
+          school_number,
+          submitted_at,
+          error: "No active table found for this update at submission time",
+          diffs: {},
+        });
+        continue;
+      }
+
+      // Use active_table_at_submission for querying the relevant data
       const currentDataStmt = db.prepare(`
         SELECT 
           FOUNDED, SCHOOL, AUTHORITY, ADDRESS, SADDRESS, CITY, POSTAL, PHONE, FAX, Website, Email, FIRST, LAST, DEGREE,
           PrekAge4, Halfday_k, Fullday_k, "1_7", UNE, "8", "9", "10", "11", "12", UNS,
           FUNDING, SPECIALTY, ASSOC, SDNUM, SD, ElectoralNew, FISA
-        FROM "${activeTable}"
+        FROM "${active_table_at_submission}"
         WHERE SCHOOL_NUM = ?
       `);
-      const currentData = currentDataStmt.get(school_number);
 
-      if (!currentData) {
-        // Handle the case where current data is not found
+      let currentData;
+      try {
+        currentData = currentDataStmt.get(school_number);
+      } catch (queryError) {
+        console.error(
+          `Error querying active_table_at_submission: ${active_table_at_submission}`,
+          queryError
+        );
         result.push({
           id,
           school_number,
           submitted_at,
+          active_table_at_submission,
+          error: `Error querying active table ${active_table_at_submission}: ${queryError.message}`,
+          diffs: {},
+        });
+        continue;
+      }
+
+      if (!currentData) {
+        result.push({
+          id,
+          school_number,
+          submitted_at,
+          active_table_at_submission,
           error: "Current data not found for this school_number",
           diffs: {},
         });
@@ -65,6 +85,7 @@ export async function GET() {
           id,
           school_number,
           submitted_at,
+          active_table_at_submission,
           error: "Failed to parse proposed_data JSON",
           diffs: {},
         });
@@ -139,10 +160,10 @@ export async function GET() {
           id,
           school_number,
           submitted_at,
+          active_table_at_submission, // Include active_table_at_submission in the response
           diffs,
         });
       }
-      // Optionally, handle updates with no differences
     }
 
     db.close();
