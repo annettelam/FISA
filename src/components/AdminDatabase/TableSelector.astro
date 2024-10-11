@@ -1,13 +1,10 @@
----
---- 
-
 <div>
   <form id="tableForm" class="flex flex-col space-y-4">
     <div>
       <label for="sourceTable" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         Source Table
       </label>
-      <select id="sourceTable" name="sourceTable" class="block w-full p-2 border border-gray-300 dark:border-gray-700 rounded-md" required>
+      <select id="sourceTable" name="sourceTable" class="block w-full p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
         <option value="" disabled selected>Select a source table</option>
         <!-- Options will be populated dynamically -->
       </select>
@@ -16,7 +13,7 @@
       <label for="newTableName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
         New Table Name
       </label>
-      <input type="text" id="newTableName" name="newTableName" placeholder="Enter new table name" class="block w-full p-2 border border-gray-300 dark:border-gray-700 rounded-md" required />
+      <input type="text" id="newTableName" name="newTableName" placeholder="Enter new table name" class="block w-full p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required />
     </div>
     <button type="submit" class="px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
       Duplicate Table
