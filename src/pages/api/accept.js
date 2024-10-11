@@ -12,29 +12,30 @@ import { openDatabase, getActiveTable } from "./db-utils";
  * @param {string|null} newValue - The new value.
  * @param {string} updatedBy - Identifier for who made the update.
  */
-function logChange(db, schoolNum, fieldChanged, oldValue, newValue, updatedBy) {
-  const sanitizedOldValue =
-    oldValue === undefined || oldValue === null ? null : String(oldValue);
-  const sanitizedNewValue =
-    newValue === undefined || newValue === null ? null : String(newValue);
-  const sanitizedUpdatedBy =
-    updatedBy === undefined || updatedBy === null
-      ? "unknown"
-      : String(updatedBy);
+function logChange(db, schoolNum, fieldChanged, oldValue, newValue, updatedBy, activeTable) {
+  // Ensure values are strings or null before binding
+  const sanitizedOldValue = oldValue === undefined || oldValue === null ? null : String(oldValue);
+  const sanitizedNewValue = newValue === undefined || newValue === null ? null : String(newValue);
+  const sanitizedUpdatedBy = updatedBy === undefined || updatedBy === null ? 'unknown' : String(updatedBy);
+  const sanitizedActiveTable = activeTable === undefined || activeTable === null ? 'unknown' : String(activeTable);
 
   const insertLog = db.prepare(`
-    INSERT INTO school_change_log (school_num, field_changed, old_value, new_value, updated_by) 
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO school_change_log (school_num, field_changed, old_value, new_value, updated_by, active_table_at_change) 
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
 
   insertLog.run(
-    String(schoolNum),
-    String(fieldChanged),
-    sanitizedOldValue,
-    sanitizedNewValue,
-    sanitizedUpdatedBy
+    String(schoolNum),      // Ensure schoolNum is a string
+    String(fieldChanged),   // Ensure fieldChanged is a string
+    sanitizedOldValue,      // Convert oldValue to a string or null
+    sanitizedNewValue,      // Convert newValue to a string or null
+    sanitizedUpdatedBy,     // Ensure updatedBy is a string
+    sanitizedActiveTable    // Ensure activeTable is a string
   );
 }
+
+
+
 
 export async function POST({ request }) {
   let db;
@@ -54,7 +55,8 @@ export async function POST({ request }) {
     // Fetch the active table name
     let activeTable;
     try {
-      activeTable = getActiveTable(db);
+      activeTable = getActiveTable(db); // Fetch the active table
+      console.log(`Active Table: ${activeTable}`); // Debug log to confirm active table
     } catch (error) {
       console.error("Error fetching active table:", error);
       db.close();
@@ -189,7 +191,8 @@ export async function POST({ request }) {
               dbField,
               oldValue,
               newValue,
-              updatedBy
+              updatedBy,
+              activeTable // Pass the active table to the logChange function
             );
           }
 
@@ -250,3 +253,4 @@ export async function POST({ request }) {
     );
   }
 }
+

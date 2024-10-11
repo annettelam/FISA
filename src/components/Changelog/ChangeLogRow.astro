@@ -6,19 +6,18 @@ interface Log {
   new_value: string;
   updated_by: string;
   timestamp: string;
-}
-
-interface Props {
-  log: Log;
+  active_table_at_change: string; // Add active table to the log interface
 }
 
 const { log } = Astro.props;
 ---
 
-<tr class="bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors duration-300">
-  <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{log.field_changed}</td>
-  <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{log.old_value || "N/A"}</td>
-  <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{log.new_value || "N/A"}</td>
-  <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{log.updated_by}</td>
-  <td class="px-4 py-2 text-gray-900 dark:text-gray-100">{log.timestamp}</td>
+<tr>
+  <td class="px-4 py-2">{log.field_changed}</td>
+  <td class="px-4 py-2">{log.old_value || 'N/A'}</td>
+  <td class="px-4 py-2">{log.new_value || 'N/A'}</td>
+  <td class="px-4 py-2">{log.updated_by}</td>
+  <td class="px-4 py-2">{log.timestamp}</td>
+  <!-- Add Active Table value -->
+  <td class="px-4 py-2">{log.active_table_at_change}</td>
 </tr>

@@ -1,7 +1,15 @@
 import Database from "better-sqlite3";
 
 // Helper function to log changes to the change log
-function logChange(db, schoolNum, fieldChanged, oldValue, newValue, updatedBy) {
+function logChange(
+  db,
+  schoolNum,
+  fieldChanged,
+  oldValue,
+  newValue,
+  updatedBy,
+  activeTable
+) {
   // Ensure values are strings or null before binding
   const sanitizedOldValue =
     oldValue === undefined || oldValue === null ? null : String(oldValue);
@@ -11,21 +19,27 @@ function logChange(db, schoolNum, fieldChanged, oldValue, newValue, updatedBy) {
     updatedBy === undefined || updatedBy === null
       ? "unknown"
       : String(updatedBy);
+  const sanitizedActiveTable =
+    activeTable === undefined || activeTable === null
+      ? "unknown"
+      : String(activeTable);
 
   const insertLog = db.prepare(`
-    INSERT INTO school_change_log (school_num, field_changed, old_value, new_value, updated_by) 
-    VALUES (?, ?, ?, ?, ?)
+    INSERT INTO school_change_log (school_num, field_changed, old_value, new_value, updated_by, active_table_at_change) 
+    VALUES (?, ?, ?, ?, ?, ?)
   `);
 
-  // Run the insert statement
   insertLog.run(
     String(schoolNum), // Ensure schoolNum is a string
     String(fieldChanged), // Ensure fieldChanged is a string
     sanitizedOldValue, // Convert oldValue to a string or null
     sanitizedNewValue, // Convert newValue to a string or null
-    sanitizedUpdatedBy // Ensure updatedBy is a string
+    sanitizedUpdatedBy, // Ensure updatedBy is a string
+    sanitizedActiveTable // Ensure activeTable is a string
   );
 }
+
+
 
 export async function POST({ request }) {
   // Parse the request body
