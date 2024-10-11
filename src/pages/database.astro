@@ -12,6 +12,15 @@ import Layout from "../layouts/Layout.astro";
       </p>
     </div>
 
+    <!-- Table Selection -->
+    <div class="mb-4">
+      <label for="tableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Table</label>
+      <select id="tableSelect" name="tableSelect" class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
+        <option value="" disabled selected>Select a table</option>
+        <!-- Options will be populated dynamically -->
+      </select>
+    </div>
+
     <!-- Filters Section -->
     <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
       <!-- Schools by Association -->
@@ -66,76 +75,142 @@ import Layout from "../layouts/Layout.astro";
     </div>
   </div>
 
-  <!-- Custom Script for dynamic table population and Clear All Filters -->
+  <!-- Custom Script for dynamic table selection and filtering -->
   <script>
     let originalData; // To store the unfiltered original data
-    let currentPage = 1;
+    let filteredData; // To store the filtered data
+    let currentTable = ""; // Track the selected table name
 
-    // Fetch data and initialize the table
-    (async function() {
+    // Function to fetch tables for the dropdown
+    async function fetchTables() {
       try {
-        const response = await fetch('http://localhost:4321/api/data');
+        const response = await fetch('/api/list-tables');
+        if (response.ok) {
+          const data = await response.json();
+          populateTableSelect(data.tables);
+        } else {
+          throw new Error('Failed to fetch tables.');
+        }
+      } catch (error) {
+        console.error('Error fetching tables:', error);
+      }
+    }
+
+    // Populate the tables dropdown
+    function populateTableSelect(tables) {
+      const tableSelect = document.getElementById('tableSelect');
+      tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
+
+      if (tables.length === 0) {
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "No tables available";
+        option.disabled = true;
+        tableSelect.appendChild(option);
+        tableSelect.disabled = true;
+        return;
+      }
+
+      tableSelect.disabled = false;
+      tables.forEach(table => {
+        const option = document.createElement('option');
+        option.value = table;
+        option.textContent = table;
+        tableSelect.appendChild(option);
+      });
+
+      // Fetch data for the selected table when user changes table selection
+      tableSelect.addEventListener('change', fetchDataForTable);
+    }
+
+    // Fetch data for the selected table
+    async function fetchDataForTable() {
+      const selectedTable = document.getElementById('tableSelect').value;
+      if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
+
+      currentTable = selectedTable; // Update current table
+
+      try {
+        const response = await fetch(`/api/data?table=${encodeURIComponent(selectedTable)}`);
         if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+          throw new Error(`Failed to fetch data for table: ${selectedTable}`);
         }
-        let data = await response.json();
-        originalData = data; // Store original data
-
-        if (data.length === 0) {
-          console.warn("No data received from the API.");
-          return;
-        }
-
-        const headers = Object.keys(data[0]);
+        const data = await response.json();
+        originalData = data; // Store the data
+        filteredData = [...originalData]; // Initialize filteredData
 
         // Populate table headers
-        const headerRow = document.getElementById('table-header');
-        headers.forEach(key => {
-          const th = document.createElement('th');
-          th.className = 'px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider';
-          th.textContent = key;
-          headerRow.appendChild(th);
-        });
-
+        populateTableHeaders(data);
         // Populate filter options
-        const associations = [...new Set(data.map(item => item.ASSOC))].filter(Boolean).sort();
-        const associationSelect = document.getElementById('association');
-        associations.forEach(assoc => {
-          const option = document.createElement('option');
-          option.value = assoc;
-          option.textContent = assoc;
-          associationSelect.appendChild(option);
-        });
-
-        const sortColumnSelect = document.getElementById('sortColumn');
-        headers.forEach(header => {
-          const option = document.createElement('option');
-          option.value = header;
-          option.textContent = header;
-          sortColumnSelect.appendChild(option);
-        });
-
-        // Event listeners for filters
-        associationSelect.addEventListener('change', applyFilters);
-        document.getElementById('schoolName').addEventListener('input', applyFilters);
-        sortColumnSelect.addEventListener('change', applyFilters);
-
-        // Event listener for clear filters
-        document.getElementById('clear-filters').addEventListener('click', clearFilters);
-
+        populateFilters(data);
+        // Attach event listeners for filters
+        attachFilterEventListeners();
         // Initial render
-        renderTableBody(data);
-
-        // Set initial total schools displayed
-        document.getElementById('totalSchools').textContent = data.length;
+        renderTableBody(filteredData);
+        document.getElementById('totalSchools').textContent = filteredData.length;
       } catch (error) {
-        console.error("Error fetching or rendering data:", error);
-        alert("An error occurred while loading the data. Please try again later.");
+        console.error(`Error fetching data for table ${selectedTable}:`, error);
       }
-    })();
+    }
+
+    function populateTableHeaders(data) {
+      const headers = Object.keys(data[0] || {});
+      const headerRow = document.getElementById('table-header');
+      headerRow.innerHTML = ''; // Clear existing headers
+      headers.forEach(key => {
+        const th = document.createElement('th');
+        th.className = 'px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider';
+        th.textContent = key;
+        headerRow.appendChild(th);
+      });
+    }
+
+    function populateFilters(data) {
+      // Populate filter options
+      const associations = [...new Set(data.map(item => item.ASSOC))].filter(Boolean).sort();
+      const associationSelect = document.getElementById('association');
+      associationSelect.innerHTML = '<option value="">All Associations</option>'; // Reset filter
+      associations.forEach(assoc => {
+        const option = document.createElement('option');
+        option.value = assoc;
+        option.textContent = assoc;
+        associationSelect.appendChild(option);
+      });
+
+      const sortColumnSelect = document.getElementById('sortColumn');
+      sortColumnSelect.innerHTML = '<option value="">Select Column</option>'; // Reset sorting
+      const headers = Object.keys(data[0] || {});
+      headers.forEach(header => {
+        const option = document.createElement('option');
+        option.value = header;
+        option.textContent = header;
+        sortColumnSelect.appendChild(option);
+      });
+    }
+
+    function attachFilterEventListeners() {
+      const associationSelect = document.getElementById('association');
+      const schoolNameInput = document.getElementById('schoolName');
+      const sortColumnSelect = document.getElementById('sortColumn');
+
+      // Remove previous event listeners to avoid duplicates
+      associationSelect.removeEventListener('change', applyFilters);
+      schoolNameInput.removeEventListener('input', applyFilters);
+      sortColumnSelect.removeEventListener('change', applyFilters);
+
+      // Add event listeners
+      associationSelect.addEventListener('change', applyFilters);
+      schoolNameInput.addEventListener('input', applyFilters);
+      sortColumnSelect.addEventListener('change', applyFilters);
+
+      // Event listener for clear filters
+      const clearFiltersButton = document.getElementById('clear-filters');
+      clearFiltersButton.removeEventListener('click', clearFilters);
+      clearFiltersButton.addEventListener('click', clearFilters);
+    }
 
     function applyFilters() {
-      let filteredData = [...originalData];
+      filteredData = [...originalData];
 
       const associationValue = document.getElementById('association').value;
       const schoolNameValue = document.getElementById('schoolName').value.toLowerCase();
@@ -148,7 +223,7 @@ import Layout from "../layouts/Layout.astro";
 
       // Filter by School Name
       if (schoolNameValue) {
-        filteredData = filteredData.filter(item => item.SCHOOL.toLowerCase().includes(schoolNameValue));
+        filteredData = filteredData.filter(item => item.SCHOOL && item.SCHOOL.toLowerCase().includes(schoolNameValue));
       }
 
       // Sort by Column
@@ -173,27 +248,31 @@ import Layout from "../layouts/Layout.astro";
       document.getElementById('schoolName').value = "";
       document.getElementById('sortColumn').value = "";
 
-      // Reset table to original data
-      renderTableBody(originalData);
+      // Reset filtered data
+      filteredData = [...originalData];
 
       // Update total schools displayed
-      document.getElementById('totalSchools').textContent = originalData.length;
+      document.getElementById('totalSchools').textContent = filteredData.length;
+
+      // Re-render table body
+      renderTableBody(filteredData);
     }
 
-    function renderTableBody(dataToRender) {
+    // Function to render the table body
+    function renderTableBody(data) {
       const tbody = document.getElementById('table-body');
       tbody.innerHTML = ''; // Clear existing rows
 
-      dataToRender.forEach((row, index) => {
+      data.forEach((row, index) => {
         const tr = document.createElement('tr');
         tr.className = index % 2 === 0 ? '' : 'bg-gray-50 dark:bg-gray-700';
+
         Object.keys(row).forEach(key => {
           const td = document.createElement('td');
           td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300';
 
-          // Check if the current column should be a clickable link
           if (key === 'SCHOOL') {
-            const schoolNum = row['SCHOOL_NUM']; // Use the SCHOOL_NUM for the link
+            const schoolNum = row['SCHOOL_NUM'];
             const link = document.createElement('a');
             link.href = `/fact-sheet?schoolNum=${encodeURIComponent(schoolNum)}`;
             link.textContent = row[key];
@@ -204,9 +283,13 @@ import Layout from "../layouts/Layout.astro";
           }
           tr.appendChild(td);
         });
+
         tbody.appendChild(tr);
       });
     }
+
+    // Initialize table selection and fetch data
+    document.addEventListener('DOMContentLoaded', fetchTables);
   </script>
 </Layout>
 
