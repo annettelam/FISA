@@ -1,6 +1,10 @@
+// src/pages/api/reject.js
+
 import Database from "better-sqlite3";
+import { openDatabase } from "./db-utils";
 
 export async function POST({ request }) {
+  let db;
   try {
     const body = await request.json();
     const id = body.id;
@@ -12,7 +16,7 @@ export async function POST({ request }) {
       });
     }
 
-    const db = new Database("./data/FISA.db");
+    db = openDatabase();
 
     // Check if the proposed update exists and is pending
     const updateStmt = db.prepare(`
@@ -48,6 +52,7 @@ export async function POST({ request }) {
       headers: { "Content-Type": "application/json" },
     });
   } catch (error) {
+    if (db && db.open) db.close();
     console.error("Error in reject endpoint:", error);
     return new Response(JSON.stringify({ error: "Internal Server Error" }), {
       status: 500,
