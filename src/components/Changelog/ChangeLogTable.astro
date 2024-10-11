@@ -8,6 +8,7 @@ interface Log {
   new_value: string;
   updated_by: string;
   timestamp: string;
+  active_table_at_change: string; // Add active table to the log interface
 }
 
 interface Props {
@@ -34,6 +35,8 @@ const { logs, schoolNum } = Astro.props;
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">New Value</th>
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Updated By</th>
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Timestamp</th>
+            <!-- Add a new column for the active table -->
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Active Table</th>
           </tr>
         </thead>
         <tbody>

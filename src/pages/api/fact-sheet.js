@@ -1,11 +1,20 @@
-/* src/pages/api/fact-sheet.js */
+// src/pages/api/fact-sheet.js
 
-import Database from "better-sqlite3";
+import { openDatabase, getActiveTable } from "./db-utils.js";
 
-export async function GET(req) {
+export async function GET({ request }) {
+  let db;
   try {
-    // Extract the school number from the query string
-    const url = new URL(req.url);
+    // Extract the host from headers or use a default value
+    const hostHeader = request.headers.get("host");
+    const host = hostHeader || "localhost";
+    console.log(`Host Header: ${hostHeader}`); // Debug log
+
+    // Construct the URL with the provided request URL
+    const url = new URL(request.url);
+    console.log(`Constructed URL: ${url.toString()}`); // Debug log
+    console.log(`Search Params: ${url.searchParams.toString()}`); // Debug log
+
     const schoolNum = url.searchParams.get("schoolNum");
 
     console.log(`Received schoolNum: ${schoolNum}`); // Server-side log
@@ -24,13 +33,44 @@ export async function GET(req) {
       );
     }
 
-    // Remove leading/trailing whitespaces without altering the original number
+    // Remove leading/trailing whitespaces
     const normalizedSchoolNum = schoolNum.trim();
 
-    // Open the SQLite database
-    const db = new Database("./data/FISA.db", { verbose: console.log });
+    // Updated regex to allow both 8-digit numbers and 8 digits with a hyphen and alphanumeric characters
+    const schoolNumRegex = /^\d{8}(-[a-zA-Z0-9]+)?$/;
+    if (!schoolNumRegex.test(normalizedSchoolNum)) {
+      console.log(`Invalid schoolNum format: ${normalizedSchoolNum}`);
+      return new Response(
+        JSON.stringify({ error: "Invalid 'schoolNum' format." }),
+        {
+          status: 400,
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+    }
 
-    // Prepare the query with the correct column name
+    // Open the SQLite database using utility function
+    db = openDatabase();
+    console.log("Connected to the database.");
+
+    // Retrieve the active table name using utility function
+    let activeTable;
+    try {
+      activeTable = getActiveTable(db);
+      console.log(`Active Table: ${activeTable}`);
+    } catch (error) {
+      console.error("Error fetching active table:", error);
+      return new Response(JSON.stringify({ error: error.message }), {
+        status: 500,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    // Prepare the query with the active table name, properly quoted
     const query = `
       SELECT 
         SCHOOL, 
@@ -61,24 +101,23 @@ export async function GET(req) {
         FUNDING,  
         SPECIALTY,  
         ASSOC,     
-        SCHOOL_NUM,  -- Updated column name
+        SCHOOL_NUM,  
         SD,
         SDNUM,        
         ElectoralNew,
         FISA       
       FROM 
-        "all_schools_2024-2025"
+        "${activeTable}"
       WHERE 
-        SCHOOL_NUM = ?;  -- Updated WHERE clause
+        SCHOOL_NUM = ?;
     `;
+
+    console.log(`Executing query: ${query}`); // Log the query
 
     // Execute the query with the provided school number
     const row = db.prepare(query).get(normalizedSchoolNum);
 
     console.log(`Query Result: ${JSON.stringify(row)}`); // Server-side log
-
-    // Close the database connection
-    db.close();
 
     // Check if the school was found
     if (!row) {
@@ -99,12 +138,17 @@ export async function GET(req) {
       },
     });
   } catch (error) {
-    console.error("Server Error:", error);
+    console.error("Server Error:", error.stack); // Log full stack trace
     return new Response(JSON.stringify({ error: "Internal Server Error." }), {
       status: 500,
       headers: {
         "Content-Type": "application/json",
       },
     });
+  } finally {
+    if (db && db.open) {
+      db.close();
+      console.log("Database connection closed.");
+    }
   }
 }
