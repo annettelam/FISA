@@ -1,7 +1,48 @@
+---
+const url = new URL(Astro.request.url);
+const schoolId = url.searchParams.get("schoolId");
+
+// Initialize schoolData
+let schoolData = {
+    schoolName: "",
+    ministryCode: "",
+    regularStudents: 0,
+    homeschoolers: 0,
+};
+
+// Initialize an error message variable
+let errorMessage = "";
+
+// Check if schoolId is provided
+if (schoolId) {
+    const apiUrl = new URL(
+        `/api/data?schoolId=${encodeURIComponent(schoolId)}`,
+        Astro.url.origin,
+    );
+    try {
+        const response = await fetch(apiUrl);
+        if (response.ok) {
+            const data = await response.json();
+            if (data && Object.keys(data).length > 0) {
+                schoolData = { ...schoolData, ...data };
+                calculateMyEDBCFees();
+            } else {
+                errorMessage = "No data returned from API.";
+            }
+        } else {
+            errorMessage = `Error fetching school data: ${response.statusText}`;
+        }
+    } catch (error) {
+        errorMessage = `Error fetching school data: ${error.message}`;
+    }
+} else {
+    errorMessage = "No schoolId provided in the URL.";
+}
+---
+
 <div
     class="max-w-3xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg"
 >
-    <!-- Header Section for MyEDBC Invoice Information -->
     <div class="text-center mb-6">
         <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
             MyEDBC iGroup Shared Costs Invoice (2023-2024)
@@ -12,9 +53,7 @@
         </p>
     </div>
 
-    <!-- MyEDBC Invoice Form -->
     <form id="myedbc-form" class="space-y-6">
-        <!-- School Information Section -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             School Information
         </h2>
@@ -29,8 +68,8 @@
                     type="text"
                     id="schoolName"
                     class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
-                    placeholder="Enter school name"
-                    required
+                    readonly
+                    value={schoolData.schoolName || ""}
                 />
             </div>
             <div>
@@ -49,7 +88,6 @@
             </div>
         </div>
 
-        <!-- FISA Affiliation Section for Member Schools -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             FISA Member School
         </h2>
@@ -99,7 +137,6 @@
             </div>
         </div>
 
-        <!-- Enrollment Information and Fee Calculation Section for Member Schools -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Enrollment and Fee Calculation (Member School)
         </h2>
@@ -108,9 +145,8 @@
                 <label
                     for="regularStudents"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Number of regular students enrolled (A):</label
                 >
-                    Number of regular students enrolled (A):
-                </label>
                 <input
                     type="number"
                     id="regularStudents"
@@ -122,9 +158,8 @@
                 <label
                     for="homeschoolers"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Number of homeschoolers registered (B):</label
                 >
-                    Number of homeschoolers registered (B):
-                </label>
                 <input
                     type="number"
                     id="homeschoolers"
@@ -133,14 +168,12 @@
                 />
             </div>
 
-            <!-- Calculation Result for Member School -->
             <div>
                 <label
                     for="totalPaymentMember"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Total Payment (A + B) for Member Schools:</label
                 >
-                    Total Payment (A + B) for Member Schools:
-                </label>
                 <input
                     type="text"
                     id="totalPaymentMember"
@@ -151,7 +184,6 @@
             </div>
         </div>
 
-        <!-- Enrollment Information and Fee Calculation Section for Non-Member Schools -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Enrollment and Fee Calculation (Non-Member School)
         </h2>
@@ -160,9 +192,8 @@
                 <label
                     for="nonMemberRegularStudents"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Number of regular students enrolled (A):</label
                 >
-                    Number of regular students enrolled (A):
-                </label>
                 <input
                     type="number"
                     id="nonMemberRegularStudents"
@@ -174,9 +205,8 @@
                 <label
                     for="nonMemberHomeschoolers"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Number of homeschoolers registered:</label
                 >
-                    Number of homeschoolers registered:
-                </label>
                 <input
                     type="number"
                     id="nonMemberHomeschoolers"
@@ -185,14 +215,12 @@
                 />
             </div>
 
-            <!-- Calculation Result for Non-Member School -->
             <div>
                 <label
                     for="totalPaymentNonMember"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Total Payment (A + B) for Non-Member Schools:</label
                 >
-                    Total Payment (A + B) for Non-Member Schools:
-                </label>
                 <input
                     type="text"
                     id="totalPaymentNonMember"
@@ -203,7 +231,6 @@
             </div>
         </div>
 
-        <!-- Payment Status Section -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Payment Status
         </h2>
@@ -224,7 +251,6 @@
             </div>
         </div>
 
-        <!-- Payment Method Section -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Payment Method
         </h2>
@@ -244,7 +270,6 @@
             </select>
         </div>
 
-        <!-- Submit Button -->
         <button
             type="submit"
             class="w-full text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
@@ -253,54 +278,43 @@
     </form>
 </div>
 
-<!-- Client-side Script for Calculation -->
 <script>
-    document.addEventListener("DOMContentLoaded", function () {
-        function calculateMyEDBCFees() {
-            const regularStudents =
-                parseInt(document.getElementById("regularStudents").value) || 0;
-            const homeschoolers =
-                parseInt(document.getElementById("homeschoolers").value) || 0;
+    function calculateMyEDBCFees() {
+        const regularStudents =
+            parseInt(document.getElementById("regularStudents").value) || 0;
+        const homeschoolers =
+            parseInt(document.getElementById("homeschoolers").value) || 0;
 
-            const totalPaymentMember =
-                regularStudents * 5.24 + homeschoolers * 1.05;
-            document.getElementById("totalPaymentMember").value =
-                totalPaymentMember.toFixed(2);
+        const totalPaymentMember =
+            regularStudents * 5.24 + homeschoolers * 1.05;
+        document.getElementById("totalPaymentMember").value =
+            totalPaymentMember.toFixed(2);
 
-            const nonMemberRegularStudents =
-                parseInt(
-                    document.getElementById("nonMemberRegularStudents").value,
-                ) || 0;
-            const nonMemberHomeschoolers =
-                parseInt(
-                    document.getElementById("nonMemberHomeschoolers").value,
-                ) || 0;
+        const nonMemberRegularStudents =
+            parseInt(
+                document.getElementById("nonMemberRegularStudents").value,
+            ) || 0;
+        const nonMemberHomeschoolers =
+            parseInt(document.getElementById("nonMemberHomeschoolers").value) ||
+            0;
 
-            const totalPaymentNonMember =
-                nonMemberRegularStudents * 7.35 + nonMemberHomeschoolers * 1.05;
-            document.getElementById("totalPaymentNonMember").value =
-                totalPaymentNonMember.toFixed(2);
-        }
+        const totalPaymentNonMember =
+            nonMemberRegularStudents * 7.35 + nonMemberHomeschoolers * 1.05;
+        document.getElementById("totalPaymentNonMember").value =
+            totalPaymentNonMember.toFixed(2);
+    }
 
-        const regularStudentsInput = document.getElementById("regularStudents");
-        const homeschoolersInput = document.getElementById("homeschoolers");
-        const nonMemberRegularStudentsInput = document.getElementById(
-            "nonMemberRegularStudents",
-        );
-        const nonMemberHomeschoolersInput = document.getElementById(
-            "nonMemberHomeschoolers",
-        );
-
-        // Add event listeners for calculations
-        regularStudentsInput.addEventListener("input", calculateMyEDBCFees);
-        homeschoolersInput.addEventListener("input", calculateMyEDBCFees);
-        nonMemberRegularStudentsInput.addEventListener(
-            "input",
-            calculateMyEDBCFees,
-        );
-        nonMemberHomeschoolersInput.addEventListener(
-            "input",
-            calculateMyEDBCFees,
-        );
-    });
+    // Event listeners for calculations
+    document
+        .getElementById("regularStudents")
+        .addEventListener("input", calculateMyEDBCFees);
+    document
+        .getElementById("homeschoolers")
+        .addEventListener("input", calculateMyEDBCFees);
+    document
+        .getElementById("nonMemberRegularStudents")
+        .addEventListener("input", calculateMyEDBCFees);
+    document
+        .getElementById("nonMemberHomeschoolers")
+        .addEventListener("input", calculateMyEDBCFees);
 </script>
