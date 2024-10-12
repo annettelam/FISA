@@ -1,5 +1,3 @@
-// src/utils/db-utils.js
-
 import Database from "better-sqlite3";
 import path from "path";
 import dotenv from "dotenv";
@@ -42,4 +40,37 @@ export function getActiveTable(db) {
   }
 
   return activeTable;
+}
+
+/**
+ * Fetches the school data based on the school ID.
+ * @param {string} schoolId - The school ID.
+ * @returns {object} School data including school name, enrollment, and other relevant details.
+ */
+export function getSchoolDataFromDB(schoolId) {
+  const db = openDatabase();
+  const tableName = getActiveTable(db);
+
+  // Prepare SQL query to fetch school data
+  const query = `
+    SELECT schoolName, schoolId, fullDayKindergarten, grades1To12, halfDayKindergarten 
+    FROM ${tableName} 
+    WHERE schoolId = ?
+  `;
+
+  const schoolData = db.prepare(query).get(schoolId);
+
+  if (!schoolData) {
+    throw new Error(`School data not found for schoolId: ${schoolId}`);
+  }
+
+  // Optionally calculate totalFTE and membershipFees here if required
+  const totalFTE = schoolData.fullDayKindergarten + schoolData.grades1To12 + schoolData.halfDayKindergarten / 2;
+  const membershipFees = totalFTE * 7;
+
+  return {
+    ...schoolData,
+    totalFTE,
+    membershipFees,
+  };
 }
