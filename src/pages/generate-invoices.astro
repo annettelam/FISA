@@ -1,43 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
-let tables = [];
-let selectedTable = "";
-let schools = [];
-
-const baseUrl = "http://localhost:4321"; // Correct server URL and port
-
-// Function to fetch tables for the dropdown
-async function fetchTables() {
-    try {
-        const response = await fetch(`${baseUrl}/api/list-tables`); // Use absolute URL with the correct port
-        if (response.ok) {
-            const data = await response.json();
-            tables = data.tables;
-        } else {
-            console.error("Failed to fetch tables");
-        }
-    } catch (error) {
-        console.error("Error fetching tables:", error);
-    }
-}
-
-// Function to fetch school data for the selected table
-async function fetchSchools(table) {
-    try {
-        const response = await fetch(`${baseUrl}/api/invoices?table=${table}`); // Use absolute URL with the correct port
-        if (response.ok) {
-            schools = await response.json();
-        } else {
-            console.error("Failed to load school data");
-        }
-    } catch (error) {
-        console.error("Error fetching school data:", error);
-    }
-}
-
-// Load tables on page load
-fetchTables();
 ---
 
 <Layout title="Generate Invoices">
@@ -50,8 +12,8 @@ fetchTables();
                 Generate Invoices
             </h1>
             <p class="text-gray-600 dark:text-gray-300">
-                Select a table to view the relevant schools and generate
-                invoices.
+                Select a table and form type to view the relevant schools and
+                generate invoices.
             </p>
         </div>
 
@@ -66,13 +28,27 @@ fetchTables();
                 id="tableSelect"
                 name="tableSelect"
                 class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md"
-                onChange={(e) => {
-                    selectedTable = e.target.value;
-                    fetchSchools(selectedTable);
-                }}
             >
-                <option value="" disabled selected>Select a table</option>
-                {tables.map((table) => <option value={table}>{table}</option>)}
+                <!-- Options will be populated via JavaScript -->
+            </select>
+        </div>
+
+        <!-- Form Type Selection -->
+        <div class="mb-4">
+            <label
+                for="formTypeSelect"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >Select Form Type</label
+            >
+            <select
+                id="formTypeSelect"
+                name="formTypeSelect"
+                class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md"
+            >
+                <option value="" disabled selected>Select a form type</option>
+                <option value="fisa-fees">FISA Fees</option>
+                <option value="makeafuture">Make a Future</option>
+                <option value="myedbc">My EDBC Invoice</option>
             </select>
         </div>
 
@@ -118,48 +94,7 @@ fetchTables();
                     id="table-body"
                     class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
                 >
-                    {
-                        schools.length > 0 ? (
-                            schools.map((school) => (
-                                <tr>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {school.schoolName}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {school.schoolId}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {school.assoc}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {school.city}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        {school.email}
-                                    </td>
-                                    <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
-                                        <a
-                                            href={`/fisa-fees?schoolId=${encodeURIComponent(school.schoolId)}`}
-                                            target="_blank"
-                                        >
-                                            <button class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-300">
-                                                Generate Invoice
-                                            </button>
-                                        </a>
-                                    </td>
-                                </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td
-                                    colspan="6"
-                                    class="text-center py-4 text-sm text-gray-500"
-                                >
-                                    No schools found.
-                                </td>
-                            </tr>
-                        )
-                    }
+                    <!-- Rows will be populated via JavaScript -->
                 </tbody>
             </table>
         </div>
@@ -171,11 +106,14 @@ fetchTables();
         let tables = [];
         let selectedTable = "";
         let schools = [];
+        let selectedFormType = "";
+
+        const baseUrl = "http://localhost:4321"; // Correct server URL and port
 
         // Function to fetch tables for the dropdown
         async function fetchTables() {
             try {
-                const response = await fetch("/api/list-tables");
+                const response = await fetch(`${baseUrl}/api/list-tables`);
                 if (response.ok) {
                     const data = await response.json();
                     tables = data.tables;
@@ -206,11 +144,20 @@ fetchTables();
             });
         }
 
+        // Fetch tables on page load
+        fetchTables();
+
+        // Handle form type selection
+        const formTypeSelect = document.getElementById("formTypeSelect");
+        formTypeSelect.addEventListener("change", (e) => {
+            selectedFormType = e.target.value;
+        });
+
         // Function to fetch school data for the selected table
         async function fetchSchools(table) {
             try {
                 const response = await fetch(
-                    `/api/invoices?table=${encodeURIComponent(table)}`,
+                    `${baseUrl}/api/invoices?table=${encodeURIComponent(table)}`,
                 );
                 if (response.ok) {
                     schools = await response.json();
@@ -232,6 +179,7 @@ fetchTables();
                 schools.forEach((school) => {
                     const tr = document.createElement("tr");
 
+                    // Create table cells
                     const tdSchoolName = document.createElement("td");
                     tdSchoolName.className =
                         "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
@@ -265,15 +213,22 @@ fetchTables();
                     const tdAction = document.createElement("td");
                     tdAction.className =
                         "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
-                    const a = document.createElement("a");
-                    a.href = `/fisa-fees?schoolId=${encodeURIComponent(school.schoolId)}`;
-                    a.target = "_blank";
+
                     const button = document.createElement("button");
                     button.className =
                         "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-300";
                     button.textContent = "Generate Invoice";
-                    a.appendChild(button);
-                    tdAction.appendChild(a);
+                    button.addEventListener("click", () => {
+                        if (selectedFormType) {
+                            const url = `/${selectedFormType}?schoolId=${encodeURIComponent(school.schoolId)}`;
+                            window.open(url, "_blank");
+                        } else {
+                            alert(
+                                "Please select a form type before generating the invoice.",
+                            );
+                        }
+                    });
+                    tdAction.appendChild(button);
                     tr.appendChild(tdAction);
 
                     tbody.appendChild(tr);
@@ -288,8 +243,5 @@ fetchTables();
                 tbody.appendChild(tr);
             }
         }
-
-        // Load tables on page load
-        fetchTables();
     });
 </script>
