@@ -61,6 +61,16 @@ import Layout from "../layouts/Layout.astro";
                         >
                             Amount Due
                         </th>
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                        >
+                            Email
+                        </th>
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                        >
+                            Action
+                        </th>
                     </tr>
                 </thead>
                 <tbody
@@ -72,16 +82,19 @@ import Layout from "../layouts/Layout.astro";
                                 schoolName: "Green Valley School",
                                 overdueDays: 10,
                                 amountDue: "$1,500",
+                                email: "admin@greenvalleyschool.com",
                             },
                             {
                                 schoolName: "Riverside Academy",
                                 overdueDays: 15,
                                 amountDue: "$2,000",
+                                email: "contact@riversideacademy.org",
                             },
                             {
                                 schoolName: "Hilltop High",
                                 overdueDays: 5,
                                 amountDue: "$750",
+                                email: "principal@hilltophigh.edu",
                             },
                         ].map((payment) => (
                             <tr>
@@ -93,6 +106,17 @@ import Layout from "../layouts/Layout.astro";
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                                     {payment.amountDue}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                    {payment.email}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                    <a
+                                        href={`mailto:${payment.email}?subject=Payment%20Overdue%20Reminder&body=Dear%20${encodeURIComponent(payment.schoolName)},%0A%0AThis%20is%20a%20reminder%20that%20your%20payment%20of%20${payment.amountDue}%20is%20overdue.%20Please%20arrange%20for%20payment%20as%20soon%20as%20possible.%0A%0AThank%20you,%0A%20Your%20Organization`}
+                                        class="text-blue-500 hover:underline"
+                                    >
+                                        Send Reminder
+                                    </a>
                                 </td>
                             </tr>
                         ))
