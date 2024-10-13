@@ -1,0 +1,22 @@
+---
+
+const { 
+    title = "Funding by Group", 
+    titleContainerId = "funding-title-container", 
+    pieChartId = "funding-pie-chart" 
+    } = Astro.props;
+
+
+---
+
+<div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+  <div class="flex justify-between items-start w-full">
+    <div class="flex-col items-center">
+      <div class="flex items-center mb-1" id={titleContainerId} style="display: none;">
+        <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white me-1">{title}</h5>
+      </div>
+    </div>
+  </div>
+  <!-- Pie Chart -->
+  <div class="py-6" id={pieChartId}></div>
+</div>

@@ -20,7 +20,7 @@ import Layout from "../layouts/Layout.astro";
             </select>
         </div>
 
-        <!-- Pie Chart -->
+        <!-- Funding Pie Chart -->
         <div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
             <div class="flex justify-between items-start w-full">
                 <div class="flex-col items-center">
@@ -29,7 +29,7 @@ import Layout from "../layouts/Layout.astro";
                     </div>
                 </div>
             </div>
-            <!-- Line Chart -->
+             <!-- Pie Chart -->
             <div class="py-6" id="pie-chart"></div>
         </div>
 
@@ -45,11 +45,11 @@ import Layout from "../layouts/Layout.astro";
 <script>
 import ApexCharts from "apexcharts";
 
-let tableData;
+let tableData: any;
 let currentTable = "";
 
 // Populate the tables dropdown
-function populateTableSelect(tables) {
+function populateTableSelect(tables: any[]) {
   const tableSelect = document.getElementById('tableSelect');
   tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
 
@@ -64,7 +64,7 @@ function populateTableSelect(tables) {
   }
 
   (tableSelect as HTMLSelectElement).disabled = false;
-  tables.forEach(table => {
+  tables.forEach((table: string) => {
     const option = document.createElement('option');
     option.value = table;
     option.textContent = table;
@@ -114,11 +114,11 @@ async function fetchDataForTable() {
 
 
 // Function to process funding groups and update the pie chart
-async function processFundingGroups(data) {
+async function processFundingGroups(data: any[]) {
   const fundingCounts = {};
 
   // Count occurrences of each funding group
-  data.forEach(row => {
+  data.forEach((row: { FUNDING: any; }) => {
     const fundingGroup = row.FUNDING; // Adjust according to your data structure
     fundingCounts[fundingGroup] = (fundingCounts[fundingGroup] || 0) + 1;
   });
@@ -176,14 +176,14 @@ const getChartOptions = () => {
     },
     yaxis: {
       labels: {
-        formatter: function (value) {
+        formatter: function (value: string) {
           return value + "%"
         },
       },
     },
     xaxis: {
       labels: {
-        formatter: function (value) {
+        formatter: function (value: string) {
           return value  + "%"
         },
       },
