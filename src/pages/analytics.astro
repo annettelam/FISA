@@ -20,13 +20,11 @@ import Layout from "../layouts/Layout.astro";
             </select>
         </div>
 
-            <!-- Pie Chart -->
-    
- 
+        <!-- Pie Chart -->
         <div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
             <div class="flex justify-between items-start w-full">
                 <div class="flex-col items-center">
-                    <div class="flex items-center mb-1">
+                    <div class="flex items-center mb-1" id="funding-title-container" style="display: none;">
                         <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white me-1">Funding by Group</h5>
                     </div>
                 </div>
@@ -43,9 +41,6 @@ import Layout from "../layouts/Layout.astro";
     </div>  
 </Layout>
 
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-
-<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script>
 import ApexCharts from "apexcharts";
@@ -117,6 +112,7 @@ async function fetchDataForTable() {
   }
 }
 
+
 // Function to process funding groups and update the pie chart
 async function processFundingGroups(data) {
   const fundingCounts = {};
@@ -131,6 +127,15 @@ async function processFundingGroups(data) {
   const series = Object.values(fundingCounts);
   const labels = Object.keys(fundingCounts);
   console.log(series, labels);
+
+
+    // Show the funding title only if there's data
+    const titleContainer = document.getElementById('funding-title-container');
+  if (series.length > 0) {
+    titleContainer.style.display = 'flex'; // Show the title
+  } else {
+    titleContainer.style.display = 'none'; // Hide the title
+  }
 
 
 // Function to get chart options
