@@ -126,8 +126,8 @@
       // Close dropdown when clicking outside
       document.addEventListener("click", (event) => {
         if (
-          !notificationButton.contains(event.target) &&
-          !notificationDropdown.contains(event.target)
+          !notificationButton.contains(event.target as Node) &&
+          !notificationDropdown.contains(event.target as Node)
         ) {
           notificationDropdown.classList.add("hidden");
         }
@@ -160,7 +160,7 @@
         // Update the notification badge
         const unreadCount = dummyData.length;
         if (unreadCount > 0) {
-          notificationBadge.textContent = unreadCount;
+          notificationBadge.textContent = unreadCount.toString();
           notificationBadge.classList.remove("hidden");
         } else {
           notificationBadge.classList.add("hidden");
