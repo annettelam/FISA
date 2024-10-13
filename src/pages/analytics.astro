@@ -1,0 +1,101 @@
+---
+import Layout from "../layouts/Layout.astro";
+---
+
+<Layout title=" Analytics ">
+    <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300">
+        <div class="text-center mb-10">
+          <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Charts</h1>
+          <p class="text-gray-600 dark:text-gray-300">
+           View data from the database in a visual chart format.
+          </p>
+        </div>
+
+
+    <div class="mb-4">
+        <label for="tableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Table</label>
+        <select id="tableSelect" name="tableSelect" class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
+          <option value="" disabled selected>Select a table</option>
+          <!-- Options will be populated dynamically -->
+        </select>
+      </div>
+</div>  
+
+</Layout>
+
+
+<script>
+
+let tableData;
+let currentTable = "";
+
+
+
+    // Populate the tables dropdown
+    function populateTableSelect(tables) {
+      const tableSelect = document.getElementById('tableSelect') as HTMLSelectElement;
+      tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
+
+      if (tables.length === 0) {
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "No tables available";
+        option.disabled = true;
+        tableSelect.appendChild(option);
+        tableSelect.disabled = true;
+        return;
+      }
+
+      tableSelect.disabled = false;
+      tables.forEach(table => {
+        const option = document.createElement('option');
+        option.value = table;
+        option.textContent = table;
+        tableSelect.appendChild(option);
+      });
+
+      // Fetch data for the selected table when user changes table selection
+      tableSelect.addEventListener('change', fetchDataForTable);
+    }
+
+    // Function to fetch tables for the dropdown
+    async function fetchTables() {
+      try {
+        const response = await fetch('/api/list-tables');
+        if (response.ok) {
+          const data = await response.json();
+          populateTableSelect(data.tables);
+        } else {
+          throw new Error('Failed to fetch tables.');
+        }
+      } catch (error) {
+        console.error('Error fetching tables:', error);
+      }
+    }
+
+
+    // Fetch data for the selected table
+    async function fetchDataForTable() {
+      const selectedTable = (document.getElementById('tableSelect') as HTMLSelectElement).value;
+      if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
+
+      currentTable = selectedTable; // Update current table
+
+      try {
+        const response = await fetch(`/api/data?table=${encodeURIComponent(selectedTable)}`);
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data for table: ${selectedTable}`);
+        }
+        const data = await response.json();
+        tableData = data; // Store the data
+
+      } catch (error) {
+        console.error(`Error fetching data for table ${selectedTable}:`, error);
+      }
+    }
+
+    
+    // Initialize table selection and fetch data
+    document.addEventListener('DOMContentLoaded', fetchTables);
+
+</script>
