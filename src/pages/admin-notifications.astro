@@ -20,165 +20,85 @@ import Layout from "../layouts/Layout.astro";
     </header>
 
     <!-- Main Content Section -->
-    <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
-        <div class="max-w-7xl mx-auto px-4">
-            <!-- Overdue Payments Section -->
-            <section class="text-center mb-12 sm:mb-16">
-                <h2
-                    class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-green-800 dark:text-white"
-                >
-                    Overdue Payments
-                </h2>
-                <p
-                    class="text-sm sm:text-base text-green-600 dark:text-gray-300 max-w-2xl mx-auto"
-                >
-                    Here's a list of schools with overdue payments.
-                </p>
-            </section>
-
-            <!-- Overdue Payments Grid -->
-            <ul
-                role="list"
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+    <main
+        class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300"
+    >
+        <!-- Overdue Payments Section -->
+        <section class="text-center mb-12 sm:mb-16">
+            <h2
+                class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-gray-800 dark:text-gray-100"
             >
-                {
-                    [
-                        {
-                            schoolName: "Green Valley School",
-                            overdueDays: 10,
-                            amountDue: "$1,500",
-                        },
-                        {
-                            schoolName: "Riverside Academy",
-                            overdueDays: 15,
-                            amountDue: "$2,000",
-                        },
-                        {
-                            schoolName: "Hilltop High",
-                            overdueDays: 5,
-                            amountDue: "$750",
-                        },
-                    ].map((payment) => (
-                        <li class="bg-gray-50 shadow-md rounded-lg p-6 dark:bg-gray-800 dark:text-white">
-                            <h3 class="text-xl font-bold mb-2">
-                                {payment.schoolName}
-                            </h3>
-                            <p class="text-green-700 dark:text-gray-300">
-                                <strong>{payment.overdueDays}</strong> days
-                                overdue
-                            </p>
-                            <p class="text-green-600 dark:text-gray-300">
-                                Amount Due: <strong>{payment.amountDue}</strong>
-                            </p>
-                        </li>
-                    ))
-                }
-            </ul>
-
-            <!-- Upcoming Payments Section -->
-            <section class="text-center mt-12 sm:mt-16 mb-12 sm:mb-16">
-                <h2
-                    class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white"
-                >
-                    Upcoming Payments
-                </h2>
-                <p
-                    class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto"
-                >
-                    Here’s a list of schools with upcoming payments.
-                </p>
-            </section>
-
-            <!-- Upcoming Payments Grid -->
-            <ul
-                role="list"
-                class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+                Overdue Payments
+            </h2>
+            <p
+                class="text-sm sm:text-base text-gray-600 dark:text-gray-300 max-w-2xl mx-auto"
             >
-                {
-                    [
-                        {
-                            schoolName: "Sunset Elementary",
-                            dueInDays: 3,
-                            amountDue: "$1,200",
-                        },
-                        {
-                            schoolName: "Mountainview College",
-                            dueInDays: 7,
-                            amountDue: "$3,000",
-                        },
-                        {
-                            schoolName: "Lakeside High",
-                            dueInDays: 14,
-                            amountDue: "$950",
-                        },
-                    ].map((payment) => (
-                        <li class="bg-gray-50 shadow-md rounded-lg p-6 dark:bg-gray-800 dark:text-white">
-                            <h3 class="text-xl font-bold mb-2">
-                                {payment.schoolName}
-                            </h3>
-                            <p class="text-blue-700 dark:text-gray-300">
-                                <strong>{payment.dueInDays}</strong> days until
-                                due
-                            </p>
-                            <p class="text-blue-600 dark:text-gray-300">
-                                Amount Due: <strong>{payment.amountDue}</strong>
-                            </p>
-                        </li>
-                    ))
-                }
-            </ul>
+                Here's a list of schools with overdue payments.
+            </p>
+        </section>
+
+        <!-- Overdue Payments Table -->
+        <div
+            class="overflow-x-auto border border-gray-300 dark:border-gray-700 rounded-lg shadow"
+        >
+            <table
+                class="min-w-full text-sm text-left text-gray-700 dark:text-gray-300"
+            >
+                <thead class="bg-gray-200 dark:bg-gray-700">
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                        >
+                            School Name
+                        </th>
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                        >
+                            Days Overdue
+                        </th>
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                        >
+                            Amount Due
+                        </th>
+                    </tr>
+                </thead>
+                <tbody
+                    class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+                >
+                    {
+                        [
+                            {
+                                schoolName: "Green Valley School",
+                                overdueDays: 10,
+                                amountDue: "$1,500",
+                            },
+                            {
+                                schoolName: "Riverside Academy",
+                                overdueDays: 15,
+                                amountDue: "$2,000",
+                            },
+                            {
+                                schoolName: "Hilltop High",
+                                overdueDays: 5,
+                                amountDue: "$750",
+                            },
+                        ].map((payment) => (
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-800 dark:text-gray-100">
+                                    {payment.schoolName}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                    {payment.overdueDays} days overdue
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                                    {payment.amountDue}
+                                </td>
+                            </tr>
+                        ))
+                    }
+                </tbody>
+            </table>
         </div>
     </main>
 </Layout>
-
-<style>
-    /* Import Font Awesome for icons */
-    @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
-
-    header {
-        background-image: var(--accent-gradient);
-        color: white;
-    }
-
-    main {
-        background: white;
-        padding: 2rem 1rem;
-    }
-
-    h1,
-    h2 {
-        color: #1c4e80; /* Soft Greenish-Blue for FISA Theme */
-    }
-
-    .bg-green-800 {
-        background-color: #005f50;
-    }
-
-    .text-green-800 {
-        color: #005f50;
-    }
-
-    .bg-green-700 {
-        background-color: #007a68;
-    }
-
-    .text-green-600 {
-        color: #007a68;
-    }
-
-    .text-blue-800 {
-        color: #1e3a8a;
-    }
-
-    .text-blue-600 {
-        color: #2563eb;
-    }
-
-    /* General Card Style for Overdue and Upcoming Payments */
-    li {
-        background-color: #f9fafb;
-        border-radius: 0.5rem;
-        padding: 1rem;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    }
-</style>
