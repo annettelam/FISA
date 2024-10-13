@@ -5,97 +5,199 @@ import Layout from "../layouts/Layout.astro";
 <Layout title=" Analytics ">
     <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300">
         <div class="text-center mb-10">
-          <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Charts</h1>
-          <p class="text-gray-600 dark:text-gray-300">
-           View data from the database in a visual chart format.
-          </p>
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Charts</h1>
+            <p class="text-gray-600 dark:text-gray-300">
+            View data from the database in a visual chart format.
+            </p>
         </div>
 
 
-    <div class="mb-4">
-        <label for="tableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Table</label>
-        <select id="tableSelect" name="tableSelect" class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
-          <option value="" disabled selected>Select a table</option>
-          <!-- Options will be populated dynamically -->
-        </select>
-      </div>
-</div>  
+        <div class="mb-4">
+            <label for="tableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Table</label>
+            <select id="tableSelect" name="tableSelect" class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
+            <option value="" disabled selected>Select a table</option>
+            <!-- Options will be populated dynamically -->
+            </select>
+        </div>
 
+            <!-- Pie Chart -->
+    
+ 
+        <div class="max-w-sm w-full bg-white rounded-lg shadow dark:bg-gray-800 p-4 md:p-6">
+            <div class="flex justify-between items-start w-full">
+                <div class="flex-col items-center">
+                    <div class="flex items-center mb-1">
+                        <h5 class="text-xl font-bold leading-none text-gray-900 dark:text-white me-1">Funding by Group</h5>
+                    </div>
+                </div>
+            </div>
+            <!-- Line Chart -->
+            <div class="py-6" id="pie-chart"></div>
+        </div>
+
+
+
+
+
+
+    </div>  
 </Layout>
 
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 <script>
+import ApexCharts from "apexcharts";
 
 let tableData;
 let currentTable = "";
 
+// Populate the tables dropdown
+function populateTableSelect(tables) {
+  const tableSelect = document.getElementById('tableSelect');
+  tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
 
+  if (tables.length === 0) {
+    const option = document.createElement('option');
+    option.value = "";
+    option.textContent = "No tables available";
+    option.disabled = true;
+    tableSelect.appendChild(option);
+    (tableSelect as HTMLSelectElement).disabled = true;
+    return;
+  }
 
-    // Populate the tables dropdown
-    function populateTableSelect(tables) {
-      const tableSelect = document.getElementById('tableSelect') as HTMLSelectElement;
-      tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
+  (tableSelect as HTMLSelectElement).disabled = false;
+  tables.forEach(table => {
+    const option = document.createElement('option');
+    option.value = table;
+    option.textContent = table;
+    tableSelect.appendChild(option);
+  });
 
-      if (tables.length === 0) {
-        const option = document.createElement('option');
-        option.value = "";
-        option.textContent = "No tables available";
-        option.disabled = true;
-        tableSelect.appendChild(option);
-        tableSelect.disabled = true;
-        return;
-      }
+  // Fetch data for the selected table when user changes table selection
+  tableSelect.addEventListener('change', fetchDataForTable);
+}
 
-      tableSelect.disabled = false;
-      tables.forEach(table => {
-        const option = document.createElement('option');
-        option.value = table;
-        option.textContent = table;
-        tableSelect.appendChild(option);
-      });
-
-      // Fetch data for the selected table when user changes table selection
-      tableSelect.addEventListener('change', fetchDataForTable);
+// Function to fetch tables for the dropdown
+async function fetchTables() {
+  try {
+    const response = await fetch('/api/list-tables');
+    if (response.ok) {
+      const data = await response.json();
+      populateTableSelect(data.tables);
+    } else {
+      throw new Error('Failed to fetch tables.');
     }
+  } catch (error) {
+    console.error('Error fetching tables:', error);
+  }
+}
 
-    // Function to fetch tables for the dropdown
-    async function fetchTables() {
-      try {
-        const response = await fetch('/api/list-tables');
-        if (response.ok) {
-          const data = await response.json();
-          populateTableSelect(data.tables);
-        } else {
-          throw new Error('Failed to fetch tables.');
+// Fetch data for the selected table
+async function fetchDataForTable() {
+  const selectedTable = (document.getElementById('tableSelect') as HTMLSelectElement).value;
+  if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
+
+  currentTable = selectedTable; // Update current table
+
+  try {
+    const response = await fetch(`/api/data?table=${encodeURIComponent(selectedTable)}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data for table: ${selectedTable}`);
+    }
+    const data = await response.json();
+    tableData = data; // Store the data
+
+    // Call function to process funding groups after fetching table data
+    processFundingGroups(tableData);
+  } catch (error) {
+    console.error(`Error fetching data for table ${selectedTable}:`, error);
+  }
+}
+
+// Function to process funding groups and update the pie chart
+async function processFundingGroups(data) {
+  const fundingCounts = {};
+
+  // Count occurrences of each funding group
+  data.forEach(row => {
+    const fundingGroup = row.FUNDING; // Adjust according to your data structure
+    fundingCounts[fundingGroup] = (fundingCounts[fundingGroup] || 0) + 1;
+  });
+
+  // Prepare data for the pie chart
+  const series = Object.values(fundingCounts);
+  const labels = Object.keys(fundingCounts);
+  console.log(series, labels);
+
+
+// Function to get chart options
+const getChartOptions = () => {
+  return {
+    series: series,
+    colors: ["#1C64F2", "#16BDCA", "#9061F9","#F43F5E"],
+    chart: {
+      height: 420,
+      width: "100%",
+      type: "pie",
+    },
+    stroke: {
+      colors: ["white"],
+      lineCap: "",
+    },
+    plotOptions: {
+      pie: {
+        labels: {
+          show: true,
+        },
+        size: "100%",
+        dataLabels: {
+          offset: -25
         }
-      } catch (error) {
-        console.error('Error fetching tables:', error);
-      }
-    }
+      },
+    },
+    labels: labels,
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontFamily: "Inter, sans-serif",
+      },
+    },
+    legend: {
+      position: "bottom",
+      fontFamily: "Inter, sans-serif",
+    },
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return value + "%"
+        },
+      },
+    },
+    xaxis: {
+      labels: {
+        formatter: function (value) {
+          return value  + "%"
+        },
+      },
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+    },
+  }
+}
 
+if (document.getElementById("pie-chart") && typeof ApexCharts !== 'undefined') {
+  const chart = new ApexCharts(document.getElementById("pie-chart"), getChartOptions());
+  chart.render();
+}
 
-    // Fetch data for the selected table
-    async function fetchDataForTable() {
-      const selectedTable = (document.getElementById('tableSelect') as HTMLSelectElement).value;
-      if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
-
-      currentTable = selectedTable; // Update current table
-
-      try {
-        const response = await fetch(`/api/data?table=${encodeURIComponent(selectedTable)}`);
-        if (!response.ok) {
-          throw new Error(`Failed to fetch data for table: ${selectedTable}`);
-        }
-        const data = await response.json();
-        tableData = data; // Store the data
-
-      } catch (error) {
-        console.error(`Error fetching data for table ${selectedTable}:`, error);
-      }
-    }
-
-    
-    // Initialize table selection and fetch data
-    document.addEventListener('DOMContentLoaded', fetchTables);
-
+}
+// Initialize table selection and fetch data
+document.addEventListener('DOMContentLoaded', fetchTables);
 </script>
