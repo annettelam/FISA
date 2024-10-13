@@ -112,7 +112,7 @@ import Layout from "../layouts/Layout.astro";
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
                                     <a
-                                        href={`mailto:${payment.email}?subject=Payment%20Overdue%20Reminder&body=Dear%20${encodeURIComponent(payment.schoolName)},%0A%0AThis%20is%20a%20reminder%20that%20your%20payment%20of%20${payment.amountDue}%20is%20overdue.%20Please%20arrange%20for%20payment%20as%20soon%20as%20possible.%0A%0AThank%20you,%0A%20Your%20Organization`}
+                                        href={`mailto:${payment.email}?subject=Payment%20Overdue%20Reminder&body=Dear%20${encodeURIComponent(payment.schoolName)},%0A%0AI%20hope%20this%20message%20finds%20you%20well.%20We%20are%20writing%20to%20kindly%20remind%20you%20that%20your%20payment%20of%20${encodeURIComponent(payment.amountDue)}%20is%20now%20overdue.%20Please%20arrange%20for%20the%20payment%20at%20your%20earliest%20convenience%20to%20ensure%20continued%20service%20and%20avoid%20any%20potential%20disruptions.%0A%0AShould%20you%20have%20any%20questions%20or%20require%20further%20clarification,%20feel%20free%20to%20contact%20us.%20We%20appreciate%20your%20prompt%20attention%20to%20this%20matter.%0A%0AThank%20you%20for%20your%20cooperation.%0A%0ASincerely,%0A%0AFISA`}
                                         class="text-blue-500 hover:underline"
                                     >
                                         Send Reminder
