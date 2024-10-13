@@ -23,7 +23,8 @@ import ColumnDistributionPieChart from "../components/Analytics/columnDistributi
         </div>
 
 
-        <ColumnDistributionPieChart title="Funding by Group" titleContainerId="funding-title-container" ChartId="pie-chart" />
+        <ColumnDistributionPieChart title="Funding by Group" titleContainerId="funding-title-container" ChartId="funding-pie-chart" />
+        <ColumnDistributionPieChart title="School by Association" titleContainerId="school-assoc-title-container" ChartId="association-pie-chart" />
 
 
 
@@ -96,104 +97,229 @@ async function fetchDataForTable() {
     const data = await response.json();
     tableData = data; // Store the data
 
-    // Call function to process funding groups after fetching table data
-    processFundingGroups(tableData);
+    // // Call function to process funding groups after fetching table data
+    // processFundingGroups(tableData);
+
+    // chart for funding
+    colDistPieChart(tableData, 'FUNDING', 'funding-title-container', 'funding-pie-chart');
+
+    // chart for ASSOC
+    colDistPieChart(tableData, 'ASSOC', 'school-assoc-title-container', 'association-pie-chart');
+
   } catch (error) {
     console.error(`Error fetching data for table ${selectedTable}:`, error);
   }
 }
 
 
-// Function to process funding groups and update the pie chart
-async function processFundingGroups(data: any[]) {
-  const fundingCounts = {};
+// // Function to process funding groups and update the pie chart
+// async function processFundingGroups(data: any[]) {
+//   const fundingCounts = {};
 
-  // Count occurrences of each funding group
-  data.forEach((row: { FUNDING: any; }) => {
-    const fundingGroup = row.FUNDING; // Adjust according to your data structure
-    fundingCounts[fundingGroup] = (fundingCounts[fundingGroup] || 0) + 1;
+//   // Count occurrences of each funding group
+//   data.forEach((row: { FUNDING: any; }) => {
+//     const fundingGroup = row.FUNDING; // Adjust according to your data structure
+//     fundingCounts[fundingGroup] = (fundingCounts[fundingGroup] || 0) + 1;
+//   });
+
+//   // Prepare data for the pie chart
+//   const series = Object.values(fundingCounts);
+//   const labels = Object.keys(fundingCounts);
+//   console.log(series, labels);
+
+
+//     // Show the funding title only if there's data
+//     const titleContainer = document.getElementById('funding-title-container');
+//   if (series.length > 0) {
+//     titleContainer.style.display = 'flex'; // Show the title
+//   } else {
+//     titleContainer.style.display = 'none'; // Hide the title
+//   }
+
+
+//   // Function to get chart options
+//   const getChartOptions = () => {
+//     return {
+//       series: series,
+//       colors: ["#1C64F2", "#16BDCA", "#9061F9","#F43F5E"],
+//       chart: {
+//         height: 420,
+//         width: "100%",
+//         type: "pie",
+//       },
+//       stroke: {
+//         colors: ["white"],
+//         lineCap: "",
+//       },
+//       plotOptions: {
+//         pie: {
+//           labels: {
+//             show: true,
+//           },
+//           size: "100%",
+//           dataLabels: {
+//             offset: -25
+//           }
+//         },
+//       },
+//       labels: labels,
+//       dataLabels: {
+//         enabled: true,
+//         style: {
+//           fontFamily: "Inter, sans-serif",
+//         },
+//       },
+//       legend: {
+//         position: "bottom",
+//         fontFamily: "Inter, sans-serif",
+//       },
+//       yaxis: {
+//         labels: {
+//           formatter: function (value: string) {
+//             return value + "%"
+//           },
+//         },
+//       },
+//       xaxis: {
+//         labels: {
+//           formatter: function (value: string) {
+//             return value  + "%"
+//           },
+//         },
+//         axisTicks: {
+//           show: false,
+//         },
+//         axisBorder: {
+//           show: false,
+//         },
+//       },
+//     }
+//   }
+
+//   if (document.getElementById("pie-chart") && typeof ApexCharts !== 'undefined') {
+//     const chart = new ApexCharts(document.getElementById("pie-chart"), getChartOptions());
+//     chart.render();
+//   }
+
+// }
+
+
+
+
+// Function to process groups and update the pie chart
+async function colDistPieChart(data, colName, titleContainerId, chartContainerId) {
+  const groupCounts = {};
+
+  // Count occurrences of each group based on colName
+  data.forEach((row) => {
+    const group = row[colName];
+    groupCounts[group] = (groupCounts[group] || 0) + 1;
   });
 
   // Prepare data for the pie chart
-  const series = Object.values(fundingCounts);
-  const labels = Object.keys(fundingCounts);
+  const series = Object.values(groupCounts);
+  const labels = Object.keys(groupCounts);
   console.log(series, labels);
 
-
-    // Show the funding title only if there's data
-    const titleContainer = document.getElementById('funding-title-container');
+  // Show the title only if there's data
+  const titleContainer = document.getElementById(titleContainerId);
   if (series.length > 0) {
     titleContainer.style.display = 'flex'; // Show the title
   } else {
     titleContainer.style.display = 'none'; // Hide the title
   }
 
-
   // Function to get chart options
   const getChartOptions = () => {
-    return {
-      series: series,
-      colors: ["#1C64F2", "#16BDCA", "#9061F9","#F43F5E"],
-      chart: {
-        height: 420,
-        width: "100%",
-        type: "pie",
-      },
-      stroke: {
-        colors: ["white"],
-        lineCap: "",
-      },
-      plotOptions: {
-        pie: {
-          labels: {
-            show: true,
-          },
-          size: "100%",
-          dataLabels: {
-            offset: -25
-          }
+  const colors = generateColors(series.length);
+  return {
+    series: series,
+    colors: colors,
+    chart: {
+      height: 420,
+      width: "100%",
+      type: "pie",
+    },
+    stroke: {
+      colors: ["white"],
+      lineCap: "",
+    },
+    plotOptions: {
+      pie: {
+        labels: {
+          show: true,
         },
+        size: "100%",
+        dataLabels: {
+          offset: -25
+        }
       },
-      labels: labels,
-      dataLabels: {
-        enabled: true,
-        style: {
-          fontFamily: "Inter, sans-serif",
-        },
-      },
-      legend: {
-        position: "bottom",
+    },
+    labels: labels,
+    dataLabels: {
+      enabled: true,
+      style: {
         fontFamily: "Inter, sans-serif",
       },
-      yaxis: {
-        labels: {
-          formatter: function (value: string) {
-            return value + "%"
-          },
+    },
+    legend: {
+      position: "bottom",
+      fontFamily: "Inter, sans-serif",
+    },
+    tooltip: {
+      // Customize tooltip to show label only
+      y: {
+        formatter: (value) => value, // Show only the value without percentage
+      },
+      marker: {
+        show: true, // Optional: show marker in tooltip
+      },
+    },
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return value + "%"
         },
       },
-      xaxis: {
-        labels: {
-          formatter: function (value: string) {
-            return value  + "%"
-          },
-        },
-        axisTicks: {
-          show: false,
-        },
-        axisBorder: {
-          show: false,
+    },
+    xaxis: {
+      labels: {
+        formatter: function (value) {
+          return value + "%"
         },
       },
-    }
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+    },
   }
+}
 
-  if (document.getElementById("pie-chart") && typeof ApexCharts !== 'undefined') {
-    const chart = new ApexCharts(document.getElementById("pie-chart"), getChartOptions());
+  if (document.getElementById(chartContainerId) && typeof ApexCharts !== 'undefined') {
+    const chart = new ApexCharts(document.getElementById(chartContainerId), getChartOptions());
     chart.render();
   }
-
 }
+
+// Function to generate an array of random light colors
+function generateColors(count) {
+  const colors = [];
+  for (let i = 0; i < count; i++) {
+    const color = `hsl(${Math.random() * 360}, 70%, 60%)`; // Light colors using HSL
+    colors.push(color);
+  }
+  return colors;
+}
+
+
+
+
+
+
+
 // Initialize table selection and fetch data
 document.addEventListener('DOMContentLoaded', fetchTables);
 </script>
