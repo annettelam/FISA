@@ -47,8 +47,7 @@ import GroupBarChart from "../components/Analytics/groupBarChart.astro";
 
 <script>
 
-import ApexCharts from 'apexcharts';
-
+const ApexCharts = require('apexcharts').default;
 
 let tableData: any;
 let currentTable = "";
