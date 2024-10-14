@@ -2,6 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 
 import ColumnDistributionPieChart from "../components/Analytics/columnDistributionPieChart.astro";
+import GroupBarChart from "../components/Analytics/groupBarChart.astro";
 ---
 
 <Layout title=" Analytics ">
@@ -25,7 +26,11 @@ import ColumnDistributionPieChart from "../components/Analytics/columnDistributi
         <div class="flex flex-wrap justify-between gap-4">
           <ColumnDistributionPieChart title="Funding by Group" titleContainerId="funding-title-container" ChartId="funding-pie-chart" />
           <ColumnDistributionPieChart title="School by Association" titleContainerId="school-assoc-title-container" ChartId="association-pie-chart" />
+          <GroupBarChart title="Students by Association" titleContainerId="students-assoc-title-container" ChartId="assoc-bar-chart" />
       </div>
+
+
+      
 
 
 
@@ -105,8 +110,9 @@ async function fetchDataForTable() {
     // chart for ASSOC
     colDistPieChart(tableData, 'ASSOC', 'school-assoc-title-container', 'association-pie-chart');
 
-    // chart for SD
-    colDistPieChart(tableData, 'SD', 'school-sd-title-container', 'sd-pie-chart');
+
+    // bar chart for students by association
+    groupBarChart(tableData, 'ASSOC', 'TOTk_12', 'students-assoc-title-container', 'assoc-bar-chart');
 
   } catch (error) {
     console.error(`Error fetching data for table ${selectedTable}:`, error);
@@ -114,96 +120,118 @@ async function fetchDataForTable() {
 }
 
 
-// // Function to process funding groups and update the pie chart
-// async function processFundingGroups(data: any[]) {
-//   const fundingCounts = {};
+// Bar charts
+// Function to process groups and update the bar chart
+async function groupBarChart(data, groupByCol, sumCol, titleContainerId, chartContainerId) {
+  const groupCounts = {};
 
-//   // Count occurrences of each funding group
-//   data.forEach((row: { FUNDING: any; }) => {
-//     const fundingGroup = row.FUNDING; // Adjust according to your data structure
-//     fundingCounts[fundingGroup] = (fundingCounts[fundingGroup] || 0) + 1;
-//   });
+  // Sum values based on groupByCol
+  data.forEach((row) => {
+    const group = row[groupByCol];
+    const value = row[sumCol];
+    groupCounts[group] = (groupCounts[group] || 0) + (value || 0); // Ensure value is not undefined
+  });
 
-//   // Prepare data for the pie chart
-//   const series = Object.values(fundingCounts);
-//   const labels = Object.keys(fundingCounts);
-//   console.log(series, labels);
+  // Prepare data for the bar chart
+  const seriesData = Object.values(groupCounts);
+  const categories = Object.keys(groupCounts);
 
+  console.log(seriesData, categories);
 
-//     // Show the funding title only if there's data
-//     const titleContainer = document.getElementById('funding-title-container');
-//   if (series.length > 0) {
-//     titleContainer.style.display = 'flex'; // Show the title
-//   } else {
-//     titleContainer.style.display = 'none'; // Hide the title
-//   }
+  // Show the title only if there's data
+  const titleContainer = document.getElementById(titleContainerId);
+  titleContainer.style.display = seriesData.length > 0 ? 'flex' : 'none'; // Show or hide title
 
+  // Set up chart options
+  const options = {
+    series: [
+      {
+        name: "Students", // Renamed from "Income"
+        color: "#31C48D",
+        data: seriesData,
+      }
+    ],
+    chart: {
+      sparkline: {
+        enabled: false,
+      },
+      type: "bar",
+      width: "100%",
+      height: 400,
+      toolbar: {
+        show: false,
+      }
+    },
+    fill: {
+      opacity: 1,
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        columnWidth: "100%",
+        borderRadiusApplication: "end",
+        borderRadius: 6,
+        dataLabels: {
+          position: "top",
+        },
+      },
+    },
+    legend: {
+      show: true,
+      position: "bottom",
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      formatter: function (value) {
+        return value; // Show only the raw value without currency or percentage
+      }
+    },
+    xaxis: {
+      labels: {
+        show: true,
+        style: {
+          fontFamily: "Inter, sans-serif",
+          cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+        },
+      },
+      categories: categories, // Use ASSOC names here
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+    },
+    yaxis: {
+      labels: {
+        show: true,
+        style: {
+          fontFamily: "Inter, sans-serif",
+          cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+        }
+      }
+    },
+    grid: {
+      show: true,
+      strokeDashArray: 4,
+      padding: {
+        left: 2,
+        right: 2,
+        top: -20
+      },
+    }
+  };
 
-//   // Function to get chart options
-//   const getChartOptions = () => {
-//     return {
-//       series: series,
-//       colors: ["#1C64F2", "#16BDCA", "#9061F9","#F43F5E"],
-//       chart: {
-//         height: 420,
-//         width: "100%",
-//         type: "pie",
-//       },
-//       stroke: {
-//         colors: ["white"],
-//         lineCap: "",
-//       },
-//       plotOptions: {
-//         pie: {
-//           labels: {
-//             show: true,
-//           },
-//           size: "100%",
-//           dataLabels: {
-//             offset: -25
-//           }
-//         },
-//       },
-//       labels: labels,
-//       dataLabels: {
-//         enabled: true,
-//         style: {
-//           fontFamily: "Inter, sans-serif",
-//         },
-//       },
-//       legend: {
-//         position: "bottom",
-//         fontFamily: "Inter, sans-serif",
-//       },
-//       yaxis: {
-//         labels: {
-//           formatter: function (value: string) {
-//             return value + "%"
-//           },
-//         },
-//       },
-//       xaxis: {
-//         labels: {
-//           formatter: function (value: string) {
-//             return value  + "%"
-//           },
-//         },
-//         axisTicks: {
-//           show: false,
-//         },
-//         axisBorder: {
-//           show: false,
-//         },
-//       },
-//     }
-//   }
-
-//   if (document.getElementById("pie-chart") && typeof ApexCharts !== 'undefined') {
-//     const chart = new ApexCharts(document.getElementById("pie-chart"), getChartOptions());
-//     chart.render();
-//   }
-
-// }
+  // Render the chart
+  if (document.getElementById(chartContainerId) && typeof ApexCharts !== 'undefined') {
+    const chart = new ApexCharts(document.getElementById(chartContainerId), options);
+    chart.render();
+  }
+}
 
 
 
