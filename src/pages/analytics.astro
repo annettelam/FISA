@@ -3,6 +3,10 @@ import Layout from "../layouts/Layout.astro";
 
 import ColumnDistributionPieChart from "../components/Analytics/columnDistributionPieChart.astro";
 import GroupBarChart from "../components/Analytics/groupBarChart.astro";
+
+
+
+
 ---
 
 <Layout title=" Analytics ">
@@ -38,10 +42,13 @@ import GroupBarChart from "../components/Analytics/groupBarChart.astro";
 
     </div>  
 </Layout>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
 
 
 <script>
-import ApexCharts from "apexcharts";
+
+import ApexCharts from 'apexcharts';
+
 
 let tableData: any;
 let currentTable = "";
