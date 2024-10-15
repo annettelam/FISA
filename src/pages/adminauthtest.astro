@@ -10,11 +10,15 @@ const tokenCookie = Astro.cookies.get('token');
 
 let user = null;
 
-// Verify the JWT token
+// Verify the JWT token and check admin status
 if (tokenCookie) {
   try {
     const token = tokenCookie.value;
     user = jwt.verify(token, process.env.JWT_SECRET);
+    if (!user.isAdmin) {
+      // Redirect to login if not an admin
+      return Astro.redirect('/login');
+    }
   } catch (error) {
     console.error('Invalid JWT token:', error);
     // Redirect to login if token is invalid
@@ -25,7 +29,8 @@ if (tokenCookie) {
   return Astro.redirect('/login');
 }
 ---
-<Layout title="Dashboard">
-  <h1 class="text-2xl font-bold mb-4">Welcome to your dashboard, {user.email}!</h1>
+<Layout title="Admin Dashboard Test">
+  <h1 class="text-2xl font-bold mb-4">Welcome to the Admin Dashboard Test, {user.email}!</h1>
+  <p>This page is accessible only to admin users.</p>
   <a href="/api/auth/signout" class="text-blue-600 hover:underline">Logout</a>
 </Layout>
