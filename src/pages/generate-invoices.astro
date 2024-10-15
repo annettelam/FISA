@@ -84,6 +84,10 @@ import Layout from "../layouts/Layout.astro";
                         >
                         <th
                             class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            >Contact Name</th
+                        >
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
                             >Action</th
                         >
                     </tr>
@@ -210,6 +214,13 @@ import Layout from "../layouts/Layout.astro";
                     tdEmail.textContent = school.email || "";
                     tr.appendChild(tdEmail);
 
+                    const tdContactName = document.createElement("td");
+                    tdContactName.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdContactName.textContent = school.contactName || "";
+                    tr.appendChild(tdContactName);
+
+                    // Action Button
                     const tdAction = document.createElement("td");
                     tdAction.className =
                         "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
@@ -220,7 +231,7 @@ import Layout from "../layouts/Layout.astro";
                     button.textContent = "Generate Invoice";
                     button.addEventListener("click", () => {
                         if (selectedFormType) {
-                            const url = `/${selectedFormType}?schoolId=${encodeURIComponent(school.schoolId)}`;
+                            const url = `${baseUrl}/${selectedFormType}?schoolId=${encodeURIComponent(school.schoolId)}`;
                             window.open(url, "_blank");
                         } else {
                             alert(
@@ -236,7 +247,7 @@ import Layout from "../layouts/Layout.astro";
             } else {
                 const tr = document.createElement("tr");
                 const td = document.createElement("td");
-                td.colSpan = 6;
+                td.colSpan = 7; // Updated to match the number of columns
                 td.className = "text-center py-4 text-sm text-gray-500";
                 td.textContent = "No schools found.";
                 tr.appendChild(td);
