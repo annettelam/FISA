@@ -1,65 +1,36 @@
+// src/pages/api/invoices.js
 import { openDatabase } from "./db-utils";
 
-export async function GET({ request }) {
-    const url = new URL(request.url);
-    const tableName = url.searchParams.get("table") || "all_schools_2024-2025"; // Use default table if not specified
-    const schoolId = url.searchParams.get("schoolId"); // Get schoolId from query param if provided
-
-    const db = openDatabase();
+export async function GET({ url }) {
+    const tableName = url.searchParams.get("table");
 
     try {
-        let query;
-        let rows;
+        const db = openDatabase();
 
-        // If schoolId is provided, fetch data for a specific school
-        if (schoolId) {
-            query = `
-                SELECT 
-                    SCHOOL AS schoolName, 
-                    SCHOOL_NUM AS schoolId, 
-                    Halfday_k AS halfDayKindergarten, 
-                    Fullday_k AS fullDayKindergarten, 
-                    "1_7" AS grades1To12
-                FROM "${tableName}" 
-                WHERE SCHOOL_NUM = ?
-            `;
-            rows = db.prepare(query).get(schoolId); // Get the single row
+        const query = `
+            SELECT 
+                SCHOOL AS schoolName, 
+                SCHOOL_NUM AS schoolId, 
+                ASSOC AS assoc, 
+                CITY AS city, 
+                EMAIL AS email
+            FROM "${tableName}"
+        `;
 
-            // Return 404 if the school is not found
-            if (!rows) {
-                return new Response(JSON.stringify({ error: "School not found" }), {
-                    status: 404,
-                    headers: { "Content-Type": "application/json" },
-                });
-            }
-        } else {
-            // If no schoolId is provided, fetch all rows from the table
-            query = `
-                SELECT 
-                    SCHOOL AS schoolName, 
-                    SCHOOL_NUM AS schoolId, 
-                    Halfday_k AS halfDayKindergarten, 
-                    Fullday_k AS fullDayKindergarten, 
-                    "1_7" AS grades1To12
-                FROM "${tableName}"
-            `;
-            rows = db.prepare(query).all(); // Get all rows
-        }
+        const stmt = db.prepare(query);
+        const data = stmt.all();
 
-        // Return the fetched data
-        return new Response(JSON.stringify(rows), {
+        db.close();
+
+        return new Response(JSON.stringify(data), {
             status: 200,
             headers: { "Content-Type": "application/json" },
         });
-
     } catch (error) {
-        console.error("Error fetching data from table:", error);
-        return new Response(
-            JSON.stringify({ error: "Failed to fetch data from table" }),
-            {
-                status: 500,
-                headers: { "Content-Type": "application/json" },
-            }
-        );
+        console.error("Error fetching data:", error);
+        return new Response(JSON.stringify({ error: "Failed to fetch data" }), {
+            status: 500,
+            headers: { "Content-Type": "application/json" },
+        });
     }
 }
