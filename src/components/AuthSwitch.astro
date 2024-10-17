@@ -1,0 +1,12 @@
+---
+const { user } = Astro.props;
+---
+{user ? (
+  user.isAdmin ? (
+    <slot name="adminContent" />
+  ) : (
+    <slot name="userContent" />
+  )
+) : (
+  <slot name="guestContent" />
+)}

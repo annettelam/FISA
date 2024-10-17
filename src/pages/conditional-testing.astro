@@ -1,0 +1,36 @@
+---
+import Layout from '../layouts/Layout.astro';
+import AuthSwitch from '../components/AuthSwitch.astro';
+
+const user = Astro.locals.user;
+---
+<Layout title="Conditional Testing">
+  <AuthSwitch user={user}>
+    <!-- Admin Content -->
+    <div slot="adminContent">
+      {user && user.email ? (
+        <h1 class="text-3xl font-bold mb-4">Welcome, Admin {user.email}!</h1>
+      ) : (
+        <h1 class="text-3xl font-bold mb-4">Welcome, Admin!</h1>
+      )}
+      <p>You have administrative access.</p>
+    </div>
+
+    <!-- User Content -->
+    <div slot="userContent">
+      {user && user.email ? (
+        <h1 class="text-3xl font-bold mb-4">Welcome, {user.email}!</h1>
+      ) : (
+        <h1 class="text-3xl font-bold mb-4">Welcome, User!</h1>
+      )}
+      <p>You are logged in as a regular user.</p>
+    </div>
+
+    <!-- Guest Content -->
+    <div slot="guestContent">
+      <h1 class="text-3xl font-bold mb-4">Welcome, Guest!</h1>
+      <p>You are not logged in.</p>
+      <a href="/login" class="text-blue-600 hover:underline">Login</a>
+    </div>
+  </AuthSwitch>
+</Layout>
