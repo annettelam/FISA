@@ -27,18 +27,17 @@ const isAdmin = user?.isAdmin || false;
             <strong>Your all-in-one registration hub:</strong><br />
             Get started by having your school ID number ready.
           </p>
-          <div class="mt-6 sm:mt-8">
-            <a href="/register" class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition">
-              Get Started
-            </a>
-          </div>
         </div>
       </header>
 
-      <!-- Admin Access Indicator -->
-      <div class="bg-red-500 text-white text-center py-4">
-        <p><strong>Admin Access:</strong> You have administrative privileges.</p>
-      </div>
+<!-- Admin Access Indicator, with X button to dismiss -->
+<div class="relative bg-red-500 text-white text-center py-4">
+  <p class="inline-block w-full"><strong>Admin Access:</strong> You have administrative privileges.</p>
+  <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white dark:text-gray-200 bg-red-700 dark:bg-red-800 px-3 py-1 rounded-full hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none" onclick="this.parentElement.style.display = 'none'">
+    <i class="fas fa-times"></i>
+  </button>
+</div>
+
 
       <!-- Main Content for Admin -->
       <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
