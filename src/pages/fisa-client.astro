@@ -1,22 +1,96 @@
 ---
+<<<<<<< Updated upstream
 import Layout from '../layouts/Layout.astro';
 import SchoolInfoCard from '../components/SchoolInfoCard.astro';
 import SchoolEnrollmentCard from '../components/SchoolEnrollmentCard.astro';
 import CommentsCard from '../components/CommentsCard.astro';
 
+=======
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro"; // Ensure the Card component is imported
+const user = Astro.locals.user;
+const isAdmin = user?.isAdmin || false; // Determine if the user is an admin
+>>>>>>> Stashed changes
 ---
 
-<Layout title="FISA Client page">
-    <main class="border border-gray-300 rounded-lg p-6 m-6">
+<Layout title="Dashboard - FISA Portal">
+  <!-- Header Section -->
+  <header
+    class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20"
+  >
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md">
+        Welcome, {user.email}!
+        {isAdmin && <span class="ml-2 text-yellow-300">(Admin Access)</span>}
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+        This is your dashboard. Manage your school’s information and access key features.
+      </p>
+    </div>
+  </header>
 
-        <SchoolInfoCard />
-        <SchoolEnrollmentCard />
-        <CommentsCard />
+  <!-- Main Content -->
+  <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
+    <div class="max-w-7xl mx-auto px-4">
+      <!-- User Dashboard Section -->
+      <section class="text-center mb-12 sm:mb-16">
+        <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white">
+          Your Dashboard
+        </h2>
+        <p class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto">
+          Access the different features available to you as a registered user of the FISA Portal.
+        </p>
+      </section>
 
-        <!-- Button Section *** Add Preview button and Preview page before submission -->
-        <div class="flex justify-end mb-20 mt-20 mr-6">
-            <button id="submitButton" type="button" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm w-auto px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Submit</button>
-        </div>
-    </main>
+      <!-- Grid for Cards (Conditional Display Based on Role) -->
+      <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+        <!-- Display all cards for admin users -->
+        {isAdmin ? (
+          <>
+            <Card href="/register" icon="fa-solid fa-user-plus" title="Register" body="New independent school? Register with us seamlessly." />
+            <Card href="/login" icon="fa-solid fa-sign-in-alt" title="Login" body="Already registered? Access your account to manage payments or update your profile." />
+            <Card href="/fact-sheet" icon="fa-solid fa-file-alt" title="FISA Fact Sheet" body="View and submit updates to school information easily." />
+            <Card href="/changelog" icon="fa-solid fa-list-alt" title="FISA Changelog" body="Admins can review all changes made to schools here." />
+            <Card href="/review-client-changes" icon="fa-solid fa-check-circle" title="Review Pending Updates" body="Admins can approve or reject school update requests efficiently." />
+            <Card href="/generate-invoices" icon="fa-solid fa-database" title="Generate Invoices" body="Generate FISA, EDBC, or Make a Future invoices as needed." />
+            <Card href="/fisa-fees" icon="fa-solid fa-receipt" title="FISA Fees Invoice" body="Manage and review your fee invoices with ease." />
+            <Card href="/myedbc" icon="fa-solid fa-calculator" title="My EDBC Fees Invoice" body="Calculate and submit your EDBC fee invoices seamlessly." />
+            <Card href="/makeafuture" icon="fa-solid fa-rocket" title="Make a Future Fees Invoice" body="Plan and submit future fee invoices effortlessly." />
+            <Card href="/reminders" icon="fa-solid fa-exclamation-circle" title="Overdue Payments" body="View schools with overdue payments and take action." />
+            <Card href="/database" icon="fa-solid fa-database" title="Database Visualization" body="Explore the detailed data of all schools." />
+            <Card href="/analytics" icon="fa-solid fa-database" title="Database Charts" body="School Data in Charts." />
+            <Card href="/admin" icon="fa-solid fa-user-shield" title="Admin Dashboard" body="Manage databases, create new tables, and oversee system settings." />
+          </>
+        ) : (
+          <!-- Client-specific invoice generation -->
+          <>
+            <div class="max-w-3xl mx-auto px-4 text-center">
+              <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- FISA Fees Button -->
+                <div class="p-6 bg-blue-100 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <h3 class="text-2xl font-semibold text-blue-900 mb-2">FISA Fees</h3>
+                  <p class="text-gray-700 mb-4">Generate your FISA Fees invoice.</p>
+                  <a href="/fisa-fees" class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition">Generate FISA Fees</a>
+                </div>
 
+                <!-- Make A Future Button -->
+                <div class="p-6 bg-blue-100 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <h3 class="text-2xl font-semibold text-blue-900 mb-2">Make A Future</h3>
+                  <p class="text-gray-700 mb-4">Generate your Make A Future invoice.</p>
+                  <a href="/makeafuture" class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition">Generate Make A Future</a>
+                </div>
+
+                <!-- My EDBC Button -->
+                <div class="p-6 bg-blue-100 rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300">
+                  <h3 class="text-2xl font-semibold text-blue-900 mb-2">My EDBC</h3>
+                  <p class="text-gray-700 mb-4">Generate your My EDBC invoice.</p>
+                  <a href="/myedbc" class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition">Generate My EDBC</a>
+                </div>
+              </div>
+            </div>
+          </>
+        )}
+      </ul>
+    </div>
+  </main>
 </Layout>

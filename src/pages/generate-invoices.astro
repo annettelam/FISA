@@ -1,0 +1,242 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const user = Astro.locals.user;
+const schoolId = user.schoolId; // Assuming user has schoolId
+let invoiceData = null;
+
+try {
+    const response = await fetch(`/api/invoices?schoolId=${schoolId}`);
+    if (response.ok) {
+        invoiceData = await response.json();
+    } else {
+        throw new Error("Failed to fetch invoice data.");
+    }
+} catch (error) {
+    console.error("Error fetching invoice data:", error);
+}
+---
+
+<Layout title="Generate Invoices - FISA Portal">
+    <!-- Header Section -->
+    <header
+        class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20"
+    >
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <h1
+                class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md"
+            >
+                Generate Invoices
+            </h1>
+            <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+                Generate your school's invoice based on your current enrollment
+                data.
+            </p>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
+        <div class="max-w-7xl mx-auto px-4">
+            {
+                invoiceData ? (
+                    <div class="bg-blue-100 p-6 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-blue-800 mb-4">
+                            Invoice for {invoiceData.schoolName}
+                        </h2>
+                        <p>
+                            <strong>School ID:</strong> {invoiceData.schoolId}
+                        </p>
+                        <p>
+                            <strong>City:</strong> {invoiceData.city}
+                        </p>
+                        <p>
+                            <strong>Total FTE:</strong> {invoiceData.totalFTE}
+                        </p>
+                        <p>
+                            <strong>Amount Due:</strong> $
+                            {invoiceData.totalAmountDue}
+                        </p>
+                        <div class="mt-6">
+                            <a
+                                href="/make-payment"
+                                class="inline-block bg-blue-600 text-white font-semibold py-2 px-6 rounded-full hover:bg-blue-700 transition"
+                            >
+                                Proceed to Payment
+                            </a>
+                        </div>
+                    </div>
+                ) : (
+                    <p class="text-gray-700">Loading invoice data...</p>
+                )
+            }
+        </div>
+    </main>
+</Layout>
+
+<style>
+    /* Make the table responsive */
+    .table-container {
+        overflow-x: auto;
+        max-width: 100%;
+    }
+
+    /* Fix the width of the action column */
+    .action-column {
+        width: 160px; /* Adjust this width as needed */
+        white-space: nowrap;
+        text-align: center;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let tables = [];
+        let selectedTable = "";
+        let schools = [];
+        let selectedFormType = "";
+
+        const baseUrl = "http://localhost:4321"; // Correct server URL and port
+
+        // Function to fetch tables for the dropdown
+        async function fetchTables() {
+            try {
+                const response = await fetch(`${baseUrl}/api/list-tables`);
+                if (response.ok) {
+                    const data = await response.json();
+                    tables = data.tables;
+                    populateTableSelect();
+                } else {
+                    console.error("Failed to fetch tables");
+                }
+            } catch (error) {
+                console.error("Error fetching tables:", error);
+            }
+        }
+
+        // Function to populate table select dropdown
+        function populateTableSelect() {
+            const tableSelect = document.getElementById("tableSelect");
+            tableSelect.innerHTML =
+                '<option value="" disabled selected>Select a table</option>';
+            tables.forEach((table) => {
+                const option = document.createElement("option");
+                option.value = table;
+                option.textContent = table;
+                tableSelect.appendChild(option);
+            });
+
+            tableSelect.addEventListener("change", (e) => {
+                selectedTable = e.target.value;
+                fetchSchools(selectedTable);
+            });
+        }
+
+        // Fetch tables on page load
+        fetchTables();
+
+        // Handle form type selection
+        const formTypeSelect = document.getElementById("formTypeSelect");
+        formTypeSelect.addEventListener("change", (e) => {
+            selectedFormType = e.target.value;
+        });
+
+        // Function to fetch school data for the selected table
+        async function fetchSchools(table) {
+            try {
+                const response = await fetch(
+                    `${baseUrl}/api/invoices?table=${encodeURIComponent(table)}`,
+                );
+                if (response.ok) {
+                    schools = await response.json();
+                    renderSchoolsTable();
+                } else {
+                    console.error("Failed to load school data");
+                }
+            } catch (error) {
+                console.error("Error fetching school data:", error);
+            }
+        }
+
+        // Function to render schools table
+        function renderSchoolsTable() {
+            const tbody = document.getElementById("table-body");
+            tbody.innerHTML = "";
+
+            if (schools.length > 0) {
+                schools.forEach((school) => {
+                    const tr = document.createElement("tr");
+
+                    // Create table cells
+                    const tdSchoolName = document.createElement("td");
+                    tdSchoolName.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdSchoolName.textContent = school.schoolName || "";
+                    tr.appendChild(tdSchoolName);
+
+                    const tdSchoolId = document.createElement("td");
+                    tdSchoolId.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdSchoolId.textContent = school.schoolId || "";
+                    tr.appendChild(tdSchoolId);
+
+                    const tdAssoc = document.createElement("td");
+                    tdAssoc.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdAssoc.textContent = school.assoc || "";
+                    tr.appendChild(tdAssoc);
+
+                    const tdCity = document.createElement("td");
+                    tdCity.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdCity.textContent = school.city || "";
+                    tr.appendChild(tdCity);
+
+                    const tdEmail = document.createElement("td");
+                    tdEmail.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdEmail.textContent = school.email || "";
+                    tr.appendChild(tdEmail);
+
+                    const tdContactName = document.createElement("td");
+                    tdContactName.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdContactName.textContent = school.contactName || "";
+                    tr.appendChild(tdContactName);
+
+                    // Action Button
+                    const tdAction = document.createElement("td");
+                    tdAction.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 action-column";
+
+                    const button = document.createElement("button");
+                    button.className =
+                        "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-300";
+                    button.textContent = "Generate Invoice";
+                    button.addEventListener("click", () => {
+                        if (selectedFormType) {
+                            const url = `${baseUrl}/${selectedFormType}?schoolId=${encodeURIComponent(school.schoolId)}`;
+                            window.open(url, "_blank");
+                        } else {
+                            alert(
+                                "Please select a form type before generating the invoice.",
+                            );
+                        }
+                    });
+                    tdAction.appendChild(button);
+                    tr.appendChild(tdAction);
+
+                    tbody.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.colSpan = 7; // Updated to match the number of columns
+                td.className = "text-center py-4 text-sm text-gray-500";
+                td.textContent = "No schools found.";
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            }
+        }
+    });
+</script>
