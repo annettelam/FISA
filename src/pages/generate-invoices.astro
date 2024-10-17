@@ -56,7 +56,7 @@ const user = Astro.locals.user;
 
         <!-- Table with sticky headers and accessible scrollbar -->
         <div
-            class="table-container border border-gray-300 dark:border-gray-700 rounded-lg shadow"
+            class="table-container border border-gray-300 dark:border-gray-700 rounded-lg shadow overflow-x-auto"
         >
             <table
                 class="min-w-full text-sm text-left text-gray-700 dark:text-gray-300"
@@ -89,7 +89,7 @@ const user = Astro.locals.user;
                             >Contact Name</th
                         >
                         <th
-                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider action-column"
                             >Action</th
                         >
                     </tr>
@@ -106,6 +106,21 @@ const user = Astro.locals.user;
         </div>
     </div>
 </Layout>
+
+<style>
+    /* Make the table responsive */
+    .table-container {
+        overflow-x: auto;
+        max-width: 100%;
+    }
+
+    /* Fix the width of the action column */
+    .action-column {
+        width: 160px; /* Adjust this width as needed */
+        white-space: nowrap;
+        text-align: center;
+    }
+</style>
 
 <script>
     document.addEventListener("DOMContentLoaded", () => {
@@ -225,7 +240,7 @@ const user = Astro.locals.user;
                     // Action Button
                     const tdAction = document.createElement("td");
                     tdAction.className =
-                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 action-column";
 
                     const button = document.createElement("button");
                     button.className =
