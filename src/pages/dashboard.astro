@@ -1,11 +1,102 @@
 ---
-import Layout from '../layouts/Layout.astro';
+import Layout from "../layouts/Layout.astro";
+import Card from "../components/Card.astro";
 
 const user = Astro.locals.user;
 ---
 
-<Layout title="Dashboard">
-  <h1>Welcome, {user.email}!</h1>
-  <p>This is your dashboard.</p>
-  <a href="/api/auth/signout" style="color: blue;">Logout</a>
+<Layout title="Dashboard - FISA Portal">
+  <!-- Header Section -->
+  <header
+    class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20"
+  >
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h1
+        class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md"
+      >
+        Welcome, {user.email}!
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+        This is your dashboard. Manage your school’s information and access key
+        features.
+      </p>
+      <div class="mt-6 sm:mt-8">
+        <a
+          href="/api/auth/signout"
+          class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition"
+        >
+          Logout
+        </a>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
+    <div class="max-w-7xl mx-auto px-4">
+      <!-- User Dashboard Section -->
+      <section class="text-center mb-12 sm:mb-16">
+        <h2
+          class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white"
+        >
+          Your Dashboard
+        </h2>
+        <p
+          class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto"
+        >
+          Access the different features available to you as a registered user of
+          the FISA Portal.
+        </p>
+      </section>
+
+      <!-- Grid for Cards -->
+      <ul
+        role="list"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
+      >
+        <!-- Example Cards -->
+        <Card
+          href="/fact-sheet"
+          icon="fa-solid fa-file-alt"
+          title="FISA Fact Sheet"
+          body="View and submit updates to school information easily."
+        />
+        <Card
+          href="/generate-invoices"
+          icon="fa-solid fa-receipt"
+          title="Generate Invoices"
+          body="Create FISA, EDBC, or Make a Future invoices as needed."
+        />
+        <Card
+          href="/reminders"
+          icon="fa-solid fa-exclamation-circle"
+          title="Overdue Payments"
+          body="View schools with overdue payments and take action."
+        />
+        <Card
+          href="/database"
+          icon="fa-solid fa-database"
+          title="Database Visualization"
+          body="Explore detailed data of all schools."
+        />
+        <Card
+          href="/analytics"
+          icon="fa-solid fa-chart-line"
+          title="Analytics"
+          body="View charts and analytics of school data."
+        />
+        <Card
+          href="/admin"
+          icon="fa-solid fa-user-shield"
+          title="Admin Dashboard"
+          body="Manage databases, create new tables, and oversee system settings."
+        />
+      </ul>
+    </div>
+  </main>
 </Layout>
+
+<style>
+  /* Import Font Awesome for icons */
+  @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
+</style>
