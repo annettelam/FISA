@@ -1,5 +1,3 @@
-// src/middleware.js
-
 import { authMiddleware } from './middleware/auth.js';
 
 export async function onRequest({ request, locals }, next) {
