@@ -1,3 +1,5 @@
+// src/middleware/auth.js
+
 import jwt from 'jsonwebtoken';
 import dotenv from 'dotenv';
 
@@ -34,12 +36,10 @@ export async function authMiddleware(
   const isAuthenticated = !!user;
   const isAdmin = user?.isAdmin || false;
 
-  // Handle authentication requirement
   if (requireAuth && !isAuthenticated) {
     return { authenticated: false, redirectTo: authRedirect };
   }
 
-  // Handle admin requirement
   if (requireAdmin && !isAdmin) {
     return { authenticated: false, redirectTo: adminRedirect };
   }

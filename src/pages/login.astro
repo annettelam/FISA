@@ -12,6 +12,8 @@ Astro.cookies.set('csrf-secret', secret, {
   sameSite: 'lax',
   path: '/',
 });
+
+const user = Astro.locals.user;
 ---
 <Layout title="Login">
   <!-- Login Form -->

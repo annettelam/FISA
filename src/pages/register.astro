@@ -2,6 +2,8 @@
 import Layout from '../layouts/Layout.astro';
 import { createCsrfToken } from '../lib/csrf';
 
+const user = Astro.locals.user;
+
 // Generate CSRF token and secret
 const { csrfToken, secret } = createCsrfToken();
 

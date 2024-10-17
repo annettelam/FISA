@@ -1,12 +1,7 @@
 ---
 import Layout from '../layouts/Layout.astro';
-import { authMiddleware } from '../middleware/auth.js';
 
-const { authenticated, user, redirectTo } = await authMiddleware(Astro.request, { requireAuth: true });
-
-if (!authenticated) {
-  return Astro.redirect(redirectTo);
-}
+const user = Astro.locals.user;
 ---
 
 <Layout title="Dashboard">

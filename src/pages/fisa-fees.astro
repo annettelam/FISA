@@ -2,6 +2,8 @@
 import Layout from "../layouts/Layout.astro";
 import FisaForm from "../components/FisaForm.astro";
 
+const user = Astro.locals.user;
+
 // Extract the schoolId from the URL query parameters
 const url = new URL(Astro.request.url);
 const schoolId = url.searchParams.get("schoolId");
