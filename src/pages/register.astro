@@ -1,72 +1,177 @@
 ---
-import Layout from '../layouts/Layout.astro';
----
-<Layout title='Register'>
+import Layout from "../layouts/Layout.astro";
+import { createCsrfToken } from "../lib/csrf";
 
-  <!-- Flowbite component directly copy & pasted from flowbite.com -->
-  <form id="registrationForm" class="max-w-sm mx-auto" action="/api/register" method="POST">
-    <div class="mb-5">
-      <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-      <input type="email" id="email" name="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@flowbite.com" required />
+const user = Astro.locals.user;
+
+// Generate CSRF token and secret
+const { csrfToken, secret } = createCsrfToken();
+
+// Set the CSRF secret as a cookie
+Astro.cookies.set("csrf-secret", secret, {
+  httpOnly: true,
+  secure: import.meta.env.PROD, // `true` in production, `false` in development
+  sameSite: "lax",
+  path: "/",
+});
+---
+
+<Layout title="Register - FISA Portal">
+  <!-- Header Section -->
+  <header
+    class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20"
+  >
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <h1
+        class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md"
+      >
+        Register for <span class="text-white">FISA Portal</span>
+      </h1>
+      <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+        Create an account to manage your school's information and services.
+      </p>
     </div>
-    <div class="mb-5">
-      <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-      <input type="password" id="password" name="password" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
+  </header>
+
+  <!-- Main Content -->
+  <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
+    <div class="max-w-lg mx-auto px-4">
+      <form
+        id="registrationForm"
+        class="bg-gray-100 dark:bg-gray-800 p-8 rounded-lg shadow-md"
+        method="POST"
+      >
+        <!-- CSRF Token Hidden Input -->
+        <input type="hidden" name="csrfToken" value={csrfToken} />
+
+        <div class="mb-5">
+          <label
+            for="email"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+            >Your email</label
+          >
+          <input
+            type="email"
+            id="email"
+            name="email"
+            class="block w-full p-2.5 bg-white dark:bg-gray-700 border border-gray-300 rounded-lg text-gray-900 dark:text-white"
+            placeholder="name@example.com"
+            required
+          />
+        </div>
+        <div class="mb-5">
+          <label
+            for="password"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+            >Your password</label
+          >
+          <input
+            type="password"
+            id="password"
+            name="password"
+            class="block w-full p-2.5 bg-white dark:bg-gray-700 border border-gray-300 rounded-lg text-gray-900 dark:text-white"
+            required
+          />
+        </div>
+        <div class="mb-5">
+          <label
+            for="repeat-password"
+            class="block mb-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+            >Repeat password</label
+          >
+          <input
+            type="password"
+            id="repeat-password"
+            name="repeatPassword"
+            class="block w-full p-2.5 bg-white dark:bg-gray-700 border border-gray-300 rounded-lg text-gray-900 dark:text-white"
+            required
+          />
+        </div>
+        <!-- Admin Account Checkbox -->
+        <div class="mb-5">
+          <label class="inline-flex items-center">
+            <input
+              type="checkbox"
+              id="isAdmin"
+              name="isAdmin"
+              class="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+            />
+            <span
+              class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+              >Register as Admin</span
+            >
+          </label>
+        </div>
+        <div class="flex items-start mb-5">
+          <div class="flex items-center h-5">
+            <input
+              id="terms"
+              type="checkbox"
+              name="terms"
+              class="w-4 h-4 border border-gray-300 rounded bg-gray-50 dark:bg-gray-700 focus:ring-3 focus:ring-blue-300"
+              required
+            />
+          </div>
+          <label
+            for="terms"
+            class="ml-2 text-sm font-medium text-gray-900 dark:text-gray-300"
+          >
+            I agree with the
+            <a href="#" class="text-blue-600 dark:text-blue-400 hover:underline"
+              >terms and conditions</a
+            >
+          </label>
+        </div>
+        <button
+          type="submit"
+          class="w-full bg-blue-700 hover:bg-blue-800 text-white font-medium rounded-lg text-sm px-5 py-2.5"
+        >
+          Register new account
+        </button>
+      </form>
     </div>
-    <div class="mb-5">
-      <label for="repeat-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Repeat password</label>
-      <input type="password" id="repeat-password" name="repeatPassword" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
-    </div>
-    <div class="flex items-start mb-5">
-      <div class="flex items-center h-5">
-        <input id="terms" type="checkbox" name="terms" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
-      </div>
-      <label for="terms" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a></label>
-    </div>
-    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Register new account</button>
-  </form>
+  </main>
 
   <script>
-    document.getElementById('registrationForm').addEventListener('submit', async (event) => {
-      event.preventDefault(); // Prevent the default form submission
+    document
+      .getElementById("registrationForm")
+      .addEventListener("submit", async (event) => {
+        event.preventDefault(); // Prevent the default form submission
 
-      const email = document.getElementById('email').value;
-      const password = document.getElementById('password').value;
-      const repeatPassword = document.getElementById('repeat-password').value;
+        const formData = new FormData(event.target);
+        const data = Object.fromEntries(formData.entries());
 
-      // Check if passwords match
-      if (password !== repeatPassword) {
-        alert("Passwords do not match.");
-        return;
-      }
+        // Convert 'isAdmin' checkbox value to boolean
+        data.isAdmin = data.isAdmin === "on";
 
-      // Construct the payload
-      const payload = {
-        email,
-        password
-      };
-
-      try {
-        const response = await fetch('/api/register', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(payload),
-        });
-
-        if (response.status === 201) {
-          alert('Registration successful! Redirecting to login...');
-          window.location.href = '/login';
-        } else {
-          const errorText = await response.text();
-          throw new Error(errorText || 'Registration failed');
+        if (data.password !== data.repeatPassword) {
+          alert("Passwords do not match.");
+          return;
         }
-      } catch (error) {
-        console.error('Error:', error);
-        alert(`Error: ${error.message}`);
-      }
-    });
-  </script>
 
+        // Remove 'repeatPassword' from data
+        delete data.repeatPassword;
+
+        try {
+          const response = await fetch("/api/register", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(data),
+          });
+
+          if (response.status === 201) {
+            alert("Registration successful! Redirecting to login...");
+            window.location.href = "/login";
+          } else {
+            const errorText = await response.text();
+            throw new Error(errorText || "Registration failed");
+          }
+        } catch (error) {
+          console.error("Error:", error);
+          alert(`Error: ${error.message}`);
+        }
+      });
+  </script>
 </Layout>

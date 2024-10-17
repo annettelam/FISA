@@ -1,8 +1,10 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+
+const user = Astro.locals.user;
 ---
-    
+
 <Layout title="Welcome to FISA Portal">
   <!-- Header Section -->
   <header
@@ -84,6 +86,12 @@ import Card from "../components/Card.astro";
           body="Admins can approve or reject school update requests efficiently."
         />
         <Card
+          href="/generate-invoices"
+          icon="fa-solid fa-database"
+          title="Generate Invoices"
+          body="Generate FISA, EDBC, or Make a Future invoices as needed."
+        />
+        <Card
           href="/fisa-fees"
           icon="fa-solid fa-receipt"
           title="FISA Fees Invoice"
@@ -102,10 +110,10 @@ import Card from "../components/Card.astro";
           body="Plan and submit future fee invoices effortlessly."
         />
         <Card
-          href="/admin-notifications"
+          href="/reminders"
           icon="fa-solid fa-exclamation-circle"
           title="Overdue Payments"
-          body="View schools with overdue payments."
+          body="View schools with overdue payments and take action."
         />
         <Card
           href="/database"
@@ -113,8 +121,12 @@ import Card from "../components/Card.astro";
           title="Database Visualization"
           body="Explore the detailed data of all schools."
         />
-
-        <!-- New Admin Card -->
+        <Card
+          href="/analytics"
+          icon="fa-solid fa-database"
+          title="Database Charts"
+          body="School Data in Charts."
+        />
         <Card
           href="/admin"
           icon="fa-solid fa-user-shield"

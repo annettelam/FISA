@@ -1,0 +1,375 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+import ColumnDistributionPieChart from "../components/Analytics/columnDistributionPieChart.astro";
+import GroupBarChart from "../components/Analytics/groupBarChart.astro";
+
+const user = Astro.locals.user;
+
+
+---
+
+<Layout title=" Analytics ">
+    <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300">
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Charts</h1>
+            <p class="text-gray-600 dark:text-gray-300">
+            View data from the database in a visual chart format.
+            </p>
+        </div>
+
+
+        <div class="mb-4">
+            <label for="tableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Table</label>
+            <select id="tableSelect" name="tableSelect" class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
+            <option value="" disabled selected>Select a table</option>
+            <!-- Options will be populated dynamically -->
+            </select>
+        </div>
+
+        <div class="flex flex-wrap justify-between gap-4">
+          <ColumnDistributionPieChart title="Funding by Group" titleContainerId="funding-title-container" ChartId="funding-pie-chart" />
+          <ColumnDistributionPieChart title="School by Association" titleContainerId="school-assoc-title-container" ChartId="association-pie-chart" />
+          <GroupBarChart title="Students by Association" titleContainerId="students-assoc-title-container" ChartId="assoc-bar-chart" />
+        
+      </div>
+
+
+      
+
+
+
+
+    </div>  
+</Layout>
+<script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+
+<script>
+
+import ApexCharts from "apexcharts";
+
+let tableData: any;
+let currentTable = "";
+
+// Populate the tables dropdown
+function populateTableSelect(tables: any[]) {
+  const tableSelect = document.getElementById('tableSelect');
+  tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
+
+  if (tables.length === 0) {
+    const option = document.createElement('option');
+    option.value = "";
+    option.textContent = "No tables available";
+    option.disabled = true;
+    tableSelect.appendChild(option);
+    (tableSelect as HTMLSelectElement).disabled = true;
+    return;
+  }
+
+  (tableSelect as HTMLSelectElement).disabled = false;
+  tables.forEach((table: string) => {
+    const option = document.createElement('option');
+    option.value = table;
+    option.textContent = table;
+    tableSelect.appendChild(option);
+  });
+
+  // Fetch data for the selected table when user changes table selection
+  tableSelect.addEventListener('change', fetchDataForTable);
+}
+
+// Function to fetch tables for the dropdown
+async function fetchTables() {
+  try {
+    const response = await fetch('/api/list-tables');
+    if (response.ok) {
+      const data = await response.json();
+      populateTableSelect(data.tables);
+    } else {
+      throw new Error('Failed to fetch tables.');
+    }
+  } catch (error) {
+    console.error('Error fetching tables:', error);
+  }
+}
+
+// Fetch data for the selected table
+async function fetchDataForTable() {
+  const selectedTable = (document.getElementById('tableSelect') as HTMLSelectElement).value;
+  if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
+
+  currentTable = selectedTable; // Update current table
+
+  try {
+    const response = await fetch(`/api/data?table=${encodeURIComponent(selectedTable)}`);
+    if (!response.ok) {
+      throw new Error(`Failed to fetch data for table: ${selectedTable}`);
+    }
+    const data = await response.json();
+    tableData = data; // Store the data
+
+
+
+    // chart for funding
+    colDistPieChart(tableData, 'FUNDING', 'funding-title-container', 'funding-pie-chart');
+
+    // chart for ASSOC
+    colDistPieChart(tableData, 'ASSOC', 'school-assoc-title-container', 'association-pie-chart');
+
+
+    // bar chart for students by association
+    groupBarChart(tableData, 'ASSOC', 'TOTk_12', 'students-assoc-title-container', 'assoc-bar-chart');
+
+
+
+  } catch (error) {
+    console.error(`Error fetching data for table ${selectedTable}:`, error);
+  }
+}
+
+
+// Bar charts
+// Function to process groups and update the bar chart
+async function groupBarChart(data, groupByCol, sumCol, titleContainerId, chartContainerId) {
+  const groupCounts = {};
+
+  // Sum values based on groupByCol
+  data.forEach((row) => {
+    const group = row[groupByCol];
+    const value = row[sumCol];
+    groupCounts[group] = (groupCounts[group] || 0) + (value || 0); // Ensure value is not undefined
+  });
+
+  // Prepare data for the bar chart
+  const seriesData = Object.values(groupCounts);
+  const categories = Object.keys(groupCounts);
+
+  console.log(seriesData, categories);
+
+  // Show the title only if there's data
+  const titleContainer = document.getElementById(titleContainerId);
+  titleContainer.style.display = seriesData.length > 0 ? 'flex' : 'none'; // Show or hide title
+
+  // check if the chart is dark or not
+  const isDarkMode = document.body.classList.contains('dark'); // Check for dark mode
+
+  // Set up chart options
+  const options = {
+    series: [
+      {
+        name: "Students", // Renamed from "Income"
+        color: "#31C48D",
+        data: seriesData,
+      }
+    ],
+    chart: {
+      sparkline: {
+        enabled: false,
+      },
+      type: "bar",
+      width: "100%",
+      height: 400,
+      toolbar: {
+        show: false,
+      }
+    },
+    fill: {
+      opacity: 1,
+    },
+    plotOptions: {
+      bar: {
+        horizontal: true,
+        columnWidth: "100%",
+        borderRadiusApplication: "end",
+        borderRadius: 6,
+        dataLabels: {
+          position: "top",
+        },
+      },
+    },
+    legend: {
+      show: true,
+      position: "bottom",
+    },
+    dataLabels: {
+      enabled: false,
+    },
+    tooltip: {
+      shared: true,
+      intersect: false,
+      formatter: function (value) {
+        return value; // Show only the raw value without currency or percentage
+      }
+    },
+    xaxis: {
+      labels: {
+        show: true,
+        style: {
+          fontFamily: "Inter, sans-serif",
+          //cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          // cssClass: 'text-xs font-normal text-gray-500 dark:text-white' // Updated
+          color: isDarkMode ? 'white' : '#6B7280', // Text color based on mode
+          fontSize: '12px',
+          fontWeight: 400,
+        },
+      },
+      categories: categories, // Use ASSOC names here
+
+      axisTicks: {
+        show: true,
+        
+      },
+      axisBorder: {
+        show: false,
+      },
+    },
+    yaxis: {
+      labels: {
+        show: true,
+        style: {
+          fontFamily: "Inter, sans-serif",
+          //cssClass: 'text-xs font-normal fill-gray-500 dark:fill-gray-400'
+          //cssClass: 'text-xs font-normal text-gray-500 dark:text-white' // Updated
+          color: isDarkMode ? 'white' : '#6B7280' // Text color based on mode
+        }
+      }
+    },
+    grid: {
+      show: true,
+      strokeDashArray: 4,
+      padding: {
+        left: 2,
+        right: 2,
+        top: -20
+      },
+    }
+  };
+
+  // Render the chart
+  if (document.getElementById(chartContainerId) && typeof ApexCharts !== 'undefined') {
+    const chart = new ApexCharts(document.getElementById(chartContainerId), options);
+    chart.render();
+  }
+}
+
+
+
+
+// Function to process groups and update the pie chart
+async function colDistPieChart(data, colName, titleContainerId, chartContainerId) {
+  const groupCounts = {};
+
+  // Count occurrences of each group based on colName
+  data.forEach((row) => {
+    const group = row[colName];
+    groupCounts[group] = (groupCounts[group] || 0) + 1;
+  });
+
+  // Prepare data for the pie chart
+  const series = Object.values(groupCounts);
+  const labels = Object.keys(groupCounts);
+  console.log(series, labels);
+
+  // Show the title only if there's data
+  const titleContainer = document.getElementById(titleContainerId);
+  if (series.length > 0) {
+    titleContainer.style.display = 'flex'; // Show the title
+  } else {
+    titleContainer.style.display = 'none'; // Hide the title
+  }
+
+  // Function to get chart options
+  const getChartOptions = () => {
+  const colors = generateColors(series.length);
+  return {
+    series: series,
+    colors: colors,
+    chart: {
+      height: 420,
+      width: "100%",
+      type: "pie",
+    },
+    stroke: {
+      colors: ["white"],
+      lineCap: "",
+    },
+    plotOptions: {
+      pie: {
+        labels: {
+          show: true,
+        },
+        size: "100%",
+        dataLabels: {
+          offset: -25
+        }
+      },
+    },
+    labels: labels,
+    dataLabels: {
+      enabled: true,
+      style: {
+        fontFamily: "Inter, sans-serif",
+      },
+    },
+    legend: {
+      position: "bottom",
+      fontFamily: "Inter, sans-serif",
+    },
+    tooltip: {
+      // Customize tooltip to show label only
+      y: {
+        formatter: (value) => value, // Show only the value without percentage
+      },
+      marker: {
+        show: true, // Optional: show marker in tooltip
+      },
+    },
+    yaxis: {
+      labels: {
+        formatter: function (value) {
+          return value + "%"
+        },
+      },
+    },
+    xaxis: {
+      labels: {
+        formatter: function (value) {
+          return value + "%"
+        },
+      },
+      axisTicks: {
+        show: false,
+      },
+      axisBorder: {
+        show: false,
+      },
+    },
+  }
+}
+
+  if (document.getElementById(chartContainerId) && typeof ApexCharts !== 'undefined') {
+    const chart = new ApexCharts(document.getElementById(chartContainerId), getChartOptions());
+    chart.render();
+  }
+}
+
+// Function to generate an array of random light colors
+function generateColors(count) {
+  const colors = [];
+  for (let i = 0; i < count; i++) {
+    const color = `hsl(${Math.random() * 360}, 70%, 60%)`; // Light colors using HSL
+    colors.push(color);
+  }
+  return colors;
+}
+
+
+
+
+
+
+
+// Initialize table selection and fetch data
+document.addEventListener('DOMContentLoaded', fetchTables);
+</script>

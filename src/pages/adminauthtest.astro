@@ -1,0 +1,11 @@
+---
+import Layout from '../layouts/Layout.astro';
+
+const user = Astro.locals.user;
+---
+
+<Layout title="Admin Page">
+  <h1>Admin Dashboard</h1>
+  <p>Welcome, {user.email}! You have admin access.</p>
+  <a href="/api/auth/signout" style="color: blue;">Logout</a>
+</Layout>

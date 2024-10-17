@@ -10,11 +10,15 @@
     "astro": "astro"
   },
   "dependencies": {
+    "@astrojs/node": "^8.3.4",
     "@prisma/client": "^5.20.0",
-    "astro": "^4.15.9",
+    "apexcharts": "^3.54.0",
+    "astro": "^4.16.3",
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.3.0",
     "cookie": "^0.7.2",
+    "crypto": "^1.0.1",
+    "csrf": "^3.1.0",
     "dotenv": "^16.4.5",
     "flowbite": "^2.5.2",
     "jsonwebtoken": "^9.0.2",
