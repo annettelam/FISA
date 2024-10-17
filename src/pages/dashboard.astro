@@ -1,97 +1,175 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
+import { authMiddleware } from '../middleware/auth.js';
 
-const user = Astro.locals.user;
-const isAdmin = user?.isAdmin || false; // Determine if the user is an admin
+const { authenticated, user } = await authMiddleware(Astro.request, { requireAuth: true });
+
+// Redirect if not authenticated
+if (!authenticated) {
+  Astro.redirect('/login');
+}
+
+// Admin Dashboard: Full access
+const isAdmin = user?.isAdmin || false;
 ---
+<Layout title="Welcome to FISA Portal">
+  <!-- Conditional Rendering for Admin -->
+  {isAdmin ? (
+    <>
+      <!-- Header Section for Admin -->
+      <header class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+          <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md">
+            Welcome to <span class="text-white">FISA Portal</span>
+          </h1>
+          <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+            <strong>Your all-in-one registration hub:</strong><br />
+            Get started by having your school ID number ready.
+          </p>
+          <div class="mt-6 sm:mt-8">
+            <a href="/register" class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition">
+              Get Started
+            </a>
+          </div>
+        </div>
+      </header>
 
-<Layout title="Dashboard - FISA Portal">
-  <!-- Header Section -->
-  <header
-    class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20"
-  >
-    <div class="max-w-7xl mx-auto px-4 text-center">
-      <h1
-        class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md"
-      >
-        Welcome, {user.email}!
-        {isAdmin && <span class="ml-2 text-yellow-300">(Admin Access)</span>}
-      </h1>
-      <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
-        This is your dashboard. Manage your school’s information and access key
-        features.
-      </p>
+      <!-- Admin Access Indicator -->
+      <div class="bg-red-500 text-white text-center py-4">
+        <p><strong>Admin Access:</strong> You have administrative privileges.</p>
+      </div>
+
+      <!-- Main Content for Admin -->
+      <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
+        <div class="max-w-7xl mx-auto px-4">
+          <!-- Services Section for Admin -->
+          <section class="text-center mb-12 sm:mb-16">
+            <h2 class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white">
+              Our Services
+            </h2>
+            <p class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto">
+              Explore the various features we offer to streamline your registration and management processes.
+            </p>
+          </section>
+
+          <!-- Grid for Cards (Admin Only) -->
+          <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+            <Card href="/register" icon="fa-solid fa-user-plus" title="Register" body="New independent school? Register with us seamlessly." />
+            <Card href="/login" icon="fa-solid fa-sign-in-alt" title="Login" body="Already registered? Access your account to manage payments or update your profile." />
+            <Card href="/fact-sheet" icon="fa-solid fa-file-alt" title="FISA Fact Sheet" body="View and submit updates to school information easily." />
+            <Card href="/changelog" icon="fa-solid fa-list-alt" title="FISA Changelog" body="Admins can review all changes made to schools here." />
+            <Card href="/review-client-changes" icon="fa-solid fa-check-circle" title="Review Pending Updates" body="Admins can approve or reject school update requests efficiently." />
+            <Card href="/generate-invoices" icon="fa-solid fa-database" title="Generate Invoices" body="Generate FISA, EDBC, or Make a Future invoices as needed." />
+            <Card href="/fisa-fees" icon="fa-solid fa-receipt" title="FISA Fees Invoice" body="Manage and review your fee invoices with ease." />
+            <Card href="/myedbc" icon="fa-solid fa-calculator" title="My EDBC Fees Invoice" body="Calculate and submit your EDBC fee invoices seamlessly." />
+            <Card href="/makeafuture" icon="fa-solid fa-rocket" title="Make a Future Fees Invoice" body="Plan and submit future fee invoices effortlessly." />
+            <Card href="/reminders" icon="fa-solid fa-exclamation-circle" title="Overdue Payments" body="View schools with overdue payments and take action." />
+            <Card href="/database" icon="fa-solid fa-database" title="Database Visualization" body="Explore the detailed data of all schools." />
+            <Card href="/analytics" icon="fa-solid fa-database" title="Database Charts" body="School Data in Charts." />
+            <Card href="/admin" icon="fa-solid fa-user-shield" title="Admin Dashboard" body="Manage databases, create new tables, and oversee system settings." />
+          </ul>
+        </div>
+      </main>
+    </>
+  ) : (
+    <!-- Client Dashboard -->
+    <div class="client-dashboard">
+      <header class="bg-gradient-to-r from-blue-800 to-blue-700 text-white py-12 sm:py-16 md:py-20">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+          <h1 class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md">
+            Welcome to <span class="text-white">FISA Client Portal</span>
+          </h1>
+          <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
+            <strong>Select the invoice type to generate:</strong>
+          </p>
+        </div>
+      </header>
+
+      <!-- Client Invoice Selection Section -->
+      <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
+        <div class="max-w-7xl mx-auto px-4">
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-300">
+            <table class="min-w-full text-sm text-left text-gray-800 dark:text-gray-300">
+              <thead class="bg-gray-200 dark:bg-gray-700">
+                <tr>
+                  <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Invoice Type
+                  </th>
+                  <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    FISA Fees Invoice
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <a href="/fisa-fee" class="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded-full shadow hover:bg-blue-600 transition">
+                      Generate FISA Invoice
+                    </a>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    Make A Future Invoice
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <a href="/makeafuture" class="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded-full shadow hover:bg-blue-600 transition">
+                      Generate Make A Future Invoice
+                    </a>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    My EDBC Invoice
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <a href="/myedbc" class="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded-full shadow hover:bg-blue-600 transition">
+                      Generate My EDBC Invoice
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </main>
     </div>
-  </header>
-
-  <!-- Main Content -->
-  <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
-    <div class="max-w-7xl mx-auto px-4">
-      <!-- User Dashboard Section -->
-      <section class="text-center mb-12 sm:mb-16">
-        <h2
-          class="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 text-blue-800 dark:text-white"
-        >
-          Your Dashboard
-        </h2>
-        <p
-          class="text-sm sm:text-base text-blue-600 dark:text-gray-300 max-w-2xl mx-auto"
-        >
-          Access the different features available to you as a registered user of
-          the FISA Portal.
-        </p>
-      </section>
-
-      <!-- Grid for Cards -->
-      <ul
-        role="list"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8"
-      >
-        <!-- Example Cards -->
-        <Card
-          href="/fact-sheet"
-          icon="fa-solid fa-file-alt"
-          title="FISA Fact Sheet"
-          body="View and submit updates to school information easily."
-        />
-        <Card
-          href="/generate-invoices"
-          icon="fa-solid fa-receipt"
-          title="Generate Invoices"
-          body="Create FISA, EDBC, or Make a Future invoices as needed."
-        />
-        <Card
-          href="/reminders"
-          icon="fa-solid fa-exclamation-circle"
-          title="Overdue Payments"
-          body="View schools with overdue payments and take action."
-        />
-        <Card
-          href="/database"
-          icon="fa-solid fa-database"
-          title="Database Visualization"
-          body="Explore detailed data of all schools."
-        />
-        <Card
-          href="/analytics"
-          icon="fa-solid fa-chart-line"
-          title="Analytics"
-          body="View charts and analytics of school data."
-        />
-        <Card
-          href="/admin"
-          icon="fa-solid fa-user-shield"
-          title="Admin Dashboard"
-          body="Manage databases, create new tables, and oversee system settings."
-        />
-      </ul>
-    </div>
-  </main>
+  )}
 </Layout>
 
-<!-- Style Block -->
 <style>
-  /* Import Font Awesome for icons */
   @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
+
+  .hover\:bg-gray-100:hover {
+    background-color: var(--color-gray-100);
+  }
+
+  .dark .hover\:bg-gray-700:hover {
+    background-color: var(--color-gray-700);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 1rem;
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-500);
+  }
+
+  .dark th {
+    background-color: var(--color-gray-700);
+    color: var(--color-gray-300);
+  }
 </style>
