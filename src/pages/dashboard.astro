@@ -55,7 +55,6 @@ const isAdmin = user?.isAdmin || false;
 
           <!-- Grid for Cards (Admin Only) -->
           <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
-            <!-- Existing Card Components for Admin -->
             <Card href="/register" icon="fa-solid fa-user-plus" title="Register" body="New independent school? Register with us seamlessly." />
             <Card href="/login" icon="fa-solid fa-sign-in-alt" title="Login" body="Already registered? Access your account to manage payments or update your profile." />
             <Card href="/fact-sheet" icon="fa-solid fa-file-alt" title="FISA Fact Sheet" body="View and submit updates to school information easily." />
@@ -90,28 +89,52 @@ const isAdmin = user?.isAdmin || false;
       <!-- Client Invoice Selection Section -->
       <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
         <div class="max-w-7xl mx-auto px-4">
-          <table class="client-invoice-table w-full text-center">
-            <thead>
-              <tr>
-                <th>Invoice Type</th>
-                <th>Action</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td>FISA Fees Invoice</td>
-                <td><a href="/fisa-fee" class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition">Generate FISA Invoice</a></td>
-              </tr>
-              <tr>
-                <td>Make A Future Invoice</td>
-                <td><a href="/makeafuture" class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition">Generate Make A Future Invoice</a></td>
-              </tr>
-              <tr>
-                <td>My EDBC Invoice</td>
-                <td><a href="/myedbc" class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition">Generate My EDBC Invoice</a></td>
-              </tr>
-            </tbody>
-          </table>
+          <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-300">
+            <table class="min-w-full text-sm text-left text-gray-800 dark:text-gray-300">
+              <thead class="bg-gray-200 dark:bg-gray-700">
+                <tr>
+                  <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Invoice Type
+                  </th>
+                  <th class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    FISA Fees Invoice
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <a href="/fisa-fee" class="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded-full shadow hover:bg-blue-600 transition">
+                      Generate FISA Invoice
+                    </a>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    Make A Future Invoice
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <a href="/makeafuture" class="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded-full shadow hover:bg-blue-600 transition">
+                      Generate Make A Future Invoice
+                    </a>
+                  </td>
+                </tr>
+                <tr class="hover:bg-gray-100 dark:hover:bg-gray-700">
+                  <td class="px-6 py-4 whitespace-nowrap text-sm">
+                    My EDBC Invoice
+                  </td>
+                  <td class="px-6 py-4 whitespace-nowrap text-sm text-center">
+                    <a href="/myedbc" class="inline-block bg-blue-500 text-white font-semibold py-2 px-4 rounded-full shadow hover:bg-blue-600 transition">
+                      Generate My EDBC Invoice
+                    </a>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
         </div>
       </main>
     </div>
@@ -120,4 +143,33 @@ const isAdmin = user?.isAdmin || false;
 
 <style>
   @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
+
+  .hover\:bg-gray-100:hover {
+    background-color: var(--color-gray-100);
+  }
+
+  .dark .hover\:bg-gray-700:hover {
+    background-color: var(--color-gray-700);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+
+  th,
+  td {
+    padding: 1rem;
+    text-align: left;
+  }
+
+  th {
+    background-color: var(--color-gray-200);
+    color: var(--color-gray-500);
+  }
+
+  .dark th {
+    background-color: var(--color-gray-700);
+    color: var(--color-gray-300);
+  }
 </style>
