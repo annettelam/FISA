@@ -1,3 +1,11 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const user = Astro.locals.user; // Fetch user data (assumes user is set in locals)
+const isAuthenticated = !!user; // Check if user is logged in
+const isAdmin = user?.isAdmin || false; // Check if the user is an admin
+---
+
 <header>
   <nav class="bg-white border-gray-200 px-4 lg:px-6 py-2.5 dark:bg-gray-800">
     <div
@@ -55,54 +63,65 @@
         </ul>
       </div>
 
-      <!-- Right Side: Notifications, Dark Mode Toggle, and Login -->
+      <!-- Right Side: Notifications (for admin only), Dark Mode Toggle, and Login/Logout -->
       <div class="flex items-center lg:order-2 space-x-4">
-        <!-- Notifications Dropdown -->
-        <div class="relative">
-          <button
-            id="notificationButton"
-            class="relative text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400 focus:outline-none"
-          >
-            <i class="fas fa-bell fa-lg"></i>
-            <!-- Notification Badge -->
-            <span
-              id="notificationBadge"
-              class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
-              >0</span
+        <!-- Notifications Dropdown (Only for Admin) -->
+        {isAdmin && (
+          <div class="relative">
+            <button
+              id="notificationButton"
+              class="relative text-gray-500 dark:text-gray-200 hover:text-gray-700 dark:hover:text-gray-400 focus:outline-none"
             >
-          </button>
-          <!-- Notification Dropdown -->
-          <div
-            id="notificationDropdown"
-            class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg overflow-hidden z-20"
-          >
-            <div id="notificationList" class="py-2">
-              <p class="text-gray-700 dark:text-gray-200 px-4 py-2">
-                No new notifications
-              </p>
-            </div>
-            <div class="py-2 text-center">
-              <a
-                href="/notifications"
-                class="text-blue-600 dark:text-blue-400 hover:underline"
-                >View all notifications</a
+              <i class="fas fa-bell fa-lg"></i>
+              <!-- Notification Badge -->
+              <span
+                id="notificationBadge"
+                class="hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-semibold rounded-full h-5 w-5 flex items-center justify-center"
+                >0</span
               >
+            </button>
+            <!-- Notification Dropdown -->
+            <div
+              id="notificationDropdown"
+              class="hidden absolute right-0 mt-2 w-80 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md shadow-lg overflow-hidden z-20"
+            >
+              <div id="notificationList" class="py-2">
+                <p class="text-gray-700 dark:text-gray-200 px-4 py-2">
+                  No new notifications
+                </p>
+              </div>
+              <div class="py-2 text-center">
+                <a
+                  href="/notifications"
+                  class="text-blue-600 dark:text-blue-400 hover:underline"
+                  >View all notifications</a
+                >
+              </div>
             </div>
           </div>
-        </div>
+        )}
 
         <!-- Dark Mode Toggle -->
         <button id="theme-toggle" class="theme-toggle-btn">
           <span id="theme-toggle-icon"></span>
         </button>
 
-        <!-- Login Button -->
-        <a
-          href="/login"
-          class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
-        >
-          Log in
-        </a>
+        <!-- Login/Logout Button -->
+        {isAuthenticated ? (
+          <a
+            href="/api/auth/signout"
+            class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+          >
+            Log out
+          </a>
+        ) : (
+          <a
+            href="/login"
+            class="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 dark:hover:bg-gray-700 focus:outline-none dark:focus:ring-gray-800"
+          >
+            Log in
+          </a>
+        )}
       </div>
     </div>
   </nav>
@@ -118,7 +137,7 @@
       const notificationList = document.getElementById("notificationList");
 
       // Toggle notification dropdown
-      notificationButton.addEventListener("click", (event) => {
+      notificationButton?.addEventListener("click", (event) => {
         event.stopPropagation();
         notificationDropdown.classList.toggle("hidden");
       });
