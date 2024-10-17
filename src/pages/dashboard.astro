@@ -3,6 +3,7 @@ import Layout from "../layouts/Layout.astro";
 import Card from "../components/Card.astro";
 
 const user = Astro.locals.user;
+const isAdmin = user?.isAdmin || false; // Determine if the user is an admin
 ---
 
 <Layout title="Dashboard - FISA Portal">
@@ -15,19 +16,12 @@ const user = Astro.locals.user;
         class="text-4xl sm:text-5xl font-extrabold mb-4 sm:mb-6 drop-shadow-md"
       >
         Welcome, {user.email}!
+        {isAdmin && <span class="ml-2 text-yellow-300">(Admin Access)</span>}
       </h1>
       <p class="text-base sm:text-lg md:text-xl max-w-2xl mx-auto">
         This is your dashboard. Manage your school’s information and access key
         features.
       </p>
-      <div class="mt-6 sm:mt-8">
-        <a
-          href="/api/auth/signout"
-          class="inline-block bg-blue-500 text-white font-semibold py-2 sm:py-3 px-6 sm:px-8 rounded-full shadow hover:bg-blue-600 transition"
-        >
-          Logout
-        </a>
-      </div>
     </div>
   </header>
 
@@ -96,6 +90,7 @@ const user = Astro.locals.user;
   </main>
 </Layout>
 
+<!-- Style Block -->
 <style>
   /* Import Font Awesome for icons */
   @import url("https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css");
