@@ -2,15 +2,10 @@
 import Layout from '../layouts/Layout.astro';
 import { authMiddleware } from '../middleware/auth.js';
 
+// Invoke the middleware with the current request and require authentication
 const { authenticated, user, redirectTo } = await authMiddleware(Astro.request, { requireAuth: true });
 
 if (!authenticated) {
   return Astro.redirect(redirectTo);
 }
 ---
-
-<Layout title="Dashboard">
-  <h1>Welcome, {user.email}!</h1>
-  <p>This is your dashboard.</p>
-  <a href="/api/auth/signout" style="color: blue;">Logout</a>
-</Layout>

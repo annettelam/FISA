@@ -3,25 +3,46 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-export async function authMiddleware(request) {
+export async function authMiddleware(
+  request,
+  {
+    requireAuth = false,
+    requireAdmin = false,
+    authRedirect = '/login',
+    adminRedirect = '/unauthorized',
+  } = {}
+) {
   const { headers } = request;
   const cookieHeader = headers.get('cookie');
 
-  if (!cookieHeader) {
-    return { authenticated: false };
+  let user = null;
+
+  if (cookieHeader) {
+    const tokenCookie = cookieHeader
+      .split('; ')
+      .find((c) => c.startsWith('token='));
+    if (tokenCookie) {
+      const jwtToken = tokenCookie.split('=')[1];
+      try {
+        user = jwt.verify(jwtToken, process.env.JWT_SECRET);
+      } catch (err) {
+        console.error('JWT Verification Failed:', err);
+      }
+    }
   }
 
-  const token = cookieHeader.split('; ').find(c => c.startsWith('token='));
-  if (!token) {
-    return { authenticated: false };
+  const isAuthenticated = !!user;
+  const isAdmin = user?.isAdmin || false;
+
+  // Handle authentication requirement
+  if (requireAuth && !isAuthenticated) {
+    return { authenticated: false, redirectTo: authRedirect };
   }
 
-  const jwtToken = token.split('=')[1];
-
-  try {
-    const decoded = jwt.verify(jwtToken, process.env.JWT_SECRET);
-    return { authenticated: true, user: decoded };
-  } catch (err) {
-    return { authenticated: false };
+  // Handle admin requirement
+  if (requireAdmin && !isAdmin) {
+    return { authenticated: false, redirectTo: adminRedirect };
   }
+
+  return { authenticated: true, user };
 }
