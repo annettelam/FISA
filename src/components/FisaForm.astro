@@ -1,20 +1,103 @@
 ---
-const { schoolData = {}, isAdmin = false } = Astro.props;
+import FisaForm from "../components/FisaForm.astro";
+
+const user = Astro.locals.user;
+
+// Extract the schoolId from the URL query parameters
+const url = new URL(Astro.request.url);
+const schoolId = url.searchParams.get("schoolId");
+
+// Set isAdmin to true
+const isAdmin = true;
+
+// Initialize schoolData
+let schoolData = {
+    schoolName: "",
+    schoolId: "",
+    fullDayKindergarten: 0,
+    grades1To12: 0,
+    halfDayKindergarten: 0,
+    totalFTE: 0,
+    membershipFees: 0,
+};
+
+// Initialize an error message variable
+let errorMessage = "";
+
+// Check if schoolId is provided
+if (schoolId) {
+    // Construct the API URL using the schoolId
+    const apiUrl = new URL(
+        `/api/data?schoolId=${encodeURIComponent(schoolId)}`,
+        Astro.url.origin,
+    );
+
+    // Fetch school data from the backend API
+    try {
+        const response = await fetch(apiUrl);
+        if (response.ok) {
+            const data = await response.json();
+            if (data && Object.keys(data).length > 0) {
+                schoolData = data;
+
+                // Parse the enrollment numbers as floats
+                const fullDayK =
+                    parseFloat(schoolData.fullDayKindergarten) || 0;
+                const grades1To12 = parseFloat(schoolData.grades1To12) || 0;
+                const halfDayK =
+                    parseFloat(schoolData.halfDayKindergarten) || 0;
+
+                // Calculate total FTE and fees
+                const calculateTotalFTE = (fullDayK, grades1To12, halfDayK) =>
+                    fullDayK + grades1To12 + halfDayK / 2;
+                const calculateMembershipFees = (totalFTE) => totalFTE * 7;
+
+                schoolData.totalFTE = calculateTotalFTE(
+                    fullDayK,
+                    grades1To12,
+                    halfDayK,
+                );
+                schoolData.membershipFees = calculateMembershipFees(
+                    schoolData.totalFTE,
+                );
+            } else {
+                errorMessage = "No data returned from API.";
+            }
+        } else {
+            errorMessage = `Error fetching school data: ${response.statusText}`;
+        }
+    } catch (error) {
+        errorMessage = `Error fetching school data: ${error.message}`;
+    }
+} else {
+    errorMessage = "No schoolId provided in the URL.";
+}
 ---
 
-<!-- FISA Form -->
 <div
-    class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg"
-    data-is-admin={isAdmin}
+    class="max-w-3xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg"
 >
     <!-- Display error message if any -->
     {
-        Object.keys(schoolData).length === 0 && (
+        errorMessage && (
             <div style="color: red;">
-                <p>Error: No data available for the provided school ID.</p>
+                <p>{errorMessage}</p>
             </div>
         )
     }
+
+    <div class="flex justify-between items-center mb-6">
+        <img src="/fisa_logo_small.png" alt="FISA Logo" class="w-32 h-auto" />
+        <div class="text-center">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
+                FISA Membership Fees Invoice (2023-2024)
+            </h1>
+            <p class="text-sm text-gray-600 dark:text-gray-300">
+                Calculate your membership fees based on total enrolment. Please
+                provide accurate information.
+            </p>
+        </div>
+    </div>
 
     <form id="fees-form" class="space-y-6">
         <!-- School Information -->
@@ -22,13 +105,13 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
             <div>
                 <label
                     for="schoolName"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >School Name:</label
                 >
                 <input
                     type="text"
                     id="schoolName"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value={schoolData.schoolName || ""}
                 />
@@ -36,35 +119,34 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
             <div>
                 <label
                     for="schoolId"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >School ID:</label
                 >
                 <input
                     type="text"
                     id="schoolId"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value={schoolData.schoolId || ""}
                 />
             </div>
         </div>
 
-        <!-- Enrollment Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">
+        <!-- Enrollment Information -->
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Enrollment Information
         </h2>
         <div class="space-y-4">
             <div>
                 <label
                     for="fullDayKindergarten"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >A. Enrolment in Full-day Kindergarten:</label
                 >
-                    A. Enrolment in Full-day Kindergarten:
-                </label>
                 <input
                     type="number"
                     id="fullDayKindergarten"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     value={schoolData.fullDayKindergarten || 0}
                     readonly
                 />
@@ -72,13 +154,13 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
             <div>
                 <label
                     for="grades1To12"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >B. Enrolment in Grades 1-12:</label
                 >
                 <input
                     type="number"
                     id="grades1To12"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     value={schoolData.grades1To12 || 0}
                     readonly
                 />
@@ -86,14 +168,13 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
             <div>
                 <label
                     for="halfDayKindergarten"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >C. Enrolment in Half-day Kindergarten:</label
                 >
-                    C. Enrolment in Half-day Kindergarten:
-                </label>
                 <input
                     type="number"
                     id="halfDayKindergarten"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     value={schoolData.halfDayKindergarten || 0}
                     readonly
                 />
@@ -101,13 +182,13 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
             <div>
                 <label
                     for="totalFTE"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >D. Total F.T.E. Enrolment:</label
                 >
                 <input
                     type="text"
                     id="totalFTE"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value={(schoolData.totalFTE || 0).toFixed(2)}
                 />
@@ -115,13 +196,13 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
             <div>
                 <label
                     for="membershipFees"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >E. Fee ($7.00 per F.T.E.):</label
                 >
                 <input
                     type="text"
                     id="membershipFees"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value={(schoolData.membershipFees || 0).toFixed(2)}
                 />
@@ -129,32 +210,33 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
         </div>
 
         <!-- Contact Info Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Contact Information
         </h2>
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label
                     for="contactName"
-                    class="block text-sm font-medium text-gray-900">Name:</label
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Name:</label
                 >
                 <input
                     type="text"
                     id="contactName"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     disabled={!isAdmin}
                 />
             </div>
             <div>
                 <label
                     for="contactEmail"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Email:</label
                 >
                 <input
                     type="email"
                     id="contactEmail"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     disabled={!isAdmin}
                 />
             </div>
@@ -163,7 +245,7 @@ const { schoolData = {}, isAdmin = false } = Astro.props;
         <!-- Submit Button -->
         <button
             type="submit"
-            class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
+            class="w-full text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
         >
             Submit
         </button>
