@@ -1,0 +1,96 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+let resources = [
+    {
+        id: 1,
+        title: "Minister of Education",
+        description: "The Hon. Rachna Singh",
+        link: "https://dir.gov.bc.ca/gtds.cgi?searchString=rachna+singh&sortBy=name&sortOrder=ascending&search=Search&gobutton.x=0&gobutton.y=0",
+    },
+    {
+        id: 2,
+        title: "Deputy Minister of Education",
+        description: "Christina Zacharuk",
+        link: "https://dir.gov.bc.ca/gtds.cgi?searchString=Christina+Zacharuk&sortBy=name&sortOrder=ascending&search=Search&gobutton.x=0&gobutton.y=0",
+    },
+    {
+        id: 3,
+        title: "Assistant Deputy Minister",
+        description: "Cloe Nicholls",
+        link: "https://dir.gov.bc.ca/gtds.cgi?esearch=&updateRequest=&view=detailed&sortBy=name&for=people&attribute=display+name&matchMethod=is&searchString=Cloe+Nicholls&objectId=183921",
+    },
+    {
+        id: 4,
+        title: "Director, Independent Schools and Homestay",
+        description: "Grant Sheppard",
+        link: "https://dir.gov.bc.ca/gtds.cgi?esearch=&updateRequest=&view=detailed&sortBy=name&for=people&attribute=display+name&matchMethod=is&searchString=Grant+Sheppard&objectId=171271",
+    },
+    {
+        id: 5,
+        title: "A/Director, Independent Schools and Homeschooling",
+        description: "Sophia Malczewska",
+        link: "https://dir.gov.bc.ca/gtds.cgi?esearch=&updateRequest=&view=detailed&sortBy=name&for=people&attribute=display+name&matchMethod=is&searchString=Sophia+Malczewska&objectId=151955",
+    },
+    {
+        id: 6,
+        title: "Inspector of Independent Schools",
+        description: "Theo Vandeweg",
+        link: "https://dir.gov.bc.ca/gtds.cgi?esearch=&updateRequest=&view=detailed&sortBy=name&for=people&attribute=display+name&matchMethod=is&searchString=Theo+Vandeweg&objectId=74142",
+    },
+    {
+        id: 7,
+        title: "Selected Ministry Listings",
+        description: "Visit BC Government Directory",
+        link: "https://dir.gov.bc.ca/gtds.cgi?show=Branch&organizationCode=EDUC&organizationalUnitCode=ON",
+    },
+];
+---
+
+<Layout title="Resources">
+    <div
+        class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md dark:shadow-lg rounded-lg transition-colors duration-300"
+    >
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                Ministry of Education Resources
+            </h1>
+            <p class="text-gray-600 dark:text-gray-300">
+                Explore contact details and listings from the Ministry of
+                Education.
+            </p>
+        </div>
+
+        <!-- Resource List Section -->
+        <div class="space-y-4">
+            {
+                resources.length > 0 ? (
+                    resources.map((resource) => (
+                        <div
+                            class="p-4 bg-gray-100 dark:bg-gray-700 rounded-lg shadow"
+                            key={resource.id}
+                        >
+                            <h2 class="text-lg font-semibold text-gray-800 dark:text-gray-200">
+                                {resource.title}
+                            </h2>
+                            <p class="text-gray-600 dark:text-gray-300">
+                                {resource.description}
+                            </p>
+                            <a
+                                href={resource.link}
+                                target="_blank"
+                                class="text-blue-600 dark:text-blue-400 hover:underline"
+                            >
+                                View Details
+                            </a>
+                        </div>
+                    ))
+                ) : (
+                    <p class="text-center text-gray-700 dark:text-gray-300">
+                        No resources available at the moment.
+                    </p>
+                )
+            }
+        </div>
+    </div>
+</Layout>

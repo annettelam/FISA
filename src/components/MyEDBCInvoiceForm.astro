@@ -1,10 +1,12 @@
-<div class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+<div
+    class="max-w-3xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg"
+>
     <!-- Header Section for MyEDBC Invoice Information -->
     <div class="text-center mb-6">
-        <h1 class="text-2xl font-bold text-gray-800">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
             MyEDBC iGroup Shared Costs Invoice (2023-2024)
         </h1>
-        <p class="text-sm text-gray-600">
+        <p class="text-sm text-gray-600 dark:text-gray-300">
             Please submit your payment to FISA BC by January 31, 2024. The fees
             are based on your school's FTE data as of September 30, 2023.
         </p>
@@ -13,18 +15,20 @@
     <!-- MyEDBC Invoice Form -->
     <form id="myedbc-form" class="space-y-6">
         <!-- School Information Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">School Information</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            School Information
+        </h2>
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label
                     for="schoolName"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >School Name:</label
                 >
                 <input
                     type="text"
                     id="schoolName"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter school name"
                     required
                 />
@@ -32,13 +36,13 @@
             <div>
                 <label
                     for="ministryCode"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Ministry Code:</label
                 >
                 <input
                     type="text"
                     id="ministryCode"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter ministry code"
                     required
                 />
@@ -46,42 +50,45 @@
         </div>
 
         <!-- FISA Affiliation Section for Member Schools -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">FISA Member School</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            FISA Member School
+        </h2>
         <div class="grid grid-cols-1 gap-4">
             <div>
-                <label class="block text-sm font-medium text-gray-900"
+                <label
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Check FISA affiliation:</label
                 >
                 <div class="flex gap-4">
-                    <label
+                    <label class="text-gray-900 dark:text-gray-200"
                         ><input
                             type="checkbox"
                             name="fisaAffiliation"
                             value="AMS"
                         /> AMS</label
                     >
-                    <label
+                    <label class="text-gray-900 dark:text-gray-200"
                         ><input
                             type="checkbox"
                             name="fisaAffiliation"
                             value="ACSI BC"
                         /> ACSI BC</label
                     >
-                    <label
+                    <label class="text-gray-900 dark:text-gray-200"
                         ><input
                             type="checkbox"
                             name="fisaAffiliation"
                             value="SCSBC"
                         /> SCSBC</label
                     >
-                    <label
+                    <label class="text-gray-900 dark:text-gray-200"
                         ><input
                             type="checkbox"
                             name="fisaAffiliation"
                             value="CIS"
                         /> CIS</label
                     >
-                    <label
+                    <label class="text-gray-900 dark:text-gray-200"
                         ><input
                             type="checkbox"
                             name="fisaAffiliation"
@@ -93,35 +100,35 @@
         </div>
 
         <!-- Enrollment Information and Fee Calculation Section for Member Schools -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Enrollment and Fee Calculation (Member School)
         </h2>
         <div class="space-y-4">
             <div>
                 <label
                     for="regularStudents"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >
                     Number of regular students enrolled (A):
                 </label>
                 <input
                     type="number"
                     id="regularStudents"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter number"
                 />
             </div>
             <div>
                 <label
                     for="homeschoolers"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >
                     Number of homeschoolers registered (B):
                 </label>
                 <input
                     type="number"
                     id="homeschoolers"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter number"
                 />
             </div>
@@ -130,14 +137,14 @@
             <div>
                 <label
                     for="totalPaymentMember"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >
                     Total Payment (A + B) for Member Schools:
                 </label>
                 <input
                     type="text"
                     id="totalPaymentMember"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="0.00"
                 />
@@ -145,35 +152,35 @@
         </div>
 
         <!-- Enrollment Information and Fee Calculation Section for Non-Member Schools -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Enrollment and Fee Calculation (Non-Member School)
         </h2>
         <div class="space-y-4">
             <div>
                 <label
                     for="nonMemberRegularStudents"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >
                     Number of regular students enrolled (A):
                 </label>
                 <input
                     type="number"
                     id="nonMemberRegularStudents"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter number"
                 />
             </div>
             <div>
                 <label
                     for="nonMemberHomeschoolers"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >
                     Number of homeschoolers registered:
                 </label>
                 <input
                     type="number"
                     id="nonMemberHomeschoolers"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter number"
                 />
             </div>
@@ -182,14 +189,14 @@
             <div>
                 <label
                     for="totalPaymentNonMember"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >
                     Total Payment (A + B) for Non-Member Schools:
                 </label>
                 <input
                     type="text"
                     id="totalPaymentNonMember"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="0.00"
                 />
@@ -197,17 +204,19 @@
         </div>
 
         <!-- Payment Status Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Payment Status</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            Payment Status
+        </h2>
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label
                     for="paymentStatus"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Has the Invoice Been Paid?</label
                 >
                 <select
                     id="paymentStatus"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                 >
                     <option value="pending">Pending</option>
                     <option value="paid">Paid</option>
@@ -216,16 +225,18 @@
         </div>
 
         <!-- Payment Method Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Payment Method</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            Payment Method
+        </h2>
         <div class="grid grid-cols-1">
             <label
                 for="paymentMethod"
-                class="block text-sm font-medium text-gray-900"
+                class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >Payment Method:</label
             >
             <select
                 id="paymentMethod"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
             >
                 <option value="">Select Payment Method</option>
                 <option value="shopify">Shopify Payment (Dummy)</option>
@@ -236,7 +247,7 @@
         <!-- Submit Button -->
         <button
             type="submit"
-            class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
+            class="w-full text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
             >Submit</button
         >
     </form>

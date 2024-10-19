@@ -1,12 +1,14 @@
-<div class="max-w-3xl mx-auto mt-10 p-8 bg-white shadow-md rounded-lg">
+<div
+    class="max-w-3xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg"
+>
     <!-- Header Section with Make a Future Invoice Information -->
     <div class="flex justify-between items-center mb-6">
         <img src="/fisa_logo_small.png" alt="FISA Logo" class="w-32 h-auto" />
         <div class="text-center">
-            <h1 class="text-2xl font-bold text-gray-800">
+            <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
                 Make a Future Fees Invoice (2023-2024)
             </h1>
-            <p class="text-sm text-gray-600">
+            <p class="text-sm text-gray-600 dark:text-gray-300">
                 Make a Future annual payment for the service period from April
                 1, 2023 to March 31, 2024. Please mail your cheque payable to
                 FISABC with a copy of this invoice.
@@ -17,18 +19,20 @@
     <!-- Make a Future Fee Form -->
     <form id="makeAFutureForm" class="space-y-6">
         <!-- School Information Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">School Information</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            School Information
+        </h2>
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label
                     for="schoolName"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >School Name:</label
                 >
                 <input
                     type="text"
                     id="schoolName"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="Locked School Name"
                     disabled
@@ -37,13 +41,13 @@
             <div>
                 <label
                     for="schoolId"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >School ID:</label
                 >
                 <input
                     type="text"
                     id="schoolId"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="Locked School ID"
                     disabled
@@ -52,20 +56,20 @@
         </div>
 
         <!-- Enrollment Information and Fee Calculation Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Enrollment Information
         </h2>
         <div class="space-y-4">
             <div>
                 <label
                     for="fteEnrolment"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >A. Total F.T.E. Enrolment (as of September 30, 2022):</label
                 >
                 <input
                     type="number"
                     id="fteEnrolment"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter FTE Enrolment"
                     oninput="calculateMakeAFutureFee()"
                 />
@@ -73,18 +77,20 @@
         </div>
 
         <!-- Fee Calculation Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Fee Calculation</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            Fee Calculation
+        </h2>
         <div class="space-y-4">
             <div>
                 <label
                     for="totalFeeB"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >B. Fee ($3.92 per FTE, minimum $300):</label
                 >
                 <input
                     type="text"
                     id="totalFeeB"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="0.00"
                     disabled
@@ -93,13 +99,13 @@
             <div>
                 <label
                     for="setupFee"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >C. One-time setup fee ($250):</label
                 >
                 <input
                     type="number"
                     id="setupFee"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="250"
                     disabled
@@ -108,26 +114,28 @@
             <div>
                 <label
                     for="lateFee"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >D. Late on-boarding fee ($100):</label
                 >
                 <input
                     type="number"
                     id="lateFee"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="100"
                     disabled
                 />
             </div>
             <div>
-                <label for="gst" class="block text-sm font-medium text-gray-900"
+                <label
+                    for="gst"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >E. GST (5% on B + C + D):</label
                 >
                 <input
                     type="text"
                     id="gst"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="0.00"
                     disabled
@@ -136,13 +144,13 @@
             <div>
                 <label
                     for="finalAmount"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >F. Total Fees Due (B + C + D + E):</label
                 >
                 <input
                     type="text"
                     id="finalAmount"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     readonly
                     value="0.00"
                     disabled
@@ -151,117 +159,123 @@
         </div>
 
         <!-- Primary Contact Information Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Primary Contact Information
         </h2>
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label
                     for="contactName"
-                    class="block text-sm font-medium text-gray-900">Name:</label
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Name:</label
                 >
                 <input
                     type="text"
                     id="contactName"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter name"
                 />
             </div>
             <div>
                 <label
                     for="contactPosition"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Position:</label
                 >
                 <input
                     type="text"
                     id="contactPosition"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter position"
                 />
             </div>
             <div>
                 <label
                     for="contactEmail"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Email:</label
                 >
                 <input
                     type="email"
                     id="contactEmail"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter email"
                 />
             </div>
             <div>
                 <label
                     for="secondaryEmail"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Secondary Email:</label
                 >
                 <input
                     type="email"
                     id="secondaryEmail"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter secondary email"
                 />
             </div>
         </div>
 
         <!-- Confirmation Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Confirmation</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            Confirmation
+        </h2>
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label
                     for="date"
-                    class="block text-sm font-medium text-gray-900">Date:</label
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >Date:</label
                 >
                 <input
                     type="date"
                     id="date"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                 />
             </div>
             <div>
                 <label
                     for="signed"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Signed by:</label
                 >
                 <input
                     type="text"
                     id="signed"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter name"
                 />
             </div>
             <div>
                 <label
                     for="position"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Position:</label
                 >
                 <input
                     type="text"
                     id="position"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                     placeholder="Enter position"
                 />
             </div>
         </div>
 
         <!-- Payment Status Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Payment Status</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            Payment Status
+        </h2>
         <div class="grid grid-cols-2 gap-4">
             <div>
                 <label
                     for="paymentStatus"
-                    class="block text-sm font-medium text-gray-900"
+                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                     >Has the Invoice Been Paid?</label
                 >
                 <select
                     id="paymentStatus"
-                    class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
                 >
                     <option value="pending">Pending</option>
                     <option value="paid">Paid</option>
@@ -270,16 +284,18 @@
         </div>
 
         <!-- Payment Method Section -->
-        <h2 class="text-xl font-bold text-gray-800 mb-4">Payment Method</h2>
+        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
+            Payment Method
+        </h2>
         <div class="grid grid-cols-1">
             <label
                 for="paymentMethod"
-                class="block text-sm font-medium text-gray-900"
+                class="block text-sm font-medium text-gray-900 dark:text-gray-200"
                 >Payment Method:</label
             >
             <select
                 id="paymentMethod"
-                class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg block w-full p-3"
+                class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
             >
                 <option value="">Select Payment Method</option>
                 <option value="shopify">Shopify Payment (Dummy)</option>
@@ -290,7 +306,7 @@
         <!-- Submit Button -->
         <button
             type="submit"
-            class="w-full text-white bg-blue-600 hover:bg-blue-700 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
+            class="w-full text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
             >Submit</button
         >
     </form>

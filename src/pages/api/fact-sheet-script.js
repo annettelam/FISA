@@ -4,6 +4,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const schoolForm = document.getElementById("school-form");
   // Simulate user role
   const isAdmin = false; // Set to true if testing as admin, false as user
+  alert(document.cookie);
 
   // Function to calculate totals dynamically
   function calculateTotals() {

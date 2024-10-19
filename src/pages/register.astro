@@ -1,83 +1,72 @@
 ---
-// This will enable component-level stylees and interactivity 
 import Layout from '../layouts/Layout.astro';
 ---
-
-
-
 <Layout title='Register'>
 
+  <!-- Flowbite component directly copy & pasted from flowbite.com -->
+  <form id="registrationForm" class="max-w-sm mx-auto" action="/api/register" method="POST">
+    <div class="mb-5">
+      <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
+      <input type="email" id="email" name="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@flowbite.com" required />
+    </div>
+    <div class="mb-5">
+      <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
+      <input type="password" id="password" name="password" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
+    </div>
+    <div class="mb-5">
+      <label for="repeat-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Repeat password</label>
+      <input type="password" id="repeat-password" name="repeatPassword" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
+    </div>
+    <div class="flex items-start mb-5">
+      <div class="flex items-center h-5">
+        <input id="terms" type="checkbox" name="terms" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
+      </div>
+      <label for="terms" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a></label>
+    </div>
+    <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Register new account</button>
+  </form>
 
- <!-- Flowbite component directly copy & pasted from flowbite.com -->
-    <form class="max-w-sm mx-auto">
-        <div class="mb-5">
-          <label for="email" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your email</label>
-          <input type="email" id="email" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" placeholder="name@flowbite.com" required />
-        </div>
-        <div class="mb-5">
-          <label for="password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Your password</label>
-          <input type="password" id="password" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
-        </div>
-        <div class="mb-5">
-          <label for="repeat-password" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">Repeat password</label>
-          <input type="password" id="repeat-password" class="shadow-sm bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light" required />
-        </div>
-        <div class="flex items-start mb-5">
-          <div class="flex items-center h-5">
-            <input id="terms" type="checkbox" value="" class="w-4 h-4 border border-gray-300 rounded bg-gray-50 focus:ring-3 focus:ring-blue-300 dark:bg-gray-700 dark:border-gray-600 dark:focus:ring-blue-600 dark:ring-offset-gray-800 dark:focus:ring-offset-gray-800" required />
-          </div>
-          <label for="terms" class="ms-2 text-sm font-medium text-gray-900 dark:text-gray-300">I agree with the <a href="#" class="text-blue-600 hover:underline dark:text-blue-500">terms and conditions</a></label>
-        </div>
-        <button type="submit" class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800">Register new account</button>
-      </form>
-    
-    
+  <script>
+    document.getElementById('registrationForm').addEventListener('submit', async (event) => {
+      event.preventDefault(); // Prevent the default form submission
 
-      <script>
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const repeatPassword = document.getElementById('repeat-password').value;
 
-        // example script to handle form submission placeholder endpoint
-        // this will enable interaction with form and DB
-        document.getElementById('registrationForm').addEventListener('submit', async (event) => {
-            event.preventDefault(); // Prevent the default form submission
+      // Check if passwords match
+      if (password !== repeatPassword) {
+        alert("Passwords do not match.");
+        return;
+      }
 
-            const email = (document.getElementById('email') as HTMLInputElement).value;
-            const password = (document.getElementById('password') as HTMLInputElement).value;
-            const repeatPassword = (document.getElementById('repeat-password') as HTMLInputElement).value;
+      // Construct the payload
+      const payload = {
+        email,
+        password
+      };
 
-            // Check if passwords match
-            if (password !== repeatPassword) {
-                alert("Passwords do not match.");
-                return;
-            }
-
-            // Construct the payload
-            const payload = {
-                email,
-                password
-            };
-
-            try {
-                const response = await fetch('YOUR_API_ENDPOINT', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify(payload),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-
-                const data = await response.json();
-                console.log('Success:', data);
-                // Handle success (e.g., redirect, show message)
-            } catch (error) {
-                console.error('Error:', error);
-                // Handle error (e.g., show error message)
-            }
+      try {
+        const response = await fetch('/api/register', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
         });
-    </script>
-    
-    
+
+        if (response.status === 201) {
+          alert('Registration successful! Redirecting to login...');
+          window.location.href = '/login';
+        } else {
+          const errorText = await response.text();
+          throw new Error(errorText || 'Registration failed');
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        alert(`Error: ${error.message}`);
+      }
+    });
+  </script>
+
 </Layout>
