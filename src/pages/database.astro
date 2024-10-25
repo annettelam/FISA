@@ -109,11 +109,11 @@ const user = Astro.locals.user;
         option.textContent = "No tables available";
         option.disabled = true;
         tableSelect.appendChild(option);
-        tableSelect.disabled = true;
+        (tableSelect as HTMLSelectElement).disabled = true;
         return;
       }
 
-      tableSelect.disabled = false;
+      (tableSelect as HTMLSelectElement).disabled = false;
       tables.forEach(table => {
         const option = document.createElement('option');
         option.value = table;
@@ -127,7 +127,7 @@ const user = Astro.locals.user;
 
     // Fetch data for the selected table
     async function fetchDataForTable() {
-      const selectedTable = document.getElementById('tableSelect').value;
+      const selectedTable = (document.getElementById('tableSelect') as HTMLSelectElement).value;
       if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
 
       currentTable = selectedTable; // Update current table
@@ -174,8 +174,8 @@ const user = Astro.locals.user;
       associationSelect.innerHTML = '<option value="">All Associations</option>'; // Reset filter
       associations.forEach(assoc => {
         const option = document.createElement('option');
-        option.value = assoc;
-        option.textContent = assoc;
+        option.value = String(assoc);
+        option.textContent = String(assoc);
         associationSelect.appendChild(option);
       });
 
@@ -214,9 +214,9 @@ const user = Astro.locals.user;
     function applyFilters() {
       filteredData = [...originalData];
 
-      const associationValue = document.getElementById('association').value;
-      const schoolNameValue = document.getElementById('schoolName').value.toLowerCase();
-      const sortColumnValue = document.getElementById('sortColumn').value;
+      const associationValue = (document.getElementById('association') as HTMLSelectElement).value;
+      const schoolNameValue = (document.getElementById('schoolName') as HTMLInputElement).value.toLowerCase();
+      const sortColumnValue = (document.getElementById('sortColumn') as HTMLSelectElement).value;
 
       // Filter by Association
       if (associationValue) {
@@ -246,9 +246,9 @@ const user = Astro.locals.user;
 
     function clearFilters() {
       // Clear filter input fields
-      document.getElementById('association').value = "";
-      document.getElementById('schoolName').value = "";
-      document.getElementById('sortColumn').value = "";
+      (document.getElementById('association') as HTMLSelectElement).value = "";
+      (document.getElementById('schoolName') as HTMLInputElement).value = "";
+      (document.getElementById('sortColumn') as HTMLSelectElement).value = "";
 
       // Reset filtered data
       filteredData = [...originalData];
