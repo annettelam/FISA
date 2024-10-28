@@ -57,9 +57,8 @@ export async function POST({ request, cookies }) {
       });
     }
 
-    // Create JWT token including isAdmin
     const token = jwt.sign(
-      { userId: user.id, email: user.email, isAdmin: user.isAdmin },
+      { id: user.id, email: user.email, isAdmin: user.isAdmin },
       process.env.JWT_SECRET,
       { expiresIn: '1h' }
     );

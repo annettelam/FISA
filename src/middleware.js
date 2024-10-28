@@ -23,6 +23,7 @@ export async function onRequest({ request, locals }, next) {
     { path: '/dashboard', options: { requireAuth: true } },
     { path: '/fact-sheet', options: { requireAuth: true } },
     { path: '/fisa-client', options: { requireAuth: true } },
+    { path: '/change-password', options: { requireAuth: true } },
 
     // Public routes
     { path: '/conditional-testing', options: {} },

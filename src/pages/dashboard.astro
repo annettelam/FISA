@@ -30,14 +30,13 @@ const isAdmin = user?.isAdmin || false;
         </div>
       </header>
 
-<!-- Admin Access Indicator, with X button to dismiss -->
-<div class="relative bg-red-500 text-white text-center py-4">
-  <p class="inline-block w-full"><strong>Admin Access:</strong> You have administrative privileges.</p>
-  <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white dark:text-gray-200 bg-red-700 dark:bg-red-800 px-3 py-1 rounded-full hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none" onclick="this.parentElement.style.display = 'none'">
-    <i class="fas fa-times"></i>
-  </button>
-</div>
-
+      <!-- Admin Access Indicator, with X button to dismiss -->
+      <div class="relative bg-red-500 text-white text-center py-4">
+        <p class="inline-block w-full"><strong>Admin Access:</strong> You have administrative privileges.</p>
+        <button class="absolute right-4 top-1/2 transform -translate-y-1/2 text-white dark:text-gray-200 bg-red-700 dark:bg-red-800 px-3 py-1 rounded-full hover:bg-red-600 dark:hover:bg-red-700 focus:outline-none" onclick="this.parentElement.style.display = 'none'">
+          <i class="fas fa-times"></i>
+        </button>
+      </div>
 
       <!-- Main Content for Admin -->
       <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
@@ -65,8 +64,10 @@ const isAdmin = user?.isAdmin || false;
             <Card href="/makeafuture" icon="fa-solid fa-rocket" title="Make a Future Fees Invoice" body="Plan and submit future fee invoices effortlessly." />
             <Card href="/reminders" icon="fa-solid fa-exclamation-circle" title="Overdue Payments" body="View schools with overdue payments and take action." />
             <Card href="/database" icon="fa-solid fa-database" title="Database Visualization" body="Explore the detailed data of all schools." />
-            <Card href="/analytics" icon="fa-solid fa-database" title="Database Analytics" body="Analyze and visualize the data of all schools." />
+            <Card href="/analytics" icon="fa-solid fa-chart-line" title="Database Analytics" body="Analyze and visualize the data of all schools." />
             <Card href="/admin" icon="fa-solid fa-user-shield" title="Admin Dashboard" body="Manage databases, create new tables, and oversee system settings." />
+            <!-- Added Change Password Card -->
+            <Card href="/change-password" icon="fa-solid fa-key" title="Change Password" body="Update your account password securely." />
           </ul>
         </div>
       </main>
@@ -85,9 +86,16 @@ const isAdmin = user?.isAdmin || false;
         </div>
       </header>
 
-      <!-- Client Invoice Selection Section -->
+      <!-- Client Main Content -->
       <main class="bg-white dark:bg-gray-900 py-12 sm:py-16 md:py-20">
         <div class="max-w-7xl mx-auto px-4">
+          <!-- Added Change Password Card for Clients -->
+          <div class="mb-8">
+            <ul role="list" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 sm:gap-8">
+              <Card href="/change-password" icon="fa-solid fa-key" title="Change Password" body="Update your account password securely." />
+            </ul>
+          </div>
+
           <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md transition-colors duration-300">
             <table class="min-w-full text-sm text-left text-gray-800 dark:text-gray-300">
               <thead class="bg-gray-200 dark:bg-gray-700">
