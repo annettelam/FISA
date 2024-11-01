@@ -42,6 +42,23 @@ export function getActiveTable(db) {
   return activeTable;
 }
 
+// Function to retrieve all table names from the database
+export function getAllTables(db) {
+  try {
+    const stmt = db.prepare(`
+      SELECT name 
+      FROM sqlite_master 
+      WHERE type='table' 
+      AND name NOT LIKE 'sqlite_%';
+    `);
+    const rows = stmt.all();
+    return rows.map(row => row.name);
+  } catch (error) {
+    console.error("Error fetching table names:", error);
+    return [];
+  }
+}
+
 /**
  * Fetches the school data based on the school ID.
  * @param {string} schoolId - The school ID.

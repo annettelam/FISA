@@ -1,10 +1,41 @@
 ---
 import Layout from "../layouts/Layout.astro";
-
-const user = Astro.locals.user;
+const user = Astro.locals.user; // Ensure this is correctly set if using authentication
 ---
-
 <Layout title="Database Visualization">
+  <!-- Loading Spinner -->
+  <div id="loading-spinner" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+  </div>
+
+  <!-- Toast Container for Notifications -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
+
+  <!-- Visualization Modal -->
+  <div id="visualization-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-labelledby="modal-title" aria-describedby="modal-description">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-11/12 md:w-3/4 lg:w-1/2 max-h-full overflow-y-auto relative">
+      <!-- Close "X" Button -->
+      <button id="close-modal-x" class="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <h2 id="modal-title" class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Edit School Details</h2>
+      <form id="edit-form" class="space-y-4">
+        <!-- Dynamic form fields will be injected here -->
+      </form>
+      <div class="flex justify-end space-x-4 mt-4">
+        <button id="submit-edit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-300">
+          Save Changes
+        </button>
+        <button id="cancel-edit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
   <!-- Main Content -->
   <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300">
     <div class="text-center mb-10">
@@ -61,10 +92,10 @@ const user = Astro.locals.user;
     </div>
 
     <!-- Table with sticky headers and accessible scrollbar -->
-    <div class="table-container border border-gray-300 dark:border-gray-700 rounded-lg shadow">
+    <div class="table-container border border-gray-300 dark:border-gray-700 rounded-lg shadow overflow-auto">
       <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-300">
         <!-- Table Header -->
-        <thead class="bg-gray-200 dark:bg-gray-700">
+        <thead class="bg-gray-200 dark:bg-gray-700 sticky top-0">
           <tr id="table-header">
             <!-- Headers will be populated dynamically -->
           </tr>
@@ -77,63 +108,115 @@ const user = Astro.locals.user;
     </div>
   </div>
 
-  <!-- Custom Script for dynamic table selection and filtering -->
-  <script>
-    let originalData; // To store the unfiltered original data
-    let filteredData; // To store the filtered data
+  <!-- Include Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Embedded JavaScript for Dynamic Table Selection and Updates -->
+  <script type="module" client:load>
+    // Initialize variables
+    let originalData = []; // To store the unfiltered original data
+    let filteredData = []; // To store the filtered data
     let currentTable = ""; // Track the selected table name
+
+    // Function to show the loading spinner
+    function showLoading() {
+      const spinner = document.getElementById("loading-spinner");
+      if (spinner) spinner.classList.remove("hidden");
+    }
+
+    // Function to hide the loading spinner
+    function hideLoading() {
+      const spinner = document.getElementById("loading-spinner");
+      if (spinner) spinner.classList.add("hidden");
+    }
+
+    // Function to show toast notifications
+    function showToast(message, type = "success") {
+      const toastContainer = document.getElementById("toast-container");
+      if (!toastContainer) return;
+
+      const toast = document.createElement("div");
+      toast.className = `mb-4 p-4 rounded shadow-lg text-white ${
+        type === "success" ? "bg-green-500" : "bg-red-500"
+      }`;
+      toast.textContent = message;
+
+      toastContainer.appendChild(toast);
+
+      // Remove the toast after 3 seconds
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
 
     // Function to fetch tables for the dropdown
     async function fetchTables() {
+      showLoading();
       try {
-        const response = await fetch('/api/list-tables');
+        const response = await fetch("/api/list-tables");
         if (response.ok) {
           const data = await response.json();
           populateTableSelect(data.tables);
         } else {
-          throw new Error('Failed to fetch tables.');
+          throw new Error("Failed to fetch tables.");
         }
       } catch (error) {
-        console.error('Error fetching tables:', error);
+        console.error("Error fetching tables:", error);
+        showToast("Error fetching tables.", "error");
+      } finally {
+        hideLoading();
       }
     }
 
     // Populate the tables dropdown
     function populateTableSelect(tables) {
-      const tableSelect = document.getElementById('tableSelect');
+      const tableSelect = document.getElementById("tableSelect");
+      if (!tableSelect) {
+        console.error('Element with ID "tableSelect" not found.');
+        return;
+      }
       tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
 
       if (tables.length === 0) {
-        const option = document.createElement('option');
+        const option = document.createElement("option");
         option.value = "";
         option.textContent = "No tables available";
         option.disabled = true;
         tableSelect.appendChild(option);
-        (tableSelect as HTMLSelectElement).disabled = true;
+        tableSelect.disabled = true;
         return;
       }
 
-      (tableSelect as HTMLSelectElement).disabled = false;
-      tables.forEach(table => {
-        const option = document.createElement('option');
+      tableSelect.disabled = false;
+      tables.forEach((table) => {
+        const option = document.createElement("option");
         option.value = table;
         option.textContent = table;
         tableSelect.appendChild(option);
       });
 
       // Fetch data for the selected table when user changes table selection
-      tableSelect.addEventListener('change', fetchDataForTable);
+      tableSelect.addEventListener("change", fetchDataForTable);
     }
 
     // Fetch data for the selected table
     async function fetchDataForTable() {
-      const selectedTable = (document.getElementById('tableSelect') as HTMLSelectElement).value;
+      const tableSelect = document.getElementById("tableSelect");
+      if (!tableSelect) {
+        console.error('Element with ID "tableSelect" not found.');
+        return;
+      }
+
+      const selectedTable = tableSelect.value;
       if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
 
       currentTable = selectedTable; // Update current table
+      showLoading();
 
       try {
-        const response = await fetch(`/api/data?table=${encodeURIComponent(selectedTable)}`);
+        const response = await fetch(
+          `/api/data?table=${encodeURIComponent(selectedTable)}`
+        );
         if (!response.ok) {
           throw new Error(`Failed to fetch data for table: ${selectedTable}`);
         }
@@ -149,19 +232,33 @@ const user = Astro.locals.user;
         attachFilterEventListeners();
         // Initial render
         renderTableBody(filteredData);
-        document.getElementById('totalSchools').textContent = filteredData.length;
+        document.getElementById("totalSchools").textContent = filteredData.length;
       } catch (error) {
         console.error(`Error fetching data for table ${selectedTable}:`, error);
+        showToast(`Error fetching data for table "${selectedTable}".`, "error");
+      } finally {
+        hideLoading();
       }
     }
 
     function populateTableHeaders(data) {
+      if (data.length === 0) {
+        const headerRow = document.getElementById("table-header");
+        if (headerRow) headerRow.innerHTML = "<th>No data available</th>";
+        return;
+      }
+
       const headers = Object.keys(data[0] || {});
-      const headerRow = document.getElementById('table-header');
-      headerRow.innerHTML = ''; // Clear existing headers
-      headers.forEach(key => {
-        const th = document.createElement('th');
-        th.className = 'px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider';
+      const headerRow = document.getElementById("table-header");
+      if (!headerRow) {
+        console.error('Element with ID "table-header" not found.');
+        return;
+      }
+      headerRow.innerHTML = ""; // Clear existing headers
+      headers.forEach((key) => {
+        const th = document.createElement("th");
+        th.className =
+          "px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider";
         th.textContent = key;
         headerRow.appendChild(th);
       });
@@ -169,21 +266,31 @@ const user = Astro.locals.user;
 
     function populateFilters(data) {
       // Populate filter options
-      const associations = [...new Set(data.map(item => item.ASSOC))].filter(Boolean).sort();
-      const associationSelect = document.getElementById('association');
+      const associations = [...new Set(data.map((item) => item.ASSOC))]
+        .filter(Boolean)
+        .sort();
+      const associationSelect = document.getElementById("association");
+      if (!associationSelect) {
+        console.error('Element with ID "association" not found.');
+        return;
+      }
       associationSelect.innerHTML = '<option value="">All Associations</option>'; // Reset filter
-      associations.forEach(assoc => {
-        const option = document.createElement('option');
+      associations.forEach((assoc) => {
+        const option = document.createElement("option");
         option.value = String(assoc);
         option.textContent = String(assoc);
         associationSelect.appendChild(option);
       });
 
-      const sortColumnSelect = document.getElementById('sortColumn');
+      const sortColumnSelect = document.getElementById("sortColumn");
+      if (!sortColumnSelect) {
+        console.error('Element with ID "sortColumn" not found.');
+        return;
+      }
       sortColumnSelect.innerHTML = '<option value="">Select Column</option>'; // Reset sorting
       const headers = Object.keys(data[0] || {});
-      headers.forEach(header => {
-        const option = document.createElement('option');
+      headers.forEach((header) => {
+        const option = document.createElement("option");
         option.value = header;
         option.textContent = header;
         sortColumnSelect.appendChild(option);
@@ -191,41 +298,69 @@ const user = Astro.locals.user;
     }
 
     function attachFilterEventListeners() {
-      const associationSelect = document.getElementById('association');
-      const schoolNameInput = document.getElementById('schoolName');
-      const sortColumnSelect = document.getElementById('sortColumn');
+      const associationSelect = document.getElementById("association");
+      const schoolNameInput = document.getElementById("schoolName");
+      const sortColumnSelect = document.getElementById("sortColumn");
+
+      if (!associationSelect || !schoolNameInput || !sortColumnSelect) {
+        console.error("One or more filter elements not found.");
+        return;
+      }
 
       // Remove previous event listeners to avoid duplicates
-      associationSelect.removeEventListener('change', applyFilters);
-      schoolNameInput.removeEventListener('input', applyFilters);
-      sortColumnSelect.removeEventListener('change', applyFilters);
+      associationSelect.removeEventListener("change", applyFilters);
+      schoolNameInput.removeEventListener("input", applyFiltersDebounced);
+      sortColumnSelect.removeEventListener("change", applyFilters);
 
       // Add event listeners
-      associationSelect.addEventListener('change', applyFilters);
-      schoolNameInput.addEventListener('input', applyFilters);
-      sortColumnSelect.addEventListener('change', applyFilters);
+      associationSelect.addEventListener("change", applyFilters);
+      schoolNameInput.addEventListener("input", applyFiltersDebounced);
+      sortColumnSelect.addEventListener("change", applyFilters);
 
       // Event listener for clear filters
-      const clearFiltersButton = document.getElementById('clear-filters');
-      clearFiltersButton.removeEventListener('click', clearFilters);
-      clearFiltersButton.addEventListener('click', clearFilters);
+      const clearFiltersButton = document.getElementById("clear-filters");
+      if (clearFiltersButton) {
+        clearFiltersButton.removeEventListener("click", clearFilters);
+        clearFiltersButton.addEventListener("click", clearFilters);
+      }
     }
+
+    // Debounce function to limit the rate at which a function can fire.
+    function debounce(func, delay) {
+      let timeout;
+      return function () {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+      };
+    }
+
+    // Debounced version of applyFilters to prevent excessive filtering
+    const applyFiltersDebounced = debounce(applyFilters, 300);
 
     function applyFilters() {
       filteredData = [...originalData];
 
-      const associationValue = (document.getElementById('association') as HTMLSelectElement).value;
-      const schoolNameValue = (document.getElementById('schoolName') as HTMLInputElement).value.toLowerCase();
-      const sortColumnValue = (document.getElementById('sortColumn') as HTMLSelectElement).value;
+      const associationValue = document.getElementById("association").value;
+      const schoolNameValue = document
+        .getElementById("schoolName")
+        .value.toLowerCase();
+      const sortColumnValue = document.getElementById("sortColumn").value;
 
       // Filter by Association
       if (associationValue) {
-        filteredData = filteredData.filter(item => item.ASSOC === associationValue);
+        filteredData = filteredData.filter(
+          (item) => item.ASSOC === associationValue
+        );
       }
 
       // Filter by School Name
       if (schoolNameValue) {
-        filteredData = filteredData.filter(item => item.SCHOOL && item.SCHOOL.toLowerCase().includes(schoolNameValue));
+        filteredData = filteredData.filter(
+          (item) =>
+            item.SCHOOL && item.SCHOOL.toLowerCase().includes(schoolNameValue)
+        );
       }
 
       // Sort by Column
@@ -238,7 +373,7 @@ const user = Astro.locals.user;
       }
 
       // Update total schools displayed
-      document.getElementById('totalSchools').textContent = filteredData.length;
+      document.getElementById("totalSchools").textContent = filteredData.length;
 
       // Re-render table body
       renderTableBody(filteredData);
@@ -246,39 +381,46 @@ const user = Astro.locals.user;
 
     function clearFilters() {
       // Clear filter input fields
-      (document.getElementById('association') as HTMLSelectElement).value = "";
-      (document.getElementById('schoolName') as HTMLInputElement).value = "";
-      (document.getElementById('sortColumn') as HTMLSelectElement).value = "";
+      document.getElementById("association").value = "";
+      document.getElementById("schoolName").value = "";
+      document.getElementById("sortColumn").value = "";
 
       // Reset filtered data
       filteredData = [...originalData];
 
       // Update total schools displayed
-      document.getElementById('totalSchools').textContent = filteredData.length;
+      document.getElementById("totalSchools").textContent = filteredData.length;
 
       // Re-render table body
       renderTableBody(filteredData);
     }
 
-    // Function to render the table body
+    // Function to render the table body with all fields and clickable school names
     function renderTableBody(data) {
-      const tbody = document.getElementById('table-body');
-      tbody.innerHTML = ''; // Clear existing rows
+      const tbody = document.getElementById("table-body");
+      if (!tbody) {
+        console.error('Element with ID "table-body" not found.');
+        return;
+      }
+      tbody.innerHTML = ""; // Clear existing rows
 
       data.forEach((row, index) => {
-        const tr = document.createElement('tr');
-        tr.className = index % 2 === 0 ? '' : 'bg-gray-50 dark:bg-gray-700';
+        const tr = document.createElement("tr");
+        tr.className = index % 2 === 0 ? "" : "bg-gray-50 dark:bg-gray-700";
 
-        Object.keys(row).forEach(key => {
-          const td = document.createElement('td');
-          td.className = 'px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300';
+        Object.keys(row).forEach((key) => {
+          const td = document.createElement("td");
+          td.className =
+            "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
 
-          if (key === 'SCHOOL') {
-            const schoolNum = row['SCHOOL_NUM'];
-            const link = document.createElement('a');
-            link.href = `/fact-sheet?schoolNum=${encodeURIComponent(schoolNum)}`;
+          if (key.toLowerCase().includes("school")) { // Assuming 'SCHOOL' column contains 'school' in its name
+            const schoolNum = row["SCHOOL_NUM"];
+            const link = document.createElement("a");
+            link.href = "javascript:void(0);"; // Prevent default navigation
             link.textContent = row[key];
-            link.className = 'text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500';
+            link.className =
+              "text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer";
+            link.addEventListener("click", () => openEditModal(row));
             td.appendChild(link);
           } else {
             td.textContent = row[key];
@@ -290,35 +432,254 @@ const user = Astro.locals.user;
       });
     }
 
+    // Function to open the edit modal with all school details
+    function openEditModal(rowData) {
+      const modal = document.getElementById("visualization-modal");
+      const modalContent = document.getElementById("edit-form");
+
+      if (!modal || !modalContent) {
+        console.error("Modal elements not found.");
+        return;
+      }
+
+      // Clear previous form content
+      modalContent.innerHTML = "";
+
+      // Dynamically create form fields based on rowData
+      Object.keys(rowData).forEach((key) => {
+        // Skip SCHOOL_NUM or any other identifier you don't want to edit
+        if (key.toLowerCase().includes("num")) return;
+
+        const div = document.createElement("div");
+        div.className = "flex flex-col";
+
+        const label = document.createElement("label");
+        label.className = "block text-sm font-medium text-gray-700 dark:text-gray-300";
+        label.setAttribute("for", `field-${key}`);
+        label.textContent = key;
+
+        let input;
+        // Determine input type based on the field name or value
+        if (typeof rowData[key] === "number") {
+          input = document.createElement("input");
+          input.type = "number";
+          input.step = "any";
+        } else if (key.toLowerCase().includes("email")) {
+          input = document.createElement("input");
+          input.type = "email";
+        } else if (key.toLowerCase().includes("phone")) {
+          input = document.createElement("input");
+          input.type = "tel";
+        } else if (key.toLowerCase().includes("fisa") || key.toLowerCase().includes("boolean")) {
+          // Assuming 'FISA' is a boolean field
+          input = document.createElement("select");
+          const optionTrue = document.createElement("option");
+          optionTrue.value = "True";
+          optionTrue.textContent = "True";
+          const optionFalse = document.createElement("option");
+          optionFalse.value = "False";
+          optionFalse.textContent = "False";
+          input.appendChild(optionTrue);
+          input.appendChild(optionFalse);
+        } else {
+          input = document.createElement("input");
+          input.type = "text";
+        }
+
+        input.id = `field-${key}`;
+        input.name = key;
+        input.value = rowData[key] !== null && rowData[key] !== undefined ? rowData[key] : "";
+        input.className = "mt-1 block w-full pl-3 pr-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-300";
+
+        div.appendChild(label);
+        div.appendChild(input);
+        modalContent.appendChild(div);
+      });
+
+      // Store the school number and table name in the form's dataset for easy access during submission
+      modalContent.dataset.schoolNum = rowData["SCHOOL_NUM"];
+      modalContent.dataset.tableName = currentTable;
+
+      // Show the modal
+      modal.classList.remove("hidden");
+    }
+
+    // Handle form submission for editing
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const schoolNum = form.dataset.schoolNum;
+      const tableName = form.dataset.tableName;
+      const updatedBy = "admin"; // Replace with actual user if available
+
+      const payload = {
+        tableName,
+        schoolNum,
+        updatedBy,
+      };
+
+      // Populate payload with updated fields
+      formData.forEach((value, key) => {
+        payload[key] = value;
+      });
+
+      showLoading();
+
+      try {
+        const response = await fetch("/api/update-school", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showToast("Data updated successfully.", "success");
+          // Update the originalData and re-render the table
+          const updatedIndex = originalData.findIndex(item => item.SCHOOL_NUM === schoolNum);
+          if (updatedIndex !== -1) {
+            originalData[updatedIndex] = { ...originalData[updatedIndex], ...payload };
+            applyFilters(); // Re-apply filters to update the displayed data
+          }
+          // Close the modal
+          const modal = document.getElementById("visualization-modal");
+          if (modal) modal.classList.add("hidden");
+        } else {
+          throw new Error(result.error || "Failed to update data.");
+        }
+      } catch (error) {
+        console.error("Error updating data:", error);
+        showToast(`Failed to update data: ${error.message}`, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Attach event listener to the submit button in the modal
+    document.addEventListener("click", (event) => {
+      if (event.target && event.target.id === "submit-edit") {
+        const form = document.getElementById("edit-form");
+        if (form) {
+          handleFormSubmit({ target: form, preventDefault: () => {} });
+        }
+      }
+    });
+
+    // Attach event listener to the cancel button in the modal
+    document.getElementById("cancel-edit").addEventListener("click", () => {
+      const modal = document.getElementById("visualization-modal");
+      if (modal) modal.classList.add("hidden");
+    });
+
+    // Attach event listener to the "X" close button in the modal
+    document.getElementById("close-modal-x").addEventListener("click", () => {
+      const modal = document.getElementById("visualization-modal");
+      if (modal) modal.classList.add("hidden");
+    });
+
+    // Close modal when clicking outside the modal content
+    window.addEventListener("click", (event) => {
+      const modal = document.getElementById("visualization-modal");
+      if (event.target === modal) {
+        modal.classList.add("hidden");
+      }
+    });
+
+    // Close modal when pressing the "Escape" key
+    window.addEventListener("keydown", (event) => {
+      const modal = document.getElementById("visualization-modal");
+      if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+        modal.classList.add("hidden");
+      }
+    });
+
     // Initialize table selection and fetch data
-    document.addEventListener('DOMContentLoaded', fetchTables);
+    document.addEventListener("DOMContentLoaded", fetchTables);
   </script>
+
+  <style>
+    .table-container {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      overflow: auto;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    .table-container::-webkit-scrollbar {
+      height: 12px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: #a0aec0;
+      border-radius: 6px;
+    }
+
+    /* Styles for editable cells */
+    .editable-cell {
+      border-bottom: 1px dashed transparent;
+      transition: background-color 0.3s, border-bottom 0.3s;
+    }
+
+    .editable-cell:focus {
+      outline: none;
+      background-color: #f0f4f8;
+      border-bottom: 1px dashed #3182ce;
+    }
+
+    /* Styles for success and error indicators */
+    .editable-cell.bg-green-100 {
+      background-color: #c6f6d5;
+    }
+
+    .editable-cell.bg-red-100 {
+      background-color: #feb2b2;
+    }
+
+    /* Modal styles */
+    #visualization-modal {
+      transition: opacity 0.3s ease;
+    }
+
+    /* Loader styles */
+    .loader {
+      border-top-color: #3498db;
+      animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Scrollbar styling for modal content */
+    #visualization-modal .overflow-y-auto::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    #visualization-modal .overflow-y-auto::-webkit-scrollbar-thumb {
+      background-color: #a0aec0;
+      border-radius: 6px;
+    }
+
+    /* Responsive adjustments for the modal */
+    @media (max-width: 768px) {
+      #visualization-modal .rounded-lg {
+        width: 90%;
+      }
+    }
+  </style>
 </Layout>
-
-<style>
-  .table-container {
-    position: relative;
-    width: 100%;
-    height: 70vh;
-    overflow: auto;
-  }
-
-  thead {
-    position: sticky;
-    top: 0;
-    z-index: 1;
-  }
-
-  tbody tr:hover {
-    background-color: #f1f5f9;
-  }
-
-  .table-container::-webkit-scrollbar {
-    height: 12px;
-  }
-
-  .table-container::-webkit-scrollbar-thumb {
-    background-color: #a0aec0;
-    border-radius: 6px;
-  }
-</style>
