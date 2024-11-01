@@ -7,8 +7,11 @@
   <div class="flex justify-between items-center mb-6">
     <img src="/fisa_logo_small.png" alt="FISA Logo" class="w-32 h-auto" />
     <div class="text-center">
-      <h1 class="text-2xl font-bold text-gray-800 dark:text-gray-100">
-        FACT SHEET FOR SCHOOL YEAR 2023 - 2024
+      <h1
+        class="text-2xl font-bold text-gray-800 dark:text-gray-100"
+        id="fact-sheet-title"
+      >
+        Loading...
       </h1>
       <p class="text-sm text-gray-600 dark:text-gray-300">
         Please complete or correct where necessary the following information<br />
@@ -475,4 +478,47 @@
       Submit
     </button>
   </form>
+</div>
+
+ <!-- Client-side script to fetch and update the title -->
+  <script>
+    async function updateFactSheetTitle() {
+      try {
+        const response = await fetch('/api/get-active-table');
+        if (!response.ok) {
+          throw new Error('Failed to fetch active table');
+        }
+        const data = await response.json();
+        const activeTableName = data.activeTable;
+
+        // Extract the school year using regex
+        // Adjust the regex based on your table naming convention
+        const schoolYearMatch = activeTableName.match(/(\d{4})\s*[-_]\s*(\d{4})/);
+        let title = 'FACT SHEET';
+        if (schoolYearMatch) {
+          const startYear = schoolYearMatch[1];
+          const endYear = schoolYearMatch[2];
+          const schoolYearStr = `${startYear} - ${endYear}`;
+          title = `FACT SHEET FOR SCHOOL YEAR ${schoolYearStr}`;
+        } else {
+          // Fallback to activeTableName or a default title
+          title = activeTableName || 'FACT SHEET';
+        }
+
+        // Update the title in the DOM
+        document.getElementById('fact-sheet-title').textContent = title;
+
+        // Display the form by removing the 'hidden' class
+        document.getElementById('school-data').classList.remove('hidden');
+      } catch (error) {
+        console.error('Error updating fact sheet title:', error);
+        document.getElementById('fact-sheet-title').textContent = 'FACT SHEET';
+        // Optionally, display the form even if there's an error
+        document.getElementById('school-data').classList.remove('hidden');
+      }
+    }
+
+    // Execute the function after the DOM is fully loaded
+    document.addEventListener('DOMContentLoaded', updateFactSheetTitle);
+  </script>
 </div>
