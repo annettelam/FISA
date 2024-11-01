@@ -1,7 +1,7 @@
 // src/pages/api/accept.js
 
 import Database from "better-sqlite3";
-import { openDatabase, getActiveTable } from "./db-utils";
+import { openDatabase } from "./db-utils";
 
 /**
  * Logs changes to the change log.
@@ -12,12 +12,28 @@ import { openDatabase, getActiveTable } from "./db-utils";
  * @param {string|null} newValue - The new value.
  * @param {string} updatedBy - Identifier for who made the update.
  */
-function logChange(db, schoolNum, fieldChanged, oldValue, newValue, updatedBy, activeTable) {
+function logChange(
+  db,
+  schoolNum,
+  fieldChanged,
+  oldValue,
+  newValue,
+  updatedBy,
+  activeTable
+) {
   // Ensure values are strings or null before binding
-  const sanitizedOldValue = oldValue === undefined || oldValue === null ? null : String(oldValue);
-  const sanitizedNewValue = newValue === undefined || newValue === null ? null : String(newValue);
-  const sanitizedUpdatedBy = updatedBy === undefined || updatedBy === null ? 'unknown' : String(updatedBy);
-  const sanitizedActiveTable = activeTable === undefined || activeTable === null ? 'unknown' : String(activeTable);
+  const sanitizedOldValue =
+    oldValue === undefined || oldValue === null ? null : String(oldValue);
+  const sanitizedNewValue =
+    newValue === undefined || newValue === null ? null : String(newValue);
+  const sanitizedUpdatedBy =
+    updatedBy === undefined || updatedBy === null
+      ? "unknown"
+      : String(updatedBy);
+  const sanitizedActiveTable =
+    activeTable === undefined || activeTable === null
+      ? "unknown"
+      : String(activeTable);
 
   const insertLog = db.prepare(`
     INSERT INTO school_change_log (school_num, field_changed, old_value, new_value, updated_by, active_table_at_change) 
@@ -25,17 +41,14 @@ function logChange(db, schoolNum, fieldChanged, oldValue, newValue, updatedBy, a
   `);
 
   insertLog.run(
-    String(schoolNum),      // Ensure schoolNum is a string
-    String(fieldChanged),   // Ensure fieldChanged is a string
-    sanitizedOldValue,      // Convert oldValue to a string or null
-    sanitizedNewValue,      // Convert newValue to a string or null
-    sanitizedUpdatedBy,     // Ensure updatedBy is a string
-    sanitizedActiveTable    // Ensure activeTable is a string
+    String(schoolNum), // Ensure schoolNum is a string
+    String(fieldChanged), // Ensure fieldChanged is a string
+    sanitizedOldValue, // Convert oldValue to a string or null
+    sanitizedNewValue, // Convert newValue to a string or null
+    sanitizedUpdatedBy, // Ensure updatedBy is a string
+    sanitizedActiveTable // Ensure activeTable is a string
   );
 }
-
-
-
 
 export async function POST({ request }) {
   let db;
@@ -52,23 +65,9 @@ export async function POST({ request }) {
 
     db = openDatabase();
 
-    // Fetch the active table name
-    let activeTable;
-    try {
-      activeTable = getActiveTable(db); // Fetch the active table
-      console.log(`Active Table: ${activeTable}`); // Debug log to confirm active table
-    } catch (error) {
-      console.error("Error fetching active table:", error);
-      db.close();
-      return new Response(JSON.stringify({ error: error.message }), {
-        status: 500,
-        headers: { "Content-Type": "application/json" },
-      });
-    }
-
-    // Fetch the proposed update
+    // Fetch the proposed update, including active_table_at_submission
     const updateStmt = db.prepare(`
-      SELECT school_number, proposed_data
+      SELECT school_number, proposed_data, active_table_at_submission
       FROM proposed_updates
       WHERE id = ? AND status = 'pending'
     `);
@@ -85,7 +84,22 @@ export async function POST({ request }) {
       );
     }
 
-    const { school_number, proposed_data } = update;
+    const { school_number, proposed_data, active_table_at_submission } = update;
+
+    const activeTable = active_table_at_submission;
+
+    if (!activeTable) {
+      db.close();
+      return new Response(
+        JSON.stringify({
+          error: "Active table at submission is not specified",
+        }),
+        {
+          status: 500,
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+    }
 
     // Parse proposed_data
     let proposedDataParsed;
@@ -253,4 +267,3 @@ export async function POST({ request }) {
     );
   }
 }
-
