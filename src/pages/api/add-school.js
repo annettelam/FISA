@@ -109,10 +109,12 @@ export async function POST({ request }) {
     // Capture the provided SCHOOL_NUM
     const schoolNum = fields.SCHOOL_NUM;
 
-    // Log the addition in the change log
+    // Log the addition in the change log, including ACTIVE_TABLE_AT_CHANGE
     const logStmt = db.prepare(`
-      INSERT INTO "school_change_log" ("SCHOOL_NUM", "ACTION", "TIMESTAMP", "USER_ID", "field_changed")
-      VALUES (?, 'ADD', datetime('now'), ?, 'ALL')
+      INSERT INTO "school_change_log" 
+        ("SCHOOL_NUM", "ACTION", "TIMESTAMP", "USER_ID", "FIELD_CHANGED", "ACTIVE_TABLE_AT_CHANGE")
+      VALUES 
+        (?, 'ADD', datetime('now'), ?, 'ALL', 'school_data')
     `);
     logStmt.run(schoolNum, addedBy || "system"); // default to "system" if addedBy not provided
 

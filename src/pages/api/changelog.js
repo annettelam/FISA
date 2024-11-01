@@ -1,3 +1,5 @@
+// src/pages/api/changelog.js
+
 import { openDatabase } from "./db-utils.js";
 import { DateTime } from "luxon";
 
@@ -10,14 +12,24 @@ export function getLogsBySchool(schoolNum) {
 
     // Fetch logs for a single school, ordered by timestamp (most recent first)
     const logsQuery = `
-  SELECT school_num, field_changed, old_value, new_value, updated_by, timestamp, active_table_at_change 
-  FROM school_change_log
-  WHERE school_num = ?
-  ORDER BY timestamp DESC
-`;
+      SELECT 
+        "SCHOOL_NUM" AS school_num, 
+        "ACTION" AS action, 
+        "FIELD_CHANGED" AS field_changed, 
+        "OLD_VALUE" AS old_value, 
+        "NEW_VALUE" AS new_value, 
+        "USER_ID" AS updated_by, 
+        "TIMESTAMP" AS timestamp, 
+        "ACTIVE_TABLE_AT_CHANGE" AS active_table_at_change 
+      FROM 
+        "school_change_log"
+      WHERE 
+        "SCHOOL_NUM" = ?
+      ORDER BY 
+        "TIMESTAMP" DESC;
+    `;
 
     const logs = db.prepare(logsQuery).all(schoolNum);
-
 
     // Convert timestamps to Vancouver time
     logs.forEach((log) => {
@@ -47,10 +59,10 @@ export function getAllSchoolNumbersOrderedByRecentChange() {
 
     // Query to get unique school numbers, ordered by the most recent timestamp of any change
     const schoolNumbersQuery = `
-      SELECT school_num
-      FROM school_change_log
-      GROUP BY school_num
-      ORDER BY MAX(timestamp) DESC
+      SELECT "SCHOOL_NUM" AS school_num
+      FROM "school_change_log"
+      GROUP BY "SCHOOL_NUM"
+      ORDER BY MAX("TIMESTAMP") DESC;
     `;
 
     const schoolNumbers = db.prepare(schoolNumbersQuery).all();

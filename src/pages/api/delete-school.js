@@ -70,11 +70,13 @@ export async function POST({ request }) {
           throw new Error("No school found with the provided SCHOOL_NUM.");
         }
 
-        // Log the deletion in the change log
+        // Log the deletion in the change log, including ACTIVE_TABLE_AT_CHANGE
         const logStmt = db.prepare(`
-        INSERT INTO "school_change_log" ("SCHOOL_NUM", "ACTION", "TIMESTAMP", "USER_ID", "field_changed")
-        VALUES (?, 'DELETE', datetime('now'), ?, 'ALL')
-      `);
+          INSERT INTO "school_change_log" 
+            ("SCHOOL_NUM", "ACTION", "TIMESTAMP", "USER_ID", "FIELD_CHANGED", "ACTIVE_TABLE_AT_CHANGE")
+          VALUES 
+            (?, 'DELETE', datetime('now'), ?, 'ALL', 'school_data')
+        `);
         logStmt.run(schoolNum, deletedBy || "system");
       }
     );
