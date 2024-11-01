@@ -13,7 +13,7 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
 
   <!-- Visualization Modal -->
   <div id="visualization-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-labelledby="modal-title" aria-describedby="modal-description">
-    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-11/12 md:w-3/4 lg:w-1/2 max-h-full overflow-y-auto relative">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-y-auto relative">
       <!-- Close "X" Button -->
       <button id="close-modal-x" class="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -21,15 +21,26 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
         </svg>
       </button>
 
+      <!-- Modal Title -->
       <h2 id="modal-title" class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Edit School Details</h2>
+
+      <!-- Hidden Field to Indicate Mode -->
+      <input type="hidden" id="modal-mode" value="edit" />
+
+      <!-- Form for Editing or Adding -->
       <form id="edit-form" class="space-y-4">
         <!-- Dynamic form fields will be injected here -->
       </form>
+
+      <!-- Action Buttons -->
       <div class="flex justify-end space-x-4 mt-4">
         <button id="submit-edit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-300">
           Save Changes
         </button>
-        <button id="cancel-edit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">
+        <button id="delete-record" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">
+          Delete Record
+        </button>
+        <button id="cancel-edit" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors duration-300">
           Cancel
         </button>
       </div>
@@ -43,6 +54,13 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
       <p class="text-gray-600 dark:text-gray-300">
         Explore detailed data of all schools in the system, with filtering and sorting options.
       </p>
+    </div>
+
+    <!-- Add Record Button -->
+    <div class="flex justify-end mb-4">
+      <button id="add-record" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300">
+        Add Record
+      </button>
     </div>
 
     <!-- Table Selection -->
@@ -436,11 +454,19 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
     function openEditModal(rowData) {
       const modal = document.getElementById("visualization-modal");
       const modalContent = document.getElementById("edit-form");
+      const modalMode = document.getElementById("modal-mode");
+      const modalTitle = document.getElementById("modal-title");
+      const deleteButton = document.getElementById("delete-record");
 
-      if (!modal || !modalContent) {
+      if (!modal || !modalContent || !modalMode || !modalTitle || !deleteButton) {
         console.error("Modal elements not found.");
         return;
       }
+
+      // Set mode to 'edit'
+      modalMode.value = "edit";
+      modalTitle.textContent = "Edit School Details";
+      deleteButton.classList.remove("hidden");
 
       // Clear previous form content
       modalContent.innerHTML = "";
@@ -558,13 +584,229 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
       }
     }
 
-    // Attach event listener to the submit button in the modal
+    // Handle record deletion
+    async function handleDeleteRecord() {
+      const modal = document.getElementById("visualization-modal");
+      const form = document.getElementById("edit-form");
+
+      if (!form) {
+        console.error("Edit form not found.");
+        return;
+      }
+
+      const schoolNum = form.dataset.schoolNum;
+      const tableName = form.dataset.tableName;
+
+      // Confirm deletion with the user
+      const confirmation = confirm("Are you sure you want to delete this record? This action cannot be undone.");
+      if (!confirmation) return;
+
+      showLoading();
+
+      try {
+        const payload = {
+          tableName,
+          schoolNum,
+          updatedBy: "admin", // Replace with actual user if available
+        };
+
+        const response = await fetch("/api/delete-school", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showToast("Record deleted successfully.", "success");
+          // Remove the deleted record from originalData and re-render the table
+          originalData = originalData.filter(item => item.SCHOOL_NUM !== schoolNum);
+          applyFilters();
+          // Close the modal
+          if (modal) modal.classList.add("hidden");
+        } else {
+          throw new Error(result.error || "Failed to delete record.");
+        }
+      } catch (error) {
+        console.error("Error deleting record:", error);
+        showToast(`Failed to delete record: ${error.message}`, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Handle adding a new record
+    async function handleAddRecord(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const tableName = form.dataset.tableName;
+      const addedBy = "admin"; // Replace with actual user if available
+
+      const payload = {
+        tableName,
+        addedBy,
+      };
+
+      // Populate payload with fields to add
+      formData.forEach((value, key) => {
+        payload[key] = value;
+      });
+
+      showLoading();
+
+      try {
+        const response = await fetch("/api/add-school", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showToast("Record added successfully.", "success");
+          // Optionally, fetch the updated data or append the new record
+          // For simplicity, we'll append it to originalData
+          const newRecord = { SCHOOL_NUM: result.schoolNum, ...payload };
+          originalData.push(newRecord);
+          applyFilters(); // Re-apply filters to update the displayed data
+          // Close the modal
+          const modal = document.getElementById("visualization-modal");
+          if (modal) modal.classList.add("hidden");
+        } else {
+          throw new Error(result.error || "Failed to add record.");
+        }
+      } catch (error) {
+        console.error("Error adding record:", error);
+        showToast(`Failed to add record: ${error.message}`, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+   // Function to open the modal in Add mode
+function openAddModal() {
+  const modal = document.getElementById("visualization-modal");
+  const modalContent = document.getElementById("edit-form");
+  const modalMode = document.getElementById("modal-mode");
+  const modalTitle = document.getElementById("modal-title");
+  const deleteButton = document.getElementById("delete-record");
+
+  if (!modal || !modalContent || !modalMode || !modalTitle || !deleteButton) {
+    console.error("Modal elements not found.");
+    return;
+  }
+
+  // Set mode to 'add'
+  modalMode.value = "add";
+  modalTitle.textContent = "Add New Record";
+  deleteButton.classList.add("hidden"); // Hide delete button in add mode
+
+  // Clear previous form content
+  modalContent.innerHTML = "";
+
+  // Fetch column names for the selected table
+  fetch(`/api/get-columns?table=${encodeURIComponent(currentTable)}`)
+    .then(response => response.json())
+    .then(data => {
+      const columnNames = data.columns;
+
+      columnNames.forEach((key) => {
+        // **Remove or Modify This Condition**
+        // if (key.toLowerCase().includes("num")) return;
+
+        // **Optionally, Only Skip Specific Fields**
+        // For example, if you have other "num" fields you want to exclude:
+        // if (key.toLowerCase().includes("num") && key !== "SCHOOL_NUM") return;
+
+        const div = document.createElement("div");
+        div.className = "flex flex-col";
+
+        const label = document.createElement("label");
+        label.className = "block text-sm font-medium text-gray-700 dark:text-gray-300";
+        label.setAttribute("for", `field-${key}`);
+        label.textContent = key;
+
+        let input;
+        // Determine input type based on the field name
+        if (key.toLowerCase().includes("email")) {
+          input = document.createElement("input");
+          input.type = "email";
+        } else if (key.toLowerCase().includes("phone")) {
+          input = document.createElement("input");
+          input.type = "tel";
+        } else if (key.toLowerCase().includes("fisa") || key.toLowerCase().includes("boolean")) {
+          // Assuming 'FISA' is a boolean field
+          input = document.createElement("select");
+          const optionTrue = document.createElement("option");
+          optionTrue.value = "True";
+          optionTrue.textContent = "True";
+          const optionFalse = document.createElement("option");
+          optionFalse.value = "False";
+          optionFalse.textContent = "False";
+          input.appendChild(optionTrue);
+          input.appendChild(optionFalse);
+        } else {
+          input = document.createElement("input");
+          input.type = "text";
+        }
+
+        input.id = `field-${key}`;
+        input.name = key;
+        input.value = ""; // Empty for new records
+        input.className = "mt-1 block w-full pl-3 pr-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-300";
+
+        div.appendChild(label);
+        div.appendChild(input);
+        modalContent.appendChild(div);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching column names:", error);
+      showToast("Failed to load form fields.", "error");
+    });
+
+  // Store the table name in the form's dataset for easy access during submission
+  modalContent.dataset.tableName = currentTable;
+
+  // Clear any previous schoolNum as it's not needed in add mode
+  delete modalContent.dataset.schoolNum;
+
+  // Show the modal
+  modal.classList.remove("hidden");
+}
+
+    // Attach event listener to the Add Record button
+    document.getElementById("add-record").addEventListener("click", () => {
+      if (currentTable) {
+        openAddModal();
+      } else {
+        showToast("Please select a table first.", "error");
+      }
+    });
+
+    // Attach event listener to the submit button based on modal mode
     document.addEventListener("click", (event) => {
       if (event.target && event.target.id === "submit-edit") {
         const form = document.getElementById("edit-form");
+        const modalMode = document.getElementById("modal-mode").value;
         if (form) {
-          handleFormSubmit({ target: form, preventDefault: () => {} });
+          if (modalMode === "edit") {
+            handleFormSubmit({ target: form, preventDefault: () => {} });
+          } else if (modalMode === "add") {
+            handleAddRecord({ target: form, preventDefault: () => {} });
+          }
         }
+      }
+    });
+
+    // Attach event listener to the delete button in the modal
+    document.addEventListener("click", (event) => {
+      if (event.target && event.target.id === "delete-record") {
+        handleDeleteRecord();
       }
     });
 
@@ -583,6 +825,7 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
     // Close modal when clicking outside the modal content
     window.addEventListener("click", (event) => {
       const modal = document.getElementById("visualization-modal");
+      if (!modal) return;
       if (event.target === modal) {
         modal.classList.add("hidden");
       }

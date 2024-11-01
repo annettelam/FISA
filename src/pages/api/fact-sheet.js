@@ -36,8 +36,9 @@ export async function GET({ request }) {
     // Remove leading/trailing whitespaces
     const normalizedSchoolNum = schoolNum.trim();
 
-    // Updated regex to allow both 8-digit numbers and 8 digits with a hyphen and alphanumeric characters
-    const schoolNumRegex = /^\d{8}(-[a-zA-Z0-9]+)?$/;
+    // **Updated regex to be more flexible**
+    // Allows one or more digits with optional hyphen and alphanumerics
+    const schoolNumRegex = /^\d+(-[a-zA-Z0-9]+)?$/;
     if (!schoolNumRegex.test(normalizedSchoolNum)) {
       console.log(`Invalid schoolNum format: ${normalizedSchoolNum}`);
       return new Response(

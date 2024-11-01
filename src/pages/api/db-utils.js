@@ -59,6 +59,12 @@ export function getAllTables(db) {
   }
 }
 
+export function getTableColumns(db, tableName) {
+  const stmt = db.prepare(`PRAGMA table_info("${tableName}")`);
+  const rows = stmt.all();
+  return rows.map((col) => col.name);
+}
+
 /**
  * Fetches the school data based on the school ID.
  * @param {string} schoolId - The school ID.
