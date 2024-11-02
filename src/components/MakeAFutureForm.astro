@@ -1,29 +1,42 @@
 ---
+import { Astro } from "astro"; // If needed for your setup
+
+// Fetch the URL and schoolId from the request
 const url = new URL(Astro.request.url);
 const schoolId = url.searchParams.get("schoolId");
 
-// Initialize schoolData
+// Initialize schoolData with default values
 let schoolData = {
     schoolName: "",
     schoolId: "",
     fteEnrolment: 0,
+    contactName: "",
+    contactEmail: "",
 };
 
-// Initialize an error message variable
 let errorMessage = "";
 
-// Check if schoolId is provided
+// Fetch school data if schoolId is provided
 if (schoolId) {
     const apiUrl = new URL(
         `/api/data?schoolId=${encodeURIComponent(schoolId)}`,
         Astro.url.origin,
     );
+
     try {
         const response = await fetch(apiUrl);
         if (response.ok) {
             const data = await response.json();
             if (data && Object.keys(data).length > 0) {
-                schoolData = { ...schoolData, ...data };
+                schoolData = {
+                    ...schoolData,
+                    schoolName: data.schoolName || "N/A",
+                    schoolId: data.schoolId || "N/A",
+                    fteEnrolment: parseFloat(data.grades1To12 || 0),
+                    contactName:
+                        `${data.firstName || ""} ${data.lastName || ""}`.trim(),
+                    contactEmail: data.email || "N/A",
+                };
             } else {
                 errorMessage = "No data returned from API.";
             }
@@ -38,18 +51,20 @@ if (schoolId) {
 }
 ---
 
+<!-- Astro Component Markup -->
 <div
     class="max-w-3xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg"
 >
-    <!-- Display error message if any -->
+    <!-- Error Message -->
     {
         errorMessage && (
-            <div style="color: red;">
+            <div class="text-red-600 mb-4">
                 <p>{errorMessage}</p>
             </div>
         )
     }
 
+    <!-- Header Section -->
     <div class="flex justify-between items-center mb-6">
         <img src="/fisa_logo_small.png" alt="FISA Logo" class="w-32 h-auto" />
         <div class="text-center">
@@ -64,40 +79,39 @@ if (schoolId) {
         </div>
     </div>
 
-    <form id="makeAFutureForm" class="space-y-6">
-        <!-- School Information Section -->
+    <!-- Form Section -->
+    <form id="makeAFutureForm">
+        <!-- School Information -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             School Information
         </h2>
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 mb-6">
             <div>
                 <label
                     for="schoolName"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >School Name:</label
                 >
-                    School Name:
-                </label>
                 <input
                     type="text"
                     id="schoolName"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
+                    class="w-full p-3 rounded-lg border dark:bg-gray-900"
                     readonly
-                    value={schoolData.schoolName || ""}
+                    value={schoolData.schoolName}
                 />
             </div>
             <div>
                 <label
                     for="schoolId"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >School ID:</label
                 >
-                    School ID:
-                </label>
                 <input
                     type="text"
                     id="schoolId"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
+                    class="w-full p-3 rounded-lg border dark:bg-gray-900"
                     readonly
-                    value={schoolData.schoolId || ""}
+                    value={schoolData.schoolId}
                 />
             </div>
         </div>
@@ -106,85 +120,66 @@ if (schoolId) {
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Enrollment Information
         </h2>
-        <div class="space-y-4">
-            <div>
-                <label
-                    for="fteEnrolment"
-                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
-                >
-                    A. Total F.T.E. Enrolment:
-                </label>
-                <input
-                    type="number"
-                    id="fteEnrolment"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
-                    value={schoolData.fteEnrolment || 0}
-                    oninput="calculateMakeAFutureFee()"
-                />
-            </div>
+        <div class="mb-6">
+            <label
+                for="fteEnrolment"
+                class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                >A. Total F.T.E. Enrolment:</label
+            >
+            <input
+                type="number"
+                id="fteEnrolment"
+                class="w-full p-3 rounded-lg border dark:bg-gray-900"
+                value={schoolData.fteEnrolment}
+                readonly
+            />
         </div>
 
         <!-- Fee Calculation Section -->
         <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
             Fee Calculation
         </h2>
-        <div class="space-y-4">
+        <div class="space-y-4 mb-6">
             <div>
                 <label
                     for="totalFeeB"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >B. Fee ($3.92 per FTE, minimum $300):</label
                 >
-                    B. Fee ($3.92 per FTE, minimum $300):
-                </label>
                 <input
                     type="text"
                     id="totalFeeB"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
+                    class="w-full p-3 rounded-lg border dark:bg-gray-900"
                     readonly
                     value="0.00"
                 />
             </div>
-            <div>
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" id="setupFeeCheckbox" class="h-5 w-5" />
                 <label
-                    for="setupFee"
-                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    for="setupFeeCheckbox"
+                    class="text-gray-900 dark:text-gray-200"
+                    >C. One-time setup fee ($250)</label
                 >
-                    C. One-time setup fee ($250):
-                </label>
-                <input
-                    type="number"
-                    id="setupFee"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
-                    readonly
-                    value="250"
-                />
             </div>
-            <div>
+            <div class="flex items-center space-x-2">
+                <input type="checkbox" id="lateFeeCheckbox" class="h-5 w-5" />
                 <label
-                    for="lateFee"
-                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    for="lateFeeCheckbox"
+                    class="text-gray-900 dark:text-gray-200"
+                    >D. Late on-boarding fee ($100)</label
                 >
-                    D. Late on-boarding fee ($100):
-                </label>
-                <input
-                    type="number"
-                    id="lateFee"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
-                    readonly
-                    value="100"
-                />
             </div>
             <div>
                 <label
                     for="gst"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >E. GST (5% on B + C + D):</label
                 >
-                    E. GST (5% on B + C + D):
-                </label>
                 <input
                     type="text"
                     id="gst"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
+                    class="w-full p-3 rounded-lg border dark:bg-gray-900"
                     readonly
                     value="0.00"
                 />
@@ -193,75 +188,46 @@ if (schoolId) {
                 <label
                     for="finalAmount"
                     class="block text-sm font-medium text-gray-900 dark:text-gray-200"
+                    >F. Total Fees Due (B + C + D + E):</label
                 >
-                    F. Total Fees Due (B + C + D + E):
-                </label>
                 <input
                     type="text"
                     id="finalAmount"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
+                    class="w-full p-3 rounded-lg border dark:bg-gray-900"
                     readonly
                     value="0.00"
                 />
             </div>
         </div>
 
-        <!-- Primary Contact Information Section -->
-        <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">
-            Primary Contact Information
-        </h2>
-        <div class="grid grid-cols-2 gap-4">
-            <div>
-                <label
-                    for="contactName"
-                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
-                >
-                    Name:
-                </label>
-                <input
-                    type="text"
-                    id="contactName"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
-                />
-            </div>
-            <div>
-                <label
-                    for="contactEmail"
-                    class="block text-sm font-medium text-gray-900 dark:text-gray-200"
-                >
-                    Email:
-                </label>
-                <input
-                    type="email"
-                    id="contactEmail"
-                    class="bg-gray-50 dark:bg-gray-900 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg block w-full p-3"
-                />
-            </div>
-        </div>
-
-        <!-- Submit Button -->
+        <!-- Button -->
         <button
             type="submit"
-            class="w-full text-white bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:focus:ring-blue-900 font-medium rounded-lg text-sm px-5 py-3 mt-4 text-center"
+            class="w-full mt-6 py-3 bg-blue-500 text-white rounded-lg"
+            >Generate Stripe Invoice</button
         >
-            Submit
-        </button>
     </form>
 
     <script>
         function calculateMakeAFutureFee() {
             const fteEnrolment =
-                parseInt(document.getElementById("fteEnrolment").value) || 0;
-            const setupFee = 250;
-            const lateFee = 100;
+                parseFloat(document.getElementById("fteEnrolment").value) || 0;
             const feePerFTE = 3.92;
             const minFee = 300;
+            const setupFee = document.getElementById("setupFeeCheckbox").checked
+                ? 250
+                : 0;
+            const lateFee = document.getElementById("lateFeeCheckbox").checked
+                ? 100
+                : 0;
 
+            // Calculate the fees
             const fteFee = Math.max(fteEnrolment * feePerFTE, minFee);
             const subtotal = fteFee + setupFee + lateFee;
             const gst = subtotal * 0.05;
             const finalAmount = subtotal + gst;
 
+            // Update the fields with calculated values
             document.getElementById("totalFeeB").value = fteFee.toFixed(2);
             document.getElementById("gst").value = gst.toFixed(2);
             document.getElementById("finalAmount").value =
@@ -269,9 +235,16 @@ if (schoolId) {
         }
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Initial calculation
+            calculateMakeAFutureFee();
+
+            // Add event listeners to checkboxes
             document
-                .getElementById("fteEnrolment")
-                .addEventListener("input", calculateMakeAFutureFee);
+                .getElementById("setupFeeCheckbox")
+                .addEventListener("change", calculateMakeAFutureFee);
+            document
+                .getElementById("lateFeeCheckbox")
+                .addEventListener("change", calculateMakeAFutureFee);
         });
     </script>
 </div>
