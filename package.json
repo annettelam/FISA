@@ -27,7 +27,8 @@
     "node": "^22.9.0",
     "nodemailer": "^6.9.15",
     "puppeteer": "^23.4.1",
-    "sqlite3": "^5.1.7"
+    "sqlite3": "^5.1.7",
+    "stripe": "^17.3.1"
   },
   "description": "```sh npm create astro@latest -- --template basics ```",
   "main": "index.js",
