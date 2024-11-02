@@ -1,0 +1,416 @@
+---
+import Layout from "../layouts/Layout.astro"; 
+---
+
+<head>
+    <style>
+        #school-dist-num, #school-name {
+            margin-bottom: 35px;
+        }
+
+        #school-num-input, #school-name-input {
+            color: black;
+            border: 3px solid black;
+            display: block
+        }
+
+        #switch-button {
+            display: block;
+            background-color: blue;
+            color: black;
+            border: 3px solid black;
+            border-radius: 25px;
+            width: 10vw;
+            height: 6vh;
+            font-size: 10pt;
+            line-height: 10pt;
+        }
+
+        .french-form-input {
+            max-width: 60px;
+            color: black;
+            border: solid black 3px;
+        }
+
+        .french-form-headerlabel {
+            font-size: 20pt;
+            font-weight: 500;
+        }
+
+        .french-form {
+            margin-top: 20px;
+            margin-bottom: 50px;
+        }
+
+        .french-form-input-container {
+            max-width: 60px;
+            display: inline-block;
+            margin-left: 5px;
+            margin-right: 5px;
+        }
+
+        #school-dist-num {
+            font-size: 16pt;
+        }
+
+        #school-name {
+            font-size: 24pt;
+        }
+
+        .french-fund-form-input {
+            width: 100px;
+            font-size: 10pt;
+            color: black;
+            border: solid black 3px;
+        }
+
+        .french-fund-form-input-container {
+            width: 12vw;
+            display: inline-block;
+        }
+
+        .french-fund-form-container {
+            display: inline-block;
+            width: 50vw;
+            grid-column: 1;
+        }
+
+        .french-fund-label {
+            font-size: 13pt;
+        }
+
+        .grant-total-container {
+            display: inline-block;
+            width: 45vw;
+            grid-column: 2;
+        }
+
+        .grant-total-form-input-container {
+            width: 10vw;
+            display: inline-block;
+        }
+
+        .grant-total-form-input {
+            width: 80px;
+            font-size: 10pt;
+            color: black;
+            border: solid black 3px;
+        }
+
+        .grant-total-label {
+            font-size: 13pt;
+        }
+
+        .french-grid-container {
+            display: grid;
+        }
+
+        .grant-grand-total-label {
+            font-weight: bold;
+        }
+    </style>
+</head>
+
+<Layout title="French Grant">
+    <div class="max-w-8xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md dark:shadow-lg rounded-lg transition-colors duration-300">
+        <div id="school-dist-num">
+            School Number:
+            <input id="school-num-input" />
+        </div>
+        <div id="school-name">
+            School Name:
+            <input id="school-name-input" />
+        </div>
+        <button id="switch-button">Click to Enable/Disable Name+Number Editing</button>
+        <label for="french-core" class="french-form-headerlabel">Core French:</label>
+        <form id="french-core" class="french-form">
+            <div class="french-form-input-container">
+                <label for="corek-half">KH</label>
+                <input id="corek-half" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="corek-full">KF</label>
+                <input id="corek-full" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade1">F1</label>
+                <input id="coregrade1" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade2">F2</label>
+                <input id="coregrade2" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade3">F3</label>
+                <input id="coregrade3" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade4">F4</label>
+                <input id="coregrade4" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade5">F5</label>
+                <input id="coregrade5" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade6">F6</label>
+                <input id="coregrade6" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade7">F7</label>
+                <input id="coregrade7" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="core-elemTotal">ElemTotl</label>
+                <input id="core-elemTotal" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade8">F8</label>
+                <input id="coregrade8" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade9">F9</label>
+                <input id="coregrade9" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade10">F10</label>
+                <input id="coregrade10" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade11">F11</label>
+                <input id="coregrade11" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coregrade12">F12</label>
+                <input id="coregrade12" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="core-secTotal">SecTotl</label>
+                <input id="core-secTotal" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coreTotal">CoreTotl</label>
+                <input id="coreTotal" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coreTotal1">K-3</label>
+                <input id="coreTotal1" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coreTotal2">4-7</label>
+                <input id="coreTotal2" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coreTotal3">8-10</label>
+                <input id="coreTotal3" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coreTotal4">11-12</label>
+                <input id="coreTotal4" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="coreTotal5"></label>
+                <input id="coreTotal5" class="invisible" readonly />
+            </div>
+        </form>
+        <label for="french-immers" class="french-form-headerlabel">French Immersion:</label>
+        <form id="french-immers" class="french-form">
+            <div class="french-form-input-container">
+                <label for="immersk-half">FI-KH</label>
+                <input id="immersk-half" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersk-full">FI-KF</label>
+                <input id="immersk-full" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade1">FI-F1</label>
+                <input id="immersgrade1" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade2">FI-F2</label>
+                <input id="immersgrade2" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade3">FI-F3</label>
+                <input id="immersgrade3" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade4">FI-F4</label>
+                <input id="immersgrade4" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade5">FI-F5</label>
+                <input id="immersgrade5" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade6">FI-F6</label>
+                <input id="immersgrade6" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade7">FI-F7</label>
+                <input id="immersgrade7" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immers-elemTotal">ElemTotl</label>
+                <input id="immers-elemTotal" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade8">FI-F8</label>
+                <input id="immersgrade8" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade9">FI-F9</label>
+                <input id="immersgrade9" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade10">FI-F10</label>
+                <input id="immersgrade10" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade11">FI-F11</label>
+                <input id="immersgrade11" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersgrade12">FI-F12</label>
+                <input id="immersgrade12" class="french-form-input" />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immers-secTotal">SecTotl</label>
+                <input id="immers-secTotal" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersTotal">FITotl</label>
+                <input id="immersTotal" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersTotal1">K-3</label>
+                <input id="immersTotal1" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersTotal2">4-7</label>
+                <input id="immersTotal2" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersTotal3">8-10</label>
+                <input id="immersTotal3" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersTotal4">11-12</label>
+                <input id="immersTotal4" class="french-form-input" readonly />
+            </div>
+            <div class="french-form-input-container">
+                <label for="immersTotal5"></label>
+                <input id="immersTotal5" class="invisible" readonly />
+            </div>
+        </form>
+        <div class="french-grid-container">
+            <div class="french-fund-form-container">
+                <label for="core-funding" class="french-form-headerlabel">Core French Funding Formula Information:</label>
+                <form id="core-funding">
+                    <div class="french-fund-form-input-container">
+                        <label for="core-fund-dollar1" class="french-fund-label">Core K-3$:</label><br>
+                        <label for="core-fund-dollar2" class="french-fund-label">Core 4-7$:</label><br>
+                        <label for="core-fund-dollar3" class="french-fund-label">Core 8-10$:</label><br>
+                        <label for="core-fund-dollar4" class="french-fund-label">Core 11-12$:</label><br>
+                        <label for="core-fund-dollar4" class="french-fund-label"><br></label>
+                    </div>
+                    <div class="french-fund-form-input-container">
+                        <input id="core-fund-dollar1" class="french-fund-form-input" />
+                        <input id="core-fund-dollar2" class="french-fund-form-input" />
+                        <input id="core-fund-dollar3" class="french-fund-form-input" />
+                        <input id="core-fund-dollar4" class="french-fund-form-input" />
+                        <input id="core-fund-dollar5" class="invisible" value="0" />
+                    </div>
+                    <div class="french-fund-form-input-container">
+                        <label for="core-fund-percent1" class="french-fund-label">Core K-3%:</label><br>
+                        <label for="core-fund-percent2" class="french-fund-label">Core 4-7%:</label><br>
+                        <label for="core-fund-percent3" class="french-fund-label">Core 8-10%:</label><br>
+                        <label for="core-fund-percent4" class="french-fund-label">Core 11-12%:</label><br>
+                        <label for="core-fund-percent5" class="french-fund-label"><br></label>
+                    </div>
+                    <div class="french-fund-form-input-container">
+                        <input id="core-fund-percent1" class="french-fund-form-input" />
+                        <input id="core-fund-percent2" class="french-fund-form-input" />
+                        <input id="core-fund-percent3" class="french-fund-form-input" />
+                        <input id="core-fund-percent4" class="french-fund-form-input" />
+                        <input id="core-fund-percent5" class="invisible" value="0" />
+                    </div>
+                </form>
+                <label for="immers-funding" class="french-form-headerlabel">French Immersion:</label>
+                <form id="immers-funding">
+                    <div class="french-fund-form-input-container">
+                        <label for="immers-fund-dollar1" class="french-fund-label">Immersion K-3$:</label><br>
+                        <label for="immers-fund-dollar2" class="french-fund-label">Immersion 4-7$:</label><br>
+                        <label for="immers-fund-dollar3" class="french-fund-label">Immersion 8-10$:</label><br>
+                        <label for="immers-fund-dollar4" class="french-fund-label">Immersion 11-12$:</label><br>
+                        <label for="immers-fund-dollar5" class="french-fund-label"><br></label>
+                    </div>
+                    <div class="french-fund-form-input-container">
+                        <input id="immers-fund-dollar1" class="french-fund-form-input" />
+                        <input id="immers-fund-dollar2" class="french-fund-form-input" />
+                        <input id="immers-fund-dollar3" class="french-fund-form-input" />
+                        <input id="immers-fund-dollar4" class="french-fund-form-input" />
+                        <input id="immers-fund-dollar5" class="invisible" value="0" />
+                    </div>
+                    <div class="french-fund-form-input-container">
+                        <label for="immers-fund-percent1" class="french-fund-label">Immersion K-3%:</label><br>
+                        <label for="immers-fund-percent2" class="french-fund-label">Immersion 4-7%:</label><br>
+                        <label for="immers-fund-percent3" class="french-fund-label">Immersion 8-10%:</label><br>
+                        <label for="immers-fund-percent4" class="french-fund-label">Immersion 11-12%:</label><br>
+                        <label for="immers-fund-percent5" class="french-fund-label"><br></label>
+                    </div>
+                    <div class="french-fund-form-input-container">
+                        <input id="immers-fund-percent1" class="french-fund-form-input" />
+                        <input id="immers-fund-percent2" class="french-fund-form-input" />
+                        <input id="immers-fund-percent3" class="french-fund-form-input" />
+                        <input id="immers-fund-percent4" class="french-fund-form-input" />
+                        <input id="immers-fund-percent5" class="invisible" value="0" />
+                    </div>
+                </form>
+            </div>
+            <div class="grant-total-container">
+                <label for="grant-total" class="french-form-headerlabel">Total Grant Amounts:</label>
+                <form id="grant-total">
+                    <div class="grant-total-form-input-container">
+                        <label for="core-grant-1" class="grant-total-label">Core K-3:</label><br>
+                        <label for="core-grant-2" class="grant-total-label">Core 4-7:</label><br>
+                        <label for="core-grant-3" class="grant-total-label">Core 8-10:</label><br>
+                        <label for="core-grant-4" class="grant-total-label">Core 11-12:</label><br>
+                        <label for="core-grant-5" class="grant-total-label">Core Total:</label><br>
+                        <label for="fisa-admin-fee">FISA Admin:</label>
+                    </div>
+                    <div class="grant-total-form-input-container">
+                        <input id="core-grant-1" class="grant-total-form-input" readonly />
+                        <input id="core-grant-2" class="grant-total-form-input" readonly />
+                        <input id="core-grant-3" class="grant-total-form-input" readonly />
+                        <input id="core-grant-4" class="grant-total-form-input" readonly />
+                        <input id="core-grant-5" class="grant-total-form-input" readonly />
+                        <input id="fisa-admin-fee" class="grant-total-form-input" value="5000" />
+                    </div>
+                    <div class="grant-total-form-input-container">
+                        <label for="immers-grant-1" class="grant-total-label">FI K-3:</label><br>
+                        <label for="immers-grant-2" class="grant-total-label">FI 4-7:</label><br>
+                        <label for="immers-grant-3" class="grant-total-label">FI 8-10:</label><br>
+                        <label for="immers-grant-4" class="grant-total-label">FI 11-12:</label><br>
+                        <label for="immers-grant-5" class="grant-total-label">FI Total:</label><br>
+                        <label for="grant-grand-total" class="grant-grand-total-label">Grand Total:</label>
+                    </div>
+                    <div class="grant-total-form-input-container">
+                        <input id="immers-grant-1" class="grant-total-form-input" readonly />
+                        <input id="immers-grant-2" class="grant-total-form-input" readonly />
+                        <input id="immers-grant-3" class="grant-total-form-input" readonly />
+                        <input id="immers-grant-4" class="grant-total-form-input" readonly />
+                        <input id="immers-grant-5" class="grant-total-form-input" readonly />
+                        <input id="grant-grand-total" class="grant-total-form-input" readonly />
+                    </div>
+                </form>
+            </div>
+        </div>
+        <form>
+            <label for="current-year">CurrentGrantYear:</label>
+            <input id="current-year" class="french-fund-form-input" />
+        </form>
+        <script src="./api/french-grant.js"></script>
+    </div>
+</Layout>
