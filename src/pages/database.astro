@@ -2,7 +2,7 @@
 import Layout from "../layouts/Layout.astro";
 const user = Astro.locals.user; // Ensure this is correctly set if using authentication
 ---
-<Layout title="Database Visualization">
+<Layout title="Database Tables">
   <!-- Loading Spinner -->
   <div id="loading-spinner" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
     <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
@@ -50,7 +50,7 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
   <!-- Main Content -->
   <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300">
     <div class="text-center mb-10">
-      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Visualization</h1>
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Tables</h1>
       <p class="text-gray-600 dark:text-gray-300">
         Explore detailed data of all schools in the system, with filtering and sorting options.
       </p>
