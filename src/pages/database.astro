@@ -1,79 +1,928 @@
 ---
-const response = await fetch('http://localhost:4321/api/data');
-const data = await response.json();
-
-const headers = Object.keys(data[0]); // Extract headers from the first row
+import Layout from "../layouts/Layout.astro";
+const user = Astro.locals.user; // Ensure this is correctly set if using authentication
 ---
-<html>
-  <head>
-    <title>Database Visualization</title>
-    <!-- Include Flowbite styles -->
-    <link href="https://cdn.jsdelivr.net/npm/flowbite@1.5.1/dist/flowbite.min.css" rel="stylesheet">
-    <style>
-      .table-container {
-        display: flex;
-        flex-direction: column;
-        height: 70vh; /* Adjust this to take more vertical space */
-      }
-      .table-header,
-      .table-body {
-        width: 100%;
-        overflow-x: auto; /* Enable horizontal scroll for both header and body */
-      }
-      .table-body {
-        overflow-y: auto; /* Enable vertical scrolling for the body */
-        flex: 1;
-      }
-      table {
-        width: 100%;
-        table-layout: auto; /* Allow columns to adjust based on content */
-      }
-      th,
-      td {
-        text-align: left;
-        white-space: nowrap; /* Prevent text from wrapping */
-        padding: 8px 12px; /* Add padding to make the table more readable */
-        min-width: 120px; /* Minimum width for each column to prevent overlapping */
-      }
-    </style>
-  </head>
-  <body>
-    <div class="container mx-auto p-4">
-      <h1 class="text-3xl font-bold mb-4">Database Visualization</h1>
+<Layout title="Database Visualization">
+  <!-- Loading Spinner -->
+  <div id="loading-spinner" class="hidden fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50">
+    <div class="loader ease-linear rounded-full border-4 border-t-4 border-gray-200 h-12 w-12"></div>
+  </div>
 
-      <!-- Table with scrollable body -->
-      <div class="table-container border border-gray-300">
-        <!-- Table Header -->
-        <div class="table-header">
-          <table class="min-w-full text-sm text-left text-gray-500 border-collapse">
-            <thead class="text-xs text-gray-700 uppercase bg-gray-100 sticky top-0 z-10">
-              <tr>
-                {headers.map((key) => (
-                  <th class="border px-6 py-3">{key}</th>
-                ))}
-              </tr>
-            </thead>
-          </table>
-        </div>
+  <!-- Toast Container for Notifications -->
+  <div id="toast-container" class="fixed top-4 right-4 z-50"></div>
 
-        <!-- Scrollable Table Body -->
-        <div class="table-body">
-          <table class="min-w-full text-sm text-left text-gray-500 border-collapse">
-            <tbody>
-              {data.map((row, index) => (
-                <tr class={`${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'} border-b`}>
-                  {headers.map((key) => (
-                    <td class="border px-6 py-4">{row[key]}</td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+  <!-- Visualization Modal -->
+  <div id="visualization-modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50" role="dialog" aria-labelledby="modal-title" aria-describedby="modal-description">
+    <div class="bg-white dark:bg-gray-800 rounded-lg p-6 w-11/12 md:w-3/4 lg:w-2/3 xl:w-1/2 max-h-full overflow-y-auto relative">
+      <!-- Close "X" Button -->
+      <button id="close-modal-x" class="absolute top-4 right-4 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+
+      <!-- Modal Title -->
+      <h2 id="modal-title" class="text-xl font-bold mb-4 text-gray-800 dark:text-gray-100">Edit School Details</h2>
+
+      <!-- Hidden Field to Indicate Mode -->
+      <input type="hidden" id="modal-mode" value="edit" />
+
+      <!-- Form for Editing or Adding -->
+      <form id="edit-form" class="space-y-4">
+        <!-- Dynamic form fields will be injected here -->
+      </form>
+
+      <!-- Action Buttons -->
+      <div class="flex justify-end space-x-4 mt-4">
+        <button id="submit-edit" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-300">
+          Save Changes
+        </button>
+        <button id="delete-record" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">
+          Delete Record
+        </button>
+        <button id="cancel-edit" class="px-4 py-2 bg-gray-500 text-white rounded hover:bg-gray-600 transition-colors duration-300">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300">
+    <div class="text-center mb-10">
+      <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">Database Visualization</h1>
+      <p class="text-gray-600 dark:text-gray-300">
+        Explore detailed data of all schools in the system, with filtering and sorting options.
+      </p>
+    </div>
+
+    <!-- Add Record Button -->
+    <div class="flex justify-end mb-4">
+      <button id="add-record" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors duration-300">
+        Add Record
+      </button>
+    </div>
+
+    <!-- Table Selection -->
+    <div class="mb-4">
+      <label for="tableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Table</label>
+      <select id="tableSelect" name="tableSelect" class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
+        <option value="" disabled selected>Select a table</option>
+        <!-- Options will be populated dynamically -->
+      </select>
+    </div>
+
+    <!-- Filters Section -->
+    <div class="mb-4 grid grid-cols-1 md:grid-cols-3 gap-4">
+      <!-- Schools by Association -->
+      <div>
+        <label for="association" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schools by Association</label>
+        <select id="association" name="association" class="block w-full pl-3 pr-10 py-2 text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition-colors duration-300">
+          <option value="">All Associations</option>
+        </select>
+      </div>
+
+      <!-- Schools by Name -->
+      <div>
+        <label for="schoolName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Schools by Name</label>
+        <input type="text" id="schoolName" name="schoolName" placeholder="Search by school name" class="block w-full pl-3 pr-3 py-2 text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition-colors duration-300">
+      </div>
+
+      <!-- Sort by Column -->
+      <div>
+        <label for="sortColumn" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Sort by Column</label>
+        <select id="sortColumn" name="sortColumn" class="block w-full pl-3 pr-10 py-2 text-base bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md transition-colors duration-300">
+          <option value="">Select Column</option>
+        </select>
       </div>
     </div>
 
-    <!-- Flowbite JavaScript (for additional interactive features if needed) -->
-    <script src="https://unpkg.com/flowbite@1.5.1/dist/flowbite.js"></script>
-  </body>
-</html>
+    <!-- Clear All Filters Button -->
+    <div class="flex justify-end mb-4">
+      <button id="clear-filters" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition-colors duration-300">
+        Clear All Filters
+      </button>
+    </div>
+
+    <!-- Total Number of Schools -->
+    <div class="mb-2 text-sm text-gray-700 dark:text-gray-300">
+      Total Schools Displayed: <span id="totalSchools">0</span>
+    </div>
+
+    <!-- Table with sticky headers and accessible scrollbar -->
+    <div class="table-container border border-gray-300 dark:border-gray-700 rounded-lg shadow overflow-auto">
+      <table class="min-w-full text-sm text-left text-gray-700 dark:text-gray-300">
+        <!-- Table Header -->
+        <thead class="bg-gray-200 dark:bg-gray-700 sticky top-0">
+          <tr id="table-header">
+            <!-- Headers will be populated dynamically -->
+          </tr>
+        </thead>
+        <!-- Table Body -->
+        <tbody id="table-body" class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+          <!-- Rows will be populated dynamically -->
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- Include Chart.js via CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <!-- Embedded JavaScript for Dynamic Table Selection and Updates -->
+  <script type="module" client:load>
+    // Initialize variables
+    let originalData = []; // To store the unfiltered original data
+    let filteredData = []; // To store the filtered data
+    let currentTable = ""; // Track the selected table name
+
+    // Function to show the loading spinner
+    function showLoading() {
+      const spinner = document.getElementById("loading-spinner");
+      if (spinner) spinner.classList.remove("hidden");
+    }
+
+    // Function to hide the loading spinner
+    function hideLoading() {
+      const spinner = document.getElementById("loading-spinner");
+      if (spinner) spinner.classList.add("hidden");
+    }
+
+    // Function to show toast notifications
+    function showToast(message, type = "success") {
+      const toastContainer = document.getElementById("toast-container");
+      if (!toastContainer) return;
+
+      const toast = document.createElement("div");
+      toast.className = `mb-4 p-4 rounded shadow-lg text-white ${
+        type === "success" ? "bg-green-500" : "bg-red-500"
+      }`;
+      toast.textContent = message;
+
+      toastContainer.appendChild(toast);
+
+      // Remove the toast after 3 seconds
+      setTimeout(() => {
+        toast.remove();
+      }, 3000);
+    }
+
+    // Function to fetch tables for the dropdown
+    async function fetchTables() {
+      showLoading();
+      try {
+        const response = await fetch("/api/list-tables");
+        if (response.ok) {
+          const data = await response.json();
+          populateTableSelect(data.tables);
+        } else {
+          throw new Error("Failed to fetch tables.");
+        }
+      } catch (error) {
+        console.error("Error fetching tables:", error);
+        showToast("Error fetching tables.", "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Populate the tables dropdown
+    function populateTableSelect(tables) {
+      const tableSelect = document.getElementById("tableSelect");
+      if (!tableSelect) {
+        console.error('Element with ID "tableSelect" not found.');
+        return;
+      }
+      tableSelect.innerHTML = '<option value="" disabled selected>Select a table</option>';
+
+      if (tables.length === 0) {
+        const option = document.createElement("option");
+        option.value = "";
+        option.textContent = "No tables available";
+        option.disabled = true;
+        tableSelect.appendChild(option);
+        tableSelect.disabled = true;
+        return;
+      }
+
+      tableSelect.disabled = false;
+      tables.forEach((table) => {
+        const option = document.createElement("option");
+        option.value = table;
+        option.textContent = table;
+        tableSelect.appendChild(option);
+      });
+
+      // Fetch data for the selected table when user changes table selection
+      tableSelect.addEventListener("change", fetchDataForTable);
+    }
+
+    // Fetch data for the selected table
+    async function fetchDataForTable() {
+      const tableSelect = document.getElementById("tableSelect");
+      if (!tableSelect) {
+        console.error('Element with ID "tableSelect" not found.');
+        return;
+      }
+
+      const selectedTable = tableSelect.value;
+      if (!selectedTable || currentTable === selectedTable) return; // No change, don't re-fetch
+
+      currentTable = selectedTable; // Update current table
+      showLoading();
+
+      try {
+        const response = await fetch(
+          `/api/data?table=${encodeURIComponent(selectedTable)}`
+        );
+        if (!response.ok) {
+          throw new Error(`Failed to fetch data for table: ${selectedTable}`);
+        }
+        const data = await response.json();
+        originalData = data; // Store the data
+        filteredData = [...originalData]; // Initialize filteredData
+
+        // Populate table headers
+        populateTableHeaders(data);
+        // Populate filter options
+        populateFilters(data);
+        // Attach event listeners for filters
+        attachFilterEventListeners();
+        // Initial render
+        renderTableBody(filteredData);
+        document.getElementById("totalSchools").textContent = filteredData.length;
+      } catch (error) {
+        console.error(`Error fetching data for table ${selectedTable}:`, error);
+        showToast(`Error fetching data for table "${selectedTable}".`, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    function populateTableHeaders(data) {
+      if (data.length === 0) {
+        const headerRow = document.getElementById("table-header");
+        if (headerRow) headerRow.innerHTML = "<th>No data available</th>";
+        return;
+      }
+
+      const headers = Object.keys(data[0] || {});
+      const headerRow = document.getElementById("table-header");
+      if (!headerRow) {
+        console.error('Element with ID "table-header" not found.');
+        return;
+      }
+      headerRow.innerHTML = ""; // Clear existing headers
+      headers.forEach((key) => {
+        const th = document.createElement("th");
+        th.className =
+          "px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider";
+        th.textContent = key;
+        headerRow.appendChild(th);
+      });
+    }
+
+    function populateFilters(data) {
+      // Populate filter options
+      const associations = [...new Set(data.map((item) => item.ASSOC))]
+        .filter(Boolean)
+        .sort();
+      const associationSelect = document.getElementById("association");
+      if (!associationSelect) {
+        console.error('Element with ID "association" not found.');
+        return;
+      }
+      associationSelect.innerHTML = '<option value="">All Associations</option>'; // Reset filter
+      associations.forEach((assoc) => {
+        const option = document.createElement("option");
+        option.value = String(assoc);
+        option.textContent = String(assoc);
+        associationSelect.appendChild(option);
+      });
+
+      const sortColumnSelect = document.getElementById("sortColumn");
+      if (!sortColumnSelect) {
+        console.error('Element with ID "sortColumn" not found.');
+        return;
+      }
+      sortColumnSelect.innerHTML = '<option value="">Select Column</option>'; // Reset sorting
+      const headers = Object.keys(data[0] || {});
+      headers.forEach((header) => {
+        const option = document.createElement("option");
+        option.value = header;
+        option.textContent = header;
+        sortColumnSelect.appendChild(option);
+      });
+    }
+
+    function attachFilterEventListeners() {
+      const associationSelect = document.getElementById("association");
+      const schoolNameInput = document.getElementById("schoolName");
+      const sortColumnSelect = document.getElementById("sortColumn");
+
+      if (!associationSelect || !schoolNameInput || !sortColumnSelect) {
+        console.error("One or more filter elements not found.");
+        return;
+      }
+
+      // Remove previous event listeners to avoid duplicates
+      associationSelect.removeEventListener("change", applyFilters);
+      schoolNameInput.removeEventListener("input", applyFiltersDebounced);
+      sortColumnSelect.removeEventListener("change", applyFilters);
+
+      // Add event listeners
+      associationSelect.addEventListener("change", applyFilters);
+      schoolNameInput.addEventListener("input", applyFiltersDebounced);
+      sortColumnSelect.addEventListener("change", applyFilters);
+
+      // Event listener for clear filters
+      const clearFiltersButton = document.getElementById("clear-filters");
+      if (clearFiltersButton) {
+        clearFiltersButton.removeEventListener("click", clearFilters);
+        clearFiltersButton.addEventListener("click", clearFilters);
+      }
+    }
+
+    // Debounce function to limit the rate at which a function can fire.
+    function debounce(func, delay) {
+      let timeout;
+      return function () {
+        const context = this;
+        const args = arguments;
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(context, args), delay);
+      };
+    }
+
+    // Debounced version of applyFilters to prevent excessive filtering
+    const applyFiltersDebounced = debounce(applyFilters, 300);
+
+    function applyFilters() {
+      filteredData = [...originalData];
+
+      const associationValue = document.getElementById("association").value;
+      const schoolNameValue = document
+        .getElementById("schoolName")
+        .value.toLowerCase();
+      const sortColumnValue = document.getElementById("sortColumn").value;
+
+      // Filter by Association
+      if (associationValue) {
+        filteredData = filteredData.filter(
+          (item) => item.ASSOC === associationValue
+        );
+      }
+
+      // Filter by School Name
+      if (schoolNameValue) {
+        filteredData = filteredData.filter(
+          (item) =>
+            item.SCHOOL && item.SCHOOL.toLowerCase().includes(schoolNameValue)
+        );
+      }
+
+      // Sort by Column
+      if (sortColumnValue) {
+        filteredData.sort((a, b) => {
+          if (a[sortColumnValue] < b[sortColumnValue]) return -1;
+          if (a[sortColumnValue] > b[sortColumnValue]) return 1;
+          return 0;
+        });
+      }
+
+      // Update total schools displayed
+      document.getElementById("totalSchools").textContent = filteredData.length;
+
+      // Re-render table body
+      renderTableBody(filteredData);
+    }
+
+    function clearFilters() {
+      // Clear filter input fields
+      document.getElementById("association").value = "";
+      document.getElementById("schoolName").value = "";
+      document.getElementById("sortColumn").value = "";
+
+      // Reset filtered data
+      filteredData = [...originalData];
+
+      // Update total schools displayed
+      document.getElementById("totalSchools").textContent = filteredData.length;
+
+      // Re-render table body
+      renderTableBody(filteredData);
+    }
+
+    // Function to render the table body with all fields and clickable school names
+    function renderTableBody(data) {
+      const tbody = document.getElementById("table-body");
+      if (!tbody) {
+        console.error('Element with ID "table-body" not found.');
+        return;
+      }
+      tbody.innerHTML = ""; // Clear existing rows
+
+      data.forEach((row, index) => {
+        const tr = document.createElement("tr");
+        tr.className = index % 2 === 0 ? "" : "bg-gray-50 dark:bg-gray-700";
+
+        Object.keys(row).forEach((key) => {
+          const td = document.createElement("td");
+          td.className =
+            "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+
+          if (key.toLowerCase().includes("school")) { // Assuming 'SCHOOL' column contains 'school' in its name
+            const schoolNum = row["SCHOOL_NUM"];
+            const link = document.createElement("a");
+            link.href = "javascript:void(0);"; // Prevent default navigation
+            link.textContent = row[key];
+            link.className =
+              "text-blue-600 hover:text-blue-900 dark:text-blue-400 dark:hover:text-blue-500 cursor-pointer";
+            link.addEventListener("click", () => openEditModal(row));
+            td.appendChild(link);
+          } else {
+            td.textContent = row[key];
+          }
+          tr.appendChild(td);
+        });
+
+        tbody.appendChild(tr);
+      });
+    }
+
+    // Function to open the edit modal with all school details
+    function openEditModal(rowData) {
+      const modal = document.getElementById("visualization-modal");
+      const modalContent = document.getElementById("edit-form");
+      const modalMode = document.getElementById("modal-mode");
+      const modalTitle = document.getElementById("modal-title");
+      const deleteButton = document.getElementById("delete-record");
+
+      if (!modal || !modalContent || !modalMode || !modalTitle || !deleteButton) {
+        console.error("Modal elements not found.");
+        return;
+      }
+
+      // Set mode to 'edit'
+      modalMode.value = "edit";
+      modalTitle.textContent = "Edit School Details";
+      deleteButton.classList.remove("hidden");
+
+      // Clear previous form content
+      modalContent.innerHTML = "";
+
+      // Dynamically create form fields based on rowData
+      Object.keys(rowData).forEach((key) => {
+        // Skip SCHOOL_NUM or any other identifier you don't want to edit
+        if (key.toLowerCase().includes("num")) return;
+
+        const div = document.createElement("div");
+        div.className = "flex flex-col";
+
+        const label = document.createElement("label");
+        label.className = "block text-sm font-medium text-gray-700 dark:text-gray-300";
+        label.setAttribute("for", `field-${key}`);
+        label.textContent = key;
+
+        let input;
+        // Determine input type based on the field name or value
+        if (typeof rowData[key] === "number") {
+          input = document.createElement("input");
+          input.type = "number";
+          input.step = "any";
+        } else if (key.toLowerCase().includes("email")) {
+          input = document.createElement("input");
+          input.type = "email";
+        } else if (key.toLowerCase().includes("phone")) {
+          input = document.createElement("input");
+          input.type = "tel";
+        } else if (key.toLowerCase().includes("fisa") || key.toLowerCase().includes("boolean")) {
+          // Assuming 'FISA' is a boolean field
+          input = document.createElement("select");
+          const optionTrue = document.createElement("option");
+          optionTrue.value = "True";
+          optionTrue.textContent = "True";
+          const optionFalse = document.createElement("option");
+          optionFalse.value = "False";
+          optionFalse.textContent = "False";
+          input.appendChild(optionTrue);
+          input.appendChild(optionFalse);
+        } else {
+          input = document.createElement("input");
+          input.type = "text";
+        }
+
+        input.id = `field-${key}`;
+        input.name = key;
+        input.value = rowData[key] !== null && rowData[key] !== undefined ? rowData[key] : "";
+        input.className = "mt-1 block w-full pl-3 pr-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-300";
+
+        div.appendChild(label);
+        div.appendChild(input);
+        modalContent.appendChild(div);
+      });
+
+      // Store the school number and table name in the form's dataset for easy access during submission
+      modalContent.dataset.schoolNum = rowData["SCHOOL_NUM"];
+      modalContent.dataset.tableName = currentTable;
+
+      // Show the modal
+      modal.classList.remove("hidden");
+    }
+
+    // Handle form submission for editing
+    async function handleFormSubmit(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const schoolNum = form.dataset.schoolNum;
+      const tableName = form.dataset.tableName;
+      const updatedBy = "admin"; // Replace with actual user if available
+
+      const payload = {
+        tableName,
+        schoolNum,
+        updatedBy,
+      };
+
+      // Populate payload with updated fields
+      formData.forEach((value, key) => {
+        payload[key] = value;
+      });
+
+      showLoading();
+
+      try {
+        const response = await fetch("/api/update-school", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showToast("Data updated successfully.", "success");
+          // Update the originalData and re-render the table
+          const updatedIndex = originalData.findIndex(item => item.SCHOOL_NUM === schoolNum);
+          if (updatedIndex !== -1) {
+            originalData[updatedIndex] = { ...originalData[updatedIndex], ...payload };
+            applyFilters(); // Re-apply filters to update the displayed data
+          }
+          // Close the modal
+          const modal = document.getElementById("visualization-modal");
+          if (modal) modal.classList.add("hidden");
+        } else {
+          throw new Error(result.error || "Failed to update data.");
+        }
+      } catch (error) {
+        console.error("Error updating data:", error);
+        showToast(`Failed to update data: ${error.message}`, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Handle record deletion
+    async function handleDeleteRecord() {
+      const modal = document.getElementById("visualization-modal");
+      const form = document.getElementById("edit-form");
+
+      if (!form) {
+        console.error("Edit form not found.");
+        return;
+      }
+
+      const schoolNum = form.dataset.schoolNum;
+      const tableName = form.dataset.tableName;
+
+      // Confirm deletion with the user
+      const confirmation = confirm("Are you sure you want to delete this record? This action cannot be undone.");
+      if (!confirmation) return;
+
+      showLoading();
+
+      try {
+        const payload = {
+          tableName,
+          schoolNum,
+          updatedBy: "admin", // Replace with actual user if available
+        };
+
+        const response = await fetch("/api/delete-school", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showToast("Record deleted successfully.", "success");
+          // Remove the deleted record from originalData and re-render the table
+          originalData = originalData.filter(item => item.SCHOOL_NUM !== schoolNum);
+          applyFilters();
+          // Close the modal
+          if (modal) modal.classList.add("hidden");
+        } else {
+          throw new Error(result.error || "Failed to delete record.");
+        }
+      } catch (error) {
+        console.error("Error deleting record:", error);
+        showToast(`Failed to delete record: ${error.message}`, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+    // Handle adding a new record
+    async function handleAddRecord(event) {
+      event.preventDefault();
+      const form = event.target;
+      const formData = new FormData(form);
+
+      const tableName = form.dataset.tableName;
+      const addedBy = "admin"; // Replace with actual user if available
+
+      const payload = {
+        tableName,
+        addedBy,
+      };
+
+      // Populate payload with fields to add
+      formData.forEach((value, key) => {
+        payload[key] = value;
+      });
+
+      showLoading();
+
+      try {
+        const response = await fetch("/api/add-school", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const result = await response.json();
+
+        if (response.ok && result.success) {
+          showToast("Record added successfully.", "success");
+          // Optionally, fetch the updated data or append the new record
+          // For simplicity, we'll append it to originalData
+          const newRecord = { SCHOOL_NUM: result.schoolNum, ...payload };
+          originalData.push(newRecord);
+          applyFilters(); // Re-apply filters to update the displayed data
+          // Close the modal
+          const modal = document.getElementById("visualization-modal");
+          if (modal) modal.classList.add("hidden");
+        } else {
+          throw new Error(result.error || "Failed to add record.");
+        }
+      } catch (error) {
+        console.error("Error adding record:", error);
+        showToast(`Failed to add record: ${error.message}`, "error");
+      } finally {
+        hideLoading();
+      }
+    }
+
+   // Function to open the modal in Add mode
+function openAddModal() {
+  const modal = document.getElementById("visualization-modal");
+  const modalContent = document.getElementById("edit-form");
+  const modalMode = document.getElementById("modal-mode");
+  const modalTitle = document.getElementById("modal-title");
+  const deleteButton = document.getElementById("delete-record");
+
+  if (!modal || !modalContent || !modalMode || !modalTitle || !deleteButton) {
+    console.error("Modal elements not found.");
+    return;
+  }
+
+  // Set mode to 'add'
+  modalMode.value = "add";
+  modalTitle.textContent = "Add New Record";
+  deleteButton.classList.add("hidden"); // Hide delete button in add mode
+
+  // Clear previous form content
+  modalContent.innerHTML = "";
+
+  // Fetch column names for the selected table
+  fetch(`/api/get-columns?table=${encodeURIComponent(currentTable)}`)
+    .then(response => response.json())
+    .then(data => {
+      const columnNames = data.columns;
+
+      columnNames.forEach((key) => {
+        // **Remove or Modify This Condition**
+        // if (key.toLowerCase().includes("num")) return;
+
+        // **Optionally, Only Skip Specific Fields**
+        // For example, if you have other "num" fields you want to exclude:
+        // if (key.toLowerCase().includes("num") && key !== "SCHOOL_NUM") return;
+
+        const div = document.createElement("div");
+        div.className = "flex flex-col";
+
+        const label = document.createElement("label");
+        label.className = "block text-sm font-medium text-gray-700 dark:text-gray-300";
+        label.setAttribute("for", `field-${key}`);
+        label.textContent = key;
+
+        let input;
+        // Determine input type based on the field name
+        if (key.toLowerCase().includes("email")) {
+          input = document.createElement("input");
+          input.type = "email";
+        } else if (key.toLowerCase().includes("phone")) {
+          input = document.createElement("input");
+          input.type = "tel";
+        } else if (key.toLowerCase().includes("fisa") || key.toLowerCase().includes("boolean")) {
+          // Assuming 'FISA' is a boolean field
+          input = document.createElement("select");
+          const optionTrue = document.createElement("option");
+          optionTrue.value = "True";
+          optionTrue.textContent = "True";
+          const optionFalse = document.createElement("option");
+          optionFalse.value = "False";
+          optionFalse.textContent = "False";
+          input.appendChild(optionTrue);
+          input.appendChild(optionFalse);
+        } else {
+          input = document.createElement("input");
+          input.type = "text";
+        }
+
+        input.id = `field-${key}`;
+        input.name = key;
+        input.value = ""; // Empty for new records
+        input.className = "mt-1 block w-full pl-3 pr-3 py-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors duration-300";
+
+        div.appendChild(label);
+        div.appendChild(input);
+        modalContent.appendChild(div);
+      });
+    })
+    .catch(error => {
+      console.error("Error fetching column names:", error);
+      showToast("Failed to load form fields.", "error");
+    });
+
+  // Store the table name in the form's dataset for easy access during submission
+  modalContent.dataset.tableName = currentTable;
+
+  // Clear any previous schoolNum as it's not needed in add mode
+  delete modalContent.dataset.schoolNum;
+
+  // Show the modal
+  modal.classList.remove("hidden");
+}
+
+    // Attach event listener to the Add Record button
+    document.getElementById("add-record").addEventListener("click", () => {
+      if (currentTable) {
+        openAddModal();
+      } else {
+        showToast("Please select a table first.", "error");
+      }
+    });
+
+    // Attach event listener to the submit button based on modal mode
+    document.addEventListener("click", (event) => {
+      if (event.target && event.target.id === "submit-edit") {
+        const form = document.getElementById("edit-form");
+        const modalMode = document.getElementById("modal-mode").value;
+        if (form) {
+          if (modalMode === "edit") {
+            handleFormSubmit({ target: form, preventDefault: () => {} });
+          } else if (modalMode === "add") {
+            handleAddRecord({ target: form, preventDefault: () => {} });
+          }
+        }
+      }
+    });
+
+    // Attach event listener to the delete button in the modal
+    document.addEventListener("click", (event) => {
+      if (event.target && event.target.id === "delete-record") {
+        handleDeleteRecord();
+      }
+    });
+
+    // Attach event listener to the cancel button in the modal
+    document.getElementById("cancel-edit").addEventListener("click", () => {
+      const modal = document.getElementById("visualization-modal");
+      if (modal) modal.classList.add("hidden");
+    });
+
+    // Attach event listener to the "X" close button in the modal
+    document.getElementById("close-modal-x").addEventListener("click", () => {
+      const modal = document.getElementById("visualization-modal");
+      if (modal) modal.classList.add("hidden");
+    });
+
+    // Close modal when clicking outside the modal content
+    window.addEventListener("click", (event) => {
+      const modal = document.getElementById("visualization-modal");
+      if (!modal) return;
+      if (event.target === modal) {
+        modal.classList.add("hidden");
+      }
+    });
+
+    // Close modal when pressing the "Escape" key
+    window.addEventListener("keydown", (event) => {
+      const modal = document.getElementById("visualization-modal");
+      if (event.key === "Escape" && !modal.classList.contains("hidden")) {
+        modal.classList.add("hidden");
+      }
+    });
+
+    // Initialize table selection and fetch data
+    document.addEventListener("DOMContentLoaded", fetchTables);
+  </script>
+
+  <style>
+    .table-container {
+      position: relative;
+      width: 100%;
+      height: 70vh;
+      overflow: auto;
+    }
+
+    thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+
+    tbody tr:hover {
+      background-color: #f1f5f9;
+    }
+
+    .table-container::-webkit-scrollbar {
+      height: 12px;
+    }
+
+    .table-container::-webkit-scrollbar-thumb {
+      background-color: #a0aec0;
+      border-radius: 6px;
+    }
+
+    /* Styles for editable cells */
+    .editable-cell {
+      border-bottom: 1px dashed transparent;
+      transition: background-color 0.3s, border-bottom 0.3s;
+    }
+
+    .editable-cell:focus {
+      outline: none;
+      background-color: #f0f4f8;
+      border-bottom: 1px dashed #3182ce;
+    }
+
+    /* Styles for success and error indicators */
+    .editable-cell.bg-green-100 {
+      background-color: #c6f6d5;
+    }
+
+    .editable-cell.bg-red-100 {
+      background-color: #feb2b2;
+    }
+
+    /* Modal styles */
+    #visualization-modal {
+      transition: opacity 0.3s ease;
+    }
+
+    /* Loader styles */
+    .loader {
+      border-top-color: #3498db;
+      animation: spin 1s infinite linear;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    /* Scrollbar styling for modal content */
+    #visualization-modal .overflow-y-auto::-webkit-scrollbar {
+      width: 12px;
+    }
+
+    #visualization-modal .overflow-y-auto::-webkit-scrollbar-thumb {
+      background-color: #a0aec0;
+      border-radius: 6px;
+    }
+
+    /* Responsive adjustments for the modal */
+    @media (max-width: 768px) {
+      #visualization-modal .rounded-lg {
+        width: 90%;
+      }
+    }
+  </style>
+</Layout>

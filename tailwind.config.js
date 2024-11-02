@@ -15,7 +15,9 @@ module.exports = {
     },
   },
   plugins: [
-    require("flowbite/plugin"),
+    require("flowbite/plugin")({
+      sharts: true,
+    }),
     // Add other plugins if needed
   ],
 };

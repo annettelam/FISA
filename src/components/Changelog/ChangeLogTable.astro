@@ -1,13 +1,15 @@
 ---
-import ChangeLogRow from './ChangeLogRow.astro';
+ // src/components/Changelog/ChangeLogTable.astro
 
 interface Log {
   school_num: string;
+  action: string;
   field_changed: string;
   old_value: string;
   new_value: string;
   updated_by: string;
   timestamp: string;
+  active_table_at_change: string;
 }
 
 interface Props {
@@ -17,28 +19,80 @@ interface Props {
 
 const { logs, schoolNum } = Astro.props;
 ---
-
 <div class="overflow-x-auto">
   {logs.length === 0 ? (
-    <div class="text-center py-4 text-gray-900 dark:text-gray-100">No changes logged yet for school {schoolNum}.</div>
+    <div class="text-center py-4 text-gray-900 dark:text-gray-100">
+      No changes logged yet for school {schoolNum}.
+    </div>
   ) : (
     <div class="border-b-4 border-gray-200 dark:border-gray-700 mb-6">
       <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-t-lg">
-        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">School Number: {schoolNum}</h2>
+        <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">
+          School Number: {schoolNum}
+        </h2>
       </div>
       <table class="table-auto w-full text-left text-sm text-gray-500 dark:text-gray-300">
         <thead class="bg-gray-50 dark:bg-gray-700">
           <tr>
+            <!-- Action Column Header -->
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Action</th>
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Field Changed</th>
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Old Value</th>
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">New Value</th>
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Updated By</th>
             <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Timestamp</th>
+            <th class="px-4 py-2 text-gray-900 dark:text-gray-100">Active Table</th>
           </tr>
         </thead>
-        <tbody>
-          {logs.map(log => (
-            <ChangeLogRow log={log} />
+       <tbody>
+  {logs.map(log => (
+    <tr key={`${log.school_num}-${log.timestamp}`}>
+      <!-- Action Column -->
+      <td class="px-4 py-2 whitespace-nowrap text-sm">
+        <span
+          class={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold capitalize ${
+            log.action === 'ADD'
+              ? 'bg-green-100 text-green-800'
+              : log.action === 'DELETE'
+              ? 'bg-red-100 text-red-800'
+              : 'bg-indigo-100 text-indigo-800' // Soft indigo for EDIT and unknown actions
+          }`}
+          aria-label={log.action ? log.action.toUpperCase() : 'EDIT'}
+        >
+          {log.action ? log.action.toUpperCase() : 'EDIT'}
+        </span>
+      </td>
+              
+              <!-- Field Changed Column -->
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                {log.field_changed || 'N/A'}
+              </td>
+              
+              <!-- Old Value Column -->
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                {log.old_value || 'N/A'}
+              </td>
+              
+              <!-- New Value Column -->
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                {log.new_value || 'N/A'}
+              </td>
+              
+              <!-- Updated By Column -->
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                {log.updated_by || 'Unknown'}
+              </td>
+              
+              <!-- Timestamp Column -->
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                {log.timestamp || 'N/A'}
+              </td>
+              
+              <!-- Active Table at Change Column -->
+              <td class="px-4 py-2 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">
+                {log.active_table_at_change || 'N/A'}
+              </td>
+            </tr>
           ))}
         </tbody>
       </table>

@@ -31,6 +31,7 @@ prisma/dev.db-journal
 prisma/migrations/*
 
 # SQLite database files
+/data/
 /data/FISA.db
 /data/test.db
 /FISA.db

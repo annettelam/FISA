@@ -4,6 +4,8 @@ import ChangeLogTable from '../components/Changelog/ChangeLogTable.astro';
 import ChangeLogSearchForm from '../components/Changelog/ChangeLogSearchForm.astro';
 import Layout from '../layouts/Layout.astro';
 
+const user = Astro.locals.user;
+
 // Extract query parameters for pagination and search
 const params = new URL(Astro.url).searchParams;
 const page = parseInt(params.get('page') || '1');

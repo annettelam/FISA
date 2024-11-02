@@ -20,95 +20,98 @@
   }
 
   function displayUpdates(updates) {
-    const container = document.getElementById('updatesContainer');
-    container.innerHTML = ''; // Clear existing content
+  const container = document.getElementById('updatesContainer');
+  container.innerHTML = ''; // Clear existing content
 
-    if (updates.length === 0) {
-      // No updates to display
-      const noUpdatesDiv = document.createElement('div');
-      noUpdatesDiv.classList.add('p-6', 'bg-white', 'dark:bg-gray-800', 'rounded-lg', 'border', 'border-gray-300', 'dark:border-gray-700', 'shadow-md', 'text-center');
-      noUpdatesDiv.innerHTML = `
-        <p class="text-gray-700 dark:text-gray-300 text-lg">There are no proposed updates at this time.</p>
-      `;
-      container.appendChild(noUpdatesDiv);
-      return;
-    }
+  if (updates.length === 0) {
+    // No updates to display
+    const noUpdatesDiv = document.createElement('div');
+    noUpdatesDiv.classList.add('p-6', 'bg-white', 'dark:bg-gray-800', 'rounded-lg', 'border', 'border-gray-300', 'dark:border-gray-700', 'shadow-md', 'text-center');
+    noUpdatesDiv.innerHTML = `
+      <p class="text-gray-700 dark:text-gray-300 text-lg">There are no proposed updates at this time.</p>
+    `;
+    container.appendChild(noUpdatesDiv);
+    return;
+  }
 
-    updates.forEach((update) => {
-      const { id, school_number, submitted_at, diffs, error } = update;
+  updates.forEach((update) => {
+    const { id, school_number, submitted_at, diffs, error, active_table_at_submission } = update;
 
-      const updateDiv = document.createElement('div');
-      updateDiv.classList.add('space-y-4');
+    const updateDiv = document.createElement('div');
+    updateDiv.classList.add('space-y-4');
 
-      // Create the UpdateItem component's HTML with dark mode classes
-      let updateHTML = `
-        <div class="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 shadow-md">
-          <div class="flex justify-between items-center mb-4">
-            <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">School Number: ${school_number}</h3>
-            <p class="text-sm text-gray-500 dark:text-gray-400">Submitted At: ${new Date(submitted_at).toLocaleString()}</p>
-          </div>
-      `;
+    // Create the UpdateItem component's HTML with dark mode classes
+    let updateHTML = `
+      <div class="p-6 bg-white dark:bg-gray-800 rounded-lg border border-gray-300 dark:border-gray-700 shadow-md">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="text-xl font-semibold text-gray-800 dark:text-gray-100">School Number: ${school_number}</h3>
+          <p class="text-sm text-gray-500 dark:text-gray-400">Submitted At: ${new Date(submitted_at).toLocaleString()}</p>
+        </div>
+        <!-- Display active table information -->
+        <p class="text-sm text-gray-500 dark:text-gray-400">Active Table: ${active_table_at_submission || 'N/A'}</p>
+    `;
 
-      if (error) {
-        updateHTML += `
-          <div class="p-4 mb-4 text-sm text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-700 rounded-lg" role="alert">
-            Error: ${error}
-          </div>
-        `;
-      } else if (diffs && Object.keys(diffs).length > 0) {
-        updateHTML += `
-          <div class="overflow-x-auto mb-4">
-            <table class="w-full text-sm text-left text-gray-500 dark:text-gray-300">
-              <thead class="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
-                <tr>
-                  <th class="px-4 py-2">Field</th>
-                  <th class="px-4 py-2">Current Value</th>
-                  <th class="px-4 py-2">Proposed Value</th>
-                </tr>
-              </thead>
-              <tbody>
-        `;
-
-        Object.entries(diffs).forEach(([field, values]) => {
-          updateHTML += `
-            <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
-              <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">${field}</td>
-              <td class="px-4 py-2">${values.current}</td>
-              <td class="px-4 py-2">${values.proposed}</td>
-            </tr>
-          `;
-        });
-
-        updateHTML += `
-              </tbody>
-            </table>
-          </div>
-        `;
-      } else {
-        updateHTML += `
-          <p class="text-gray-700 dark:text-gray-300">No differences found.</p>
-        `;
-      }
-
+    if (error) {
       updateHTML += `
-          <div class="flex space-x-2">
-            <button class="accept-btn bg-green-500 dark:bg-green-500 hover:bg-green-600 dark:hover:bg-green-600 text-white px-4 py-2 rounded transition-colors duration-300" data-id="${id}">
-              Accept
-            </button>
-            <button class="reject-btn bg-red-500 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-300" data-id="${id}">
-              Reject
-            </button>
-          </div>
+        <div class="p-4 mb-4 text-sm text-red-700 dark:text-red-300 bg-red-100 dark:bg-red-700 rounded-lg" role="alert">
+          Error: ${error}
         </div>
       `;
+    } else if (diffs && Object.keys(diffs).length > 0) {
+      updateHTML += `
+        <div class="overflow-x-auto mb-4">
+          <table class="w-full text-sm text-left text-gray-500 dark:text-gray-300">
+            <thead class="text-xs text-gray-700 dark:text-gray-400 uppercase bg-gray-50 dark:bg-gray-700">
+              <tr>
+                <th class="px-4 py-2">Field</th>
+                <th class="px-4 py-2">Current Value</th>
+                <th class="px-4 py-2">Proposed Value</th>
+              </tr>
+            </thead>
+            <tbody>
+      `;
 
-      updateDiv.innerHTML = updateHTML;
-      container.appendChild(updateDiv);
-    });
+      Object.entries(diffs).forEach(([field, values]) => {
+        updateHTML += `
+          <tr class="bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+            <td class="px-4 py-2 font-medium text-gray-900 dark:text-gray-100">${field}</td>
+            <td class="px-4 py-2">${values.current}</td>
+            <td class="px-4 py-2">${values.proposed}</td>
+          </tr>
+        `;
+      });
 
-    // Attach event listeners to the buttons after rendering updates
-    attachEventListeners();
-  }
+      updateHTML += `
+            </tbody>
+          </table>
+        </div>
+      `;
+    } else {
+      updateHTML += `
+        <p class="text-gray-700 dark:text-gray-300">No differences found.</p>
+      `;
+    }
+
+    updateHTML += `
+        <div class="flex space-x-2">
+          <button class="accept-btn bg-green-500 dark:bg-green-500 hover:bg-green-600 dark:hover:bg-green-600 text-white px-4 py-2 rounded transition-colors duration-300" data-id="${id}">
+            Accept
+          </button>
+          <button class="reject-btn bg-red-500 dark:bg-red-500 hover:bg-red-600 dark:hover:bg-red-600 text-white px-4 py-2 rounded transition-colors duration-300" data-id="${id}">
+            Reject
+          </button>
+        </div>
+      </div>
+    `;
+
+    updateDiv.innerHTML = updateHTML;
+    container.appendChild(updateDiv);
+  });
+
+  // Attach event listeners to the buttons after rendering updates
+  attachEventListeners();
+}
+
 
   function attachEventListeners() {
     // Accept buttons

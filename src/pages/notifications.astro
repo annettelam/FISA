@@ -1,6 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
 
+const user = Astro.locals.user;
+
 // Determine the base URL for the current environment
 const baseURL = import.meta.env.SITE || "http://localhost:4321"; // Adjust the localhost port if needed
 const response = await fetch(`${baseURL}/api/notifications`);

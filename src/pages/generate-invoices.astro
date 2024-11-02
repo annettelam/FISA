@@ -1,0 +1,275 @@
+---
+import Layout from "../layouts/Layout.astro";
+
+const user = Astro.locals.user;
+---
+
+<Layout title="Generate Invoices">
+    <!-- Main Content -->
+    <div
+        class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md rounded-lg transition-colors duration-300"
+    >
+        <div class="text-center mb-10">
+            <h1 class="text-3xl font-bold text-gray-800 dark:text-gray-100">
+                Generate Invoices
+            </h1>
+            <p class="text-gray-600 dark:text-gray-300">
+                Select a table and form type to view the relevant schools and
+                generate invoices.
+            </p>
+        </div>
+
+        <!-- Table Selection -->
+        <div class="mb-4">
+            <label
+                for="tableSelect"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >Select Table</label
+            >
+            <select
+                id="tableSelect"
+                name="tableSelect"
+                class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md"
+            >
+                <!-- Options will be populated via JavaScript -->
+            </select>
+        </div>
+
+        <!-- Form Type Selection -->
+        <div class="mb-4">
+            <label
+                for="formTypeSelect"
+                class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1"
+                >Select Form Type</label
+            >
+            <select
+                id="formTypeSelect"
+                name="formTypeSelect"
+                class="block w-full p-2 bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md"
+            >
+                <option value="" disabled selected>Select a form type</option>
+                <option value="fisa-fees">FISA Fees</option>
+                <option value="makeafuture">Make a Future</option>
+                <option value="myedbc">My EDBC Invoice</option>
+            </select>
+        </div>
+
+        <!-- Table with sticky headers and accessible scrollbar -->
+        <div
+            class="table-container border border-gray-300 dark:border-gray-700 rounded-lg shadow overflow-x-auto"
+        >
+            <table
+                class="min-w-full text-sm text-left text-gray-700 dark:text-gray-300"
+            >
+                <!-- Table Header -->
+                <thead class="bg-gray-200 dark:bg-gray-700">
+                    <tr>
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            >School Name</th
+                        >
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            >SCHOOL_NUM</th
+                        >
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            >Assoc</th
+                        >
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            >City</th
+                        >
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            >Email</th
+                        >
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider"
+                            >Contact Name</th
+                        >
+                        <th
+                            class="px-6 py-3 text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider action-column"
+                            >Action</th
+                        >
+                    </tr>
+                </thead>
+
+                <!-- Table Body -->
+                <tbody
+                    id="table-body"
+                    class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700"
+                >
+                    <!-- Rows will be populated via JavaScript -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</Layout>
+
+<style>
+    /* Make the table responsive */
+    .table-container {
+        overflow-x: auto;
+        max-width: 100%;
+    }
+
+    /* Fix the width of the action column */
+    .action-column {
+        width: 160px; /* Adjust this width as needed */
+        white-space: nowrap;
+        text-align: center;
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        let tables = [];
+        let selectedTable = "";
+        let schools = [];
+        let selectedFormType = "";
+
+        const baseUrl = "http://localhost:4321"; // Correct server URL and port
+
+        // Function to fetch tables for the dropdown
+        async function fetchTables() {
+            try {
+                const response = await fetch(`${baseUrl}/api/list-tables`);
+                if (response.ok) {
+                    const data = await response.json();
+                    tables = data.tables;
+                    populateTableSelect();
+                } else {
+                    console.error("Failed to fetch tables");
+                }
+            } catch (error) {
+                console.error("Error fetching tables:", error);
+            }
+        }
+
+        // Function to populate table select dropdown
+        function populateTableSelect() {
+            const tableSelect = document.getElementById("tableSelect");
+            tableSelect.innerHTML =
+                '<option value="" disabled selected>Select a table</option>';
+            tables.forEach((table) => {
+                const option = document.createElement("option");
+                option.value = table;
+                option.textContent = table;
+                tableSelect.appendChild(option);
+            });
+
+            tableSelect.addEventListener("change", (e) => {
+                selectedTable = e.target.value;
+                fetchSchools(selectedTable);
+            });
+        }
+
+        // Fetch tables on page load
+        fetchTables();
+
+        // Handle form type selection
+        const formTypeSelect = document.getElementById("formTypeSelect");
+        formTypeSelect.addEventListener("change", (e) => {
+            selectedFormType = e.target.value;
+        });
+
+        // Function to fetch school data for the selected table
+        async function fetchSchools(table) {
+            try {
+                const response = await fetch(
+                    `${baseUrl}/api/invoices?table=${encodeURIComponent(table)}`,
+                );
+                if (response.ok) {
+                    schools = await response.json();
+                    renderSchoolsTable();
+                } else {
+                    console.error("Failed to load school data");
+                }
+            } catch (error) {
+                console.error("Error fetching school data:", error);
+            }
+        }
+
+        // Function to render schools table
+        function renderSchoolsTable() {
+            const tbody = document.getElementById("table-body");
+            tbody.innerHTML = "";
+
+            if (schools.length > 0) {
+                schools.forEach((school) => {
+                    const tr = document.createElement("tr");
+
+                    // Create table cells
+                    const tdSchoolName = document.createElement("td");
+                    tdSchoolName.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdSchoolName.textContent = school.schoolName || "";
+                    tr.appendChild(tdSchoolName);
+
+                    const tdSchoolId = document.createElement("td");
+                    tdSchoolId.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdSchoolId.textContent = school.schoolId || "";
+                    tr.appendChild(tdSchoolId);
+
+                    const tdAssoc = document.createElement("td");
+                    tdAssoc.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdAssoc.textContent = school.assoc || "";
+                    tr.appendChild(tdAssoc);
+
+                    const tdCity = document.createElement("td");
+                    tdCity.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdCity.textContent = school.city || "";
+                    tr.appendChild(tdCity);
+
+                    const tdEmail = document.createElement("td");
+                    tdEmail.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdEmail.textContent = school.email || "";
+                    tr.appendChild(tdEmail);
+
+                    const tdContactName = document.createElement("td");
+                    tdContactName.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300";
+                    tdContactName.textContent = school.contactName || "";
+                    tr.appendChild(tdContactName);
+
+                    // Action Button
+                    const tdAction = document.createElement("td");
+                    tdAction.className =
+                        "px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300 action-column";
+
+                    const button = document.createElement("button");
+                    button.className =
+                        "bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 transition-colors duration-300";
+                    button.textContent = "Generate Invoice";
+                    button.addEventListener("click", () => {
+                        if (selectedFormType) {
+                            const url = `${baseUrl}/${selectedFormType}?schoolId=${encodeURIComponent(school.schoolId)}`;
+                            window.open(url, "_blank");
+                        } else {
+                            alert(
+                                "Please select a form type before generating the invoice.",
+                            );
+                        }
+                    });
+                    tdAction.appendChild(button);
+                    tr.appendChild(tdAction);
+
+                    tbody.appendChild(tr);
+                });
+            } else {
+                const tr = document.createElement("tr");
+                const td = document.createElement("td");
+                td.colSpan = 7; // Updated to match the number of columns
+                td.className = "text-center py-4 text-sm text-gray-500";
+                td.textContent = "No schools found.";
+                tr.appendChild(td);
+                tbody.appendChild(tr);
+            }
+        }
+    });
+</script>

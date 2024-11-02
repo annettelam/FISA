@@ -1,8 +1,90 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import FisaForm from "../components/FisaForm.astro";
+
+const user = Astro.locals.user;
+
+// Extract the schoolId from the URL query parameters
+const url = new URL(Astro.request.url);
+const schoolId = url.searchParams.get("schoolId");
+
+// Set isAdmin to true
+const isAdmin = true;
+
+// Initialize schoolData
+let schoolData = {
+    schoolName: "",
+    schoolId: "",
+    fullDayKindergarten: 0,
+    grades1To12: 0,
+    halfDayKindergarten: 0,
+    totalFTE: 0,
+    membershipFees: 0,
+};
+
+// Initialize an error message variable
+let errorMessage = "";
+
+// Check if schoolId is provided
+if (schoolId) {
+    // Construct the API URL using the schoolId
+    const apiUrl = new URL(
+        `/api/data?schoolId=${encodeURIComponent(schoolId)}`,
+        Astro.url.origin,
+    );
+
+    // Fetch school data from the backend API
+    try {
+        const response = await fetch(apiUrl);
+        if (response.ok) {
+            const data = await response.json();
+            if (data && Object.keys(data).length > 0) {
+                schoolData = data;
+
+                // Parse the enrollment numbers as floats
+                const fullDayK =
+                    parseFloat(schoolData.fullDayKindergarten) || 0;
+                const grades1To12 = parseFloat(schoolData.grades1To12) || 0;
+                const halfDayK =
+                    parseFloat(schoolData.halfDayKindergarten) || 0;
+
+                // Calculate total FTE and fees
+                const calculateTotalFTE = (fullDayK, grades1To12, halfDayK) =>
+                    fullDayK + grades1To12 + halfDayK / 2;
+                const calculateMembershipFees = (totalFTE) => totalFTE * 7;
+
+                schoolData.totalFTE = calculateTotalFTE(
+                    fullDayK,
+                    grades1To12,
+                    halfDayK,
+                );
+                schoolData.membershipFees = calculateMembershipFees(
+                    schoolData.totalFTE,
+                );
+            } else {
+                errorMessage = "No data returned from API.";
+            }
+        } else {
+            errorMessage = `Error fetching school data: ${response.statusText}`;
+        }
+    } catch (error) {
+        errorMessage = `Error fetching school data: ${error.message}`;
+    }
+} else {
+    errorMessage = "No schoolId provided in the URL.";
+}
 ---
 
 <Layout title="FISA Membership Fees Invoice">
-    <FisaForm />
+    <!-- Display error message if any -->
+    {
+        errorMessage && (
+            <div style="color: red;">
+                <p>Error: {errorMessage}</p>
+            </div>
+        )
+    }
+
+    <!-- Render the FisaForm component, passing the necessary data as props -->
+    <FisaForm schoolData={schoolData} isAdmin={isAdmin} />
 </Layout>

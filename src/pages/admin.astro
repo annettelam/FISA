@@ -1,0 +1,48 @@
+---
+import ActiveTableSelector from '../components/AdminDatabase/ActiveTableSelector.astro';
+import DuplicateTable from '../components/AdminDatabase/DuplicateTable.astro';
+import Layout from '../layouts/Layout.astro';
+import DropTableSelector from '../components/AdminDatabase/DropTableSelector.astro';
+import ExportTable from '../components/AdminDatabase/ExportTable.astro';
+
+const user = Astro.locals.user;
+---
+
+<Layout title="Admin Panel">
+  <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md dark:shadow-lg rounded-lg transition-colors duration-300">
+    <div class="text-center mb-10">
+      <h1 class="text-4xl font-bold text-gray-900 dark:text-gray-100 mb-6">Admin Panel</h1>
+      <p class="text-lg text-gray-600 dark:text-gray-300">
+        Manage active school table, duplicate, drop and export tablesand duplicate tables.
+      </p>
+    </div>
+
+    <!-- Grid Layout for Admin Sections -->
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+      
+      <!-- Active Table Management Section -->
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+       
+        <ActiveTableSelector />
+      </div>
+
+      <!-- Duplicate Table Section -->
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+        
+        <DuplicateTable />
+      </div>
+
+      <!-- Drop Table Section -->
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+        
+        <DropTableSelector />
+      </div>
+
+      <!-- Export Table Section -->
+      <div class="bg-gray-100 dark:bg-gray-700 p-6 rounded-lg shadow-md">
+        <ExportTable />
+      </div>
+      
+    </div>
+  </div>
+</Layout>

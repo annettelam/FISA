@@ -1,0 +1,142 @@
+<div class="max-w-xl mx-auto bg-gray-100 dark:bg-gray-900 p-6 rounded-lg shadow-lg space-y-6 transition-colors duration-300">
+  <div class="text-center">
+    <h2 class="text-2xl font-semibold text-gray-800 dark:text-gray-100">Duplicate Table</h2>
+    <p class="text-gray-600 dark:text-gray-400">Select a source table and provide a new name to duplicate it.</p>
+  </div>
+
+  <!-- Form for duplicating a table -->
+  <form id="tableForm" class="space-y-4">
+    <div>
+      <label for="sourceTable" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        Source Table
+      </label>
+      <select id="sourceTable" name="sourceTable" class="block w-full p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required>
+        <option value="" disabled selected>Select a source table</option>
+        <!-- Options will be populated dynamically -->
+      </select>
+    </div>
+
+    <div>
+      <label for="newTableName" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+        New Table Name
+      </label>
+      <input type="text" id="newTableName" name="newTableName" placeholder="Enter new table name" class="block w-full p-2 bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-300 border border-gray-300 dark:border-gray-700 rounded-md" required />
+    </div>
+
+    <button type="submit" class="w-full px-4 py-2 bg-green-600 text-white rounded-md hover:bg-green-700 transition">
+      Duplicate Table
+    </button>
+  </form>
+
+  <div id="tableDuplicatorMessage" class="mt-4 text-sm text-center"></div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('tableForm');
+    const sourceTableSelect = document.getElementById('sourceTable');
+    const messageDiv = document.getElementById('tableDuplicatorMessage');
+
+    // Function to fetch tables for the source dropdown
+    async function fetchTables() {
+      try {
+        const response = await fetch('/api/list-tables');
+        if (response.ok) {
+          const data = await response.json();
+          populateSourceTables(data.tables);
+        } else {
+          throw new Error('Failed to fetch tables.');
+        }
+      } catch (error) {
+        console.error(error);
+        messageDiv.textContent = 'Error fetching tables.';
+        messageDiv.className = 'text-red-600';
+      }
+    }
+
+    // Function to populate the source table dropdown
+    function populateSourceTables(tables) {
+      // Clear existing options except the first
+      sourceTableSelect.innerHTML = '<option value="" disabled selected>Select a source table</option>';
+
+      if (tables.length === 0) {
+        const option = document.createElement('option');
+        option.value = "";
+        option.textContent = "No tables available";
+        option.disabled = true;
+        sourceTableSelect.appendChild(option);
+        sourceTableSelect.disabled = true;
+        return;
+      }
+
+      sourceTableSelect.disabled = false;
+
+      tables.forEach(table => {
+        const option = document.createElement('option');
+        option.value = table;
+        option.textContent = table;
+        sourceTableSelect.appendChild(option);
+      });
+    }
+
+    // Event listener for duplicating the table
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      messageDiv.textContent = '';
+      messageDiv.className = '';
+
+      const sourceTable = sourceTableSelect.value;
+      const newTableName = form.newTableName.value.trim();
+
+      if (!sourceTable || !newTableName) {
+        messageDiv.textContent = 'Please select a source table and enter a new table name.';
+        messageDiv.className = 'text-red-600';
+        return;
+      }
+
+      // Optional: Add confirmation dialog
+      const confirmDup = confirm(`Are you sure you want to duplicate "${sourceTable}" to "${newTableName}"?`);
+      if (!confirmDup) {
+        messageDiv.textContent = 'Duplication cancelled.';
+        messageDiv.className = 'text-yellow-600';
+        return;
+      }
+
+      try {
+        const response = await fetch('/api/duplicate-table', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ sourceTable, newTable: newTableName }),
+        });
+
+        const result = await response.json();
+
+        if (response.ok) {
+          messageDiv.textContent = result.message;
+          messageDiv.className = 'text-green-600';
+          // Add the new table to the dropdown
+          const newOption = document.createElement('option');
+          newOption.value = newTableName;
+          newOption.textContent = newTableName;
+          sourceTableSelect.appendChild(newOption);
+          // Select the newly added table
+          sourceTableSelect.value = newTableName;
+          // Clear the new table name input
+          form.newTableName.value = '';
+        } else {
+          messageDiv.textContent = result.message || 'Error duplicating table.';
+          messageDiv.className = 'text-red-600';
+        }
+      } catch (error) {
+        console.error(error);
+        messageDiv.textContent = 'An error occurred while duplicating the table.';
+        messageDiv.className = 'text-red-600';
+      }
+    });
+
+    // Initialize by fetching tables
+    fetchTables();
+  });
+</script>

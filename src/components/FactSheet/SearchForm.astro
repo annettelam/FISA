@@ -4,7 +4,7 @@
 <!-- Search Section -->
 <div class="border-b border-gray-300 dark:border-gray-600 pb-6 mb-6">
   <h2 class="text-xl font-bold text-gray-800 dark:text-gray-100 mb-4">Search School by Number</h2>
-  <form id="search-form" class="space-y-4">
+  <form id="search-form" class="space-y-4" method="GET" action="/fact-sheet">
     <div>
       <label
         for="schoolNum"
@@ -14,9 +14,10 @@
       <input
         type="text"
         id="schoolNum"
+        name="schoolNum" 
         class="bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 text-sm rounded-lg focus:ring-blue-500 dark:focus:ring-blue-500 focus:border-blue-500 dark:focus:border-blue-500 block w-full p-3 transition-colors duration-300"
         placeholder="e.g., 03496069"
-        required
+        title="Please enter exactly 8 digits."
       />
     </div>
     <button

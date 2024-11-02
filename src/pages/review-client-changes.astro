@@ -1,6 +1,8 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import UpdateContainer from '../components/ReviewClientChanges/UpdateContainer.astro';
+
+const user = Astro.locals.user;
 ---
 <Layout title="Admin - Proposed Updates">
   <div class="max-w-7xl mx-auto mt-10 p-8 bg-white dark:bg-gray-800 shadow-md dark:shadow-lg rounded-lg transition-colors duration-300">
