@@ -63,6 +63,14 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
       </button>
     </div>
 
+    <!-- Export CSV Button -->
+    <div class="flex justify-end mb-4">
+      <button id="export-csv" class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600 transition-colors duration-300">
+        Export CSV
+      </button>
+    </div>
+
+
     <!-- Table Selection -->
     <div class="mb-4">
       <label for="tableSelect" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Table</label>
@@ -841,6 +849,45 @@ function openAddModal() {
 
     // Initialize table selection and fetch data
     document.addEventListener("DOMContentLoaded", fetchTables);
+
+    // Export data to CSV
+    // Function to convert data to CSV format
+    function convertToCSV(data) {
+      const headers = Object.keys(data[0]).join(',');
+      const rows = data.map(row => Object.values(row).join(',')).join('\n');
+      return `${headers}\n${rows}`;
+    }
+
+    // Function to download CSV file
+    function downloadCSV(csv, filename) {
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement("a");
+      const url = URL.createObjectURL(blob);
+      link.setAttribute("href", url);
+      link.setAttribute("download", filename);
+      link.style.visibility = 'hidden';
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+
+    // Function to handle CSV export
+    function handleExportCSV() {
+      if (filteredData.length === 0) {
+        showToast("No data to export.", "error");
+        return;
+      }
+
+      const csv = convertToCSV(filteredData);
+      const filename = `${currentTable}_export_${new Date().toISOString().slice(0, 10)}.csv`;
+      downloadCSV(csv, filename);
+      showToast("CSV exported successfully.", "success");
+    }
+
+    // Attach event listener to the Export CSV button
+    document.getElementById("export-csv").addEventListener("click", handleExportCSV);
+
+
   </script>
 
   <style>
