@@ -23,7 +23,7 @@ async function main() {
     });
 
     const testEmails = await new Promise((resolve, reject) => {
-      db.all('SELECT Email FROM test', [], (err, rows) => {
+      db.all('SELECT Email FROM "all_schools_2024-2025"', [], (err, rows) => {
         if (err) {
           reject(err);
         } else {
