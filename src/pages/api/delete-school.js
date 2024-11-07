@@ -71,13 +71,15 @@ export async function POST({ request }) {
         }
 
         // Log the deletion in the change log, including ACTIVE_TABLE_AT_CHANGE
+        // Log the deletion in the change log, including ACTIVE_TABLE_AT_CHANGE
+        // Log the deletion in the change log, including ACTIVE_TABLE_AT_CHANGE
         const logStmt = db.prepare(`
-          INSERT INTO "school_change_log" 
-            ("SCHOOL_NUM", "ACTION", "TIMESTAMP", "USER_ID", "FIELD_CHANGED", "ACTIVE_TABLE_AT_CHANGE")
-          VALUES 
-            (?, 'DELETE', datetime('now'), ?, 'ALL', 'school_data')
-        `);
-        logStmt.run(schoolNum, deletedBy || "system");
+  INSERT INTO "school_change_log" 
+    ("SCHOOL_NUM", "ACTION", "TIMESTAMP", "USER_ID", "FIELD_CHANGED", "ACTIVE_TABLE_AT_CHANGE")
+  VALUES 
+    (?, 'DELETE', datetime('now'), ?, 'ALL', ?)
+`);
+        logStmt.run(schoolNum, deletedBy || "system", tableName);
       }
     );
 
