@@ -645,55 +645,53 @@ const user = Astro.locals.user; // Ensure this is correctly set if using authent
     }
 
     // Handle adding a new record
-    async function handleAddRecord(event) {
-      event.preventDefault();
-      const form = event.target;
-      const formData = new FormData(form);
+async function handleAddRecord(event) {
+  event.preventDefault();
+  const form = event.target;
+  const formData = new FormData(form);
 
-      const tableName = form.dataset.tableName;
-      const addedBy = "admin"; // Replace with actual user if available
+  const tableName = form.dataset.tableName;
+  const addedBy = "admin"; // Replace with actual user if available
 
-      const payload = {
-        tableName,
-        addedBy,
-      };
+  const payload = {
+    tableName,
+    addedBy,
+  };
 
-      // Populate payload with fields to add
-      formData.forEach((value, key) => {
-        payload[key] = value;
-      });
+  // Populate payload with fields to add
+  formData.forEach((value, key) => {
+    payload[key] = value;
+  });
 
-      showLoading();
+  showLoading();
 
-      try {
-        const response = await fetch("/api/add-school", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        });
+  try {
+    const response = await fetch("/api/add-school", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
 
-        const result = await response.json();
+    const result = await response.json();
 
-        if (response.ok && result.success) {
-          showToast("Record added successfully.", "success");
-          // Optionally, fetch the updated data or append the new record
-          // For simplicity, we'll append it to originalData
-          const newRecord = { SCHOOL_NUM: result.schoolNum, ...payload };
-          originalData.push(newRecord);
-          applyFilters(); // Re-apply filters to update the displayed data
-          // Close the modal
-          const modal = document.getElementById("visualization-modal");
-          if (modal) modal.classList.add("hidden");
-        } else {
-          throw new Error(result.error || "Failed to add record.");
-        }
-      } catch (error) {
-        console.error("Error adding record:", error);
-        showToast(`Failed to add record: ${error.message}`, "error");
-      } finally {
-        hideLoading();
-      }
+    if (response.ok && result.success) {
+      showToast("Record added successfully.", "success");
+      // Re-fetch the data for the current table
+      await fetchDataForTable();
+      // Close the modal
+      const modal = document.getElementById("visualization-modal");
+      if (modal) modal.classList.add("hidden");
+    } else {
+      throw new Error(result.error || "Failed to add record.");
     }
+  } catch (error) {
+    console.error("Error adding record:", error);
+    showToast(`Failed to add record: ${error.message}`, "error");
+  } finally {
+    hideLoading();
+  }
+}
+
 
    // Function to open the modal in Add mode
 function openAddModal() {
