@@ -7,4 +7,14 @@ export default defineConfig({
   adapter: node({
     mode: 'standalone',
   }),
+  vite: {
+    resolve: {
+      alias: {
+        crypto: 'crypto-browserify',
+      },
+    },
+    optimizeDeps: {
+      include: ['crypto-browserify'],
+    },
+  },
 });

@@ -17,7 +17,7 @@
     "bcrypt": "^5.1.1",
     "better-sqlite3": "^11.3.0",
     "cookie": "^0.7.2",
-    "crypto": "^1.0.1",
+    "crypto-browserify": "^3.12.1",
     "csrf": "^3.1.0",
     "dotenv": "^16.4.5",
     "flowbite": "^2.5.2",
